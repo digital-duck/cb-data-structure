@@ -1,13 +1,63 @@
 [
   {
     "id": "data_structure_ch02",
-    "name": "Open Data Structures (Python) \u2014 Ch2: Array-Based Lists",
+    "name": "Open Data Structures (Python) — Ch2: Array-Based Lists",
     "capstone": "fast_array_stack",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "fast_array_stack",
+        "file": "output/core.en/sonnet/html/book_fast_array_stack.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "amortized_analysis",
+        "label": "Amortized Analysis",
+        "file": "output/core.en/sonnet/html/concept_amortized_analysis.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "array_stack",
+        "label": "Array Stack",
+        "file": "output/core.en/sonnet/html/concept_array_stack.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "backing_array",
+        "label": "Backing Array",
+        "file": "output/core.en/sonnet/html/concept_backing_array.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "fast_array_stack",
+        "label": "Fast Array Stack",
+        "file": "output/core.en/sonnet/html/concept_fast_array_stack.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "list_interface",
+        "label": "List Interface",
+        "file": "output/core.en/sonnet/html/concept_list_interface.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "resize_operation",
+        "label": "Resize Operation",
+        "file": "output/core.en/sonnet/html/concept_resize_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -21,13 +71,102 @@
   },
   {
     "id": "data_structure_ch03",
-    "name": "Open Data Structures (Python) \u2014 Ch3: Linked Lists",
+    "name": "Open Data Structures (Python) — Ch3: Linked Lists",
     "capstone": "xor_list",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "stack_operations_sllist",
+        "file": "output/core.en/sonnet/html/book_stack_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "queue_operations_sllist",
+        "file": "output/core.en/sonnet/html/book_queue_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "dllist_list_operations",
+        "file": "output/core.en/sonnet/html/book_dllist_list_operations.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "xor_list",
+        "file": "output/core.en/sonnet/html/book_xor_list.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "dllist",
+        "label": "Dllist",
+        "file": "output/core.en/sonnet/html/concept_dllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "dllist_list_operations",
+        "label": "Dllist List Operations",
+        "file": "output/core.en/sonnet/html/concept_dllist_list_operations.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "get_node_search",
+        "label": "Get Node Search",
+        "file": "output/core.en/sonnet/html/concept_get_node_search.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "node",
+        "label": "Node",
+        "file": "output/core.en/sonnet/html/concept_node.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "pointer_reference",
+        "label": "Pointer Reference",
+        "file": "output/core.en/sonnet/html/concept_pointer_reference.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "queue_operations_sllist",
+        "label": "Queue Operations Sllist",
+        "file": "output/core.en/sonnet/html/concept_queue_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sllist",
+        "label": "Sllist",
+        "file": "output/core.en/sonnet/html/concept_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "stack_operations_sllist",
+        "label": "Stack Operations Sllist",
+        "file": "output/core.en/sonnet/html/concept_stack_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "xor_list",
+        "label": "Xor List",
+        "file": "output/core.en/sonnet/html/concept_xor_list.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -41,13 +180,104 @@
   },
   {
     "id": "data_structure_ch04",
-    "name": "Open Data Structures (Python) \u2014 Ch4: Skiplists",
+    "name": "Open Data Structures (Python) — Ch4: Skiplists",
     "capstone": "skiplist_list",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "skiplist_sset",
+        "file": "output/core.en/sonnet/html/book_skiplist_sset.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "skiplist_list",
+        "file": "output/core.en/sonnet/html/book_skiplist_list.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "coin_toss_randomization",
+        "label": "Coin Toss Randomization",
+        "file": "output/core.en/sonnet/html/concept_coin_toss_randomization.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "edge_length",
+        "label": "Edge Length",
+        "file": "output/core.en/sonnet/html/concept_edge_length.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "node_height",
+        "label": "Node Height",
+        "file": "output/core.en/sonnet/html/concept_node_height.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "pick_height_procedure",
+        "label": "Pick Height Procedure",
+        "file": "output/core.en/sonnet/html/concept_pick_height_procedure.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "pseudo_random_generator",
+        "label": "Pseudo Random Generator",
+        "file": "output/core.en/sonnet/html/concept_pseudo_random_generator.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "search_path",
+        "label": "Search Path",
+        "file": "output/core.en/sonnet/html/concept_search_path.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sentinel_node",
+        "label": "Sentinel Node",
+        "file": "output/core.en/sonnet/html/concept_sentinel_node.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "singly_linked_list_hierarchy",
+        "label": "Singly Linked List Hierarchy",
+        "file": "output/core.en/sonnet/html/concept_singly_linked_list_hierarchy.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "skiplist",
+        "label": "Skiplist",
+        "file": "output/core.en/sonnet/html/concept_skiplist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "skiplist_list",
+        "label": "Skiplist List",
+        "file": "output/core.en/sonnet/html/concept_skiplist_list.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "skiplist_sset",
+        "label": "Skiplist Sset",
+        "file": "output/core.en/sonnet/html/concept_skiplist_sset.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -61,13 +291,56 @@
   },
   {
     "id": "data_structure_ch05",
-    "name": "Open Data Structures (Python) \u2014 Ch5: Hash Tables",
+    "name": "Open Data Structures (Python) — Ch5: Hash Tables",
     "capstone": "hash_collision_dos",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "hash_collision_dos",
+        "file": "output/core.en/sonnet/html/book_hash_collision_dos.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "chained_hash_table",
+        "label": "Chained Hash Table",
+        "file": "output/core.en/sonnet/html/concept_chained_hash_table.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "hash_collision_dos",
+        "label": "Hash Collision Dos",
+        "file": "output/core.en/sonnet/html/concept_hash_collision_dos.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "hash_function",
+        "label": "Hash Function",
+        "file": "output/core.en/sonnet/html/concept_hash_function.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "hash_table",
+        "label": "Hash Table",
+        "file": "output/core.en/sonnet/html/concept_hash_table.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "load_factor_invariant",
+        "label": "Load Factor Invariant",
+        "file": "output/core.en/sonnet/html/concept_load_factor_invariant.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -81,13 +354,83 @@
   },
   {
     "id": "data_structure_ch06",
-    "name": "Open Data Structures (Python) \u2014 Ch6: Binary Trees",
+    "name": "Open Data Structures (Python) — Ch6: Binary Trees",
     "capstone": "tree_balancing_strategies",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "unbalanced_bst_performance",
+        "file": "output/core.en/sonnet/html/book_unbalanced_bst_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "tree_balancing_strategies",
+        "file": "output/core.en/sonnet/html/book_tree_balancing_strategies.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "binary_search_tree",
+        "label": "Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_tree",
+        "label": "Binary Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "bst_addition",
+        "label": "Bst Addition",
+        "file": "output/core.en/sonnet/html/concept_bst_addition.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "bst_removal",
+        "label": "Bst Removal",
+        "file": "output/core.en/sonnet/html/concept_bst_removal.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "bst_search",
+        "label": "Bst Search",
+        "file": "output/core.en/sonnet/html/concept_bst_search.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "total_order",
+        "label": "Total Order",
+        "file": "output/core.en/sonnet/html/concept_total_order.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "tree_balancing_strategies",
+        "label": "Tree Balancing Strategies",
+        "file": "output/core.en/sonnet/html/concept_tree_balancing_strategies.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "unbalanced_bst_performance",
+        "label": "Unbalanced Bst Performance",
+        "file": "output/core.en/sonnet/html/concept_unbalanced_bst_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -101,13 +444,104 @@
   },
   {
     "id": "data_structure_ch07",
-    "name": "Open Data Structures (Python) \u2014 Ch7: Random Binary Search Trees",
+    "name": "Open Data Structures (Python) — Ch7: Random Binary Search Trees",
     "capstone": "treap_hashing_priorities",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "martinez_roura_rbst",
+        "file": "output/core.en/sonnet/html/book_martinez_roura_rbst.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "treap_hashing_priorities",
+        "file": "output/core.en/sonnet/html/book_treap_hashing_priorities.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "binary_search_tree",
+        "label": "Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "heap_property",
+        "label": "Heap Property",
+        "file": "output/core.en/sonnet/html/concept_heap_property.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "martinez_roura_rbst",
+        "label": "Martinez Roura Rbst",
+        "file": "output/core.en/sonnet/html/concept_martinez_roura_rbst.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "random_binary_search_tree",
+        "label": "Random Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_random_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "random_permutation",
+        "label": "Random Permutation",
+        "file": "output/core.en/sonnet/html/concept_random_permutation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "rotation",
+        "label": "Rotation",
+        "file": "output/core.en/sonnet/html/concept_rotation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sset_interface",
+        "label": "Sset Interface",
+        "file": "output/core.en/sonnet/html/concept_sset_interface.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "treap",
+        "label": "Treap",
+        "file": "output/core.en/sonnet/html/concept_treap.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "treap_add",
+        "label": "Treap Add",
+        "file": "output/core.en/sonnet/html/concept_treap_add.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "treap_hashing_priorities",
+        "label": "Treap Hashing Priorities",
+        "file": "output/core.en/sonnet/html/concept_treap_hashing_priorities.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "treap_remove",
+        "label": "Treap Remove",
+        "file": "output/core.en/sonnet/html/concept_treap_remove.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -121,13 +555,164 @@
   },
   {
     "id": "data_structure_ch08",
-    "name": "Open Data Structures (Python) \u2014 Ch8: Scapegoat Trees",
+    "name": "Open Data Structures (Python) — Ch8: Scapegoat Trees",
     "capstone": "sequence_data_structure",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "scapegoat_tree_performance",
+        "file": "output/core.en/sonnet/html/book_scapegoat_tree_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "weight_balanced_tree",
+        "file": "output/core.en/sonnet/html/book_weight_balanced_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "countdown_tree",
+        "file": "output/core.en/sonnet/html/book_countdown_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "dynamite_tree",
+        "file": "output/core.en/sonnet/html/book_dynamite_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "sequence_data_structure",
+        "file": "output/core.en/sonnet/html/book_sequence_data_structure.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "amortized_analysis",
+        "label": "Amortized Analysis",
+        "file": "output/core.en/sonnet/html/concept_amortized_analysis.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_search_tree",
+        "label": "Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "countdown_tree",
+        "label": "Countdown Tree",
+        "file": "output/core.en/sonnet/html/concept_countdown_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "credit_scheme",
+        "label": "Credit Scheme",
+        "file": "output/core.en/sonnet/html/concept_credit_scheme.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "dynamite_tree",
+        "label": "Dynamite Tree",
+        "file": "output/core.en/sonnet/html/concept_dynamite_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "height_bound_invariant",
+        "label": "Height Bound Invariant",
+        "file": "output/core.en/sonnet/html/concept_height_bound_invariant.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "rebuild_operation",
+        "label": "Rebuild Operation",
+        "file": "output/core.en/sonnet/html/concept_rebuild_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_add",
+        "label": "Scapegoat Add",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_add.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_existence_lemma",
+        "label": "Scapegoat Existence Lemma",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_existence_lemma.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_node",
+        "label": "Scapegoat Node",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_node.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_remove",
+        "label": "Scapegoat Remove",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_remove.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_tree",
+        "label": "Scapegoat Tree",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "scapegoat_tree_performance",
+        "label": "Scapegoat Tree Performance",
+        "file": "output/core.en/sonnet/html/concept_scapegoat_tree_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sequence_data_structure",
+        "label": "Sequence Data Structure",
+        "file": "output/core.en/sonnet/html/concept_sequence_data_structure.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "subtree_size",
+        "label": "Subtree Size",
+        "file": "output/core.en/sonnet/html/concept_subtree_size.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "tree_height",
+        "label": "Tree Height",
+        "file": "output/core.en/sonnet/html/concept_tree_height.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "weight_balanced_tree",
+        "label": "Weight Balanced Tree",
+        "file": "output/core.en/sonnet/html/concept_weight_balanced_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -141,13 +726,146 @@
   },
   {
     "id": "data_structure_ch09",
-    "name": "Open Data Structures (Python) \u2014 Ch9: Red-Black Trees",
+    "name": "Open Data Structures (Python) — Ch9: Red-Black Trees",
     "capstone": "avl_tree",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "red_black_performance",
+        "file": "output/core.en/sonnet/html/book_red_black_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "avl_tree",
+        "file": "output/core.en/sonnet/html/book_avl_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "2_4_tree",
+        "label": "2 4 Tree",
+        "file": "output/core.en/sonnet/html/concept_2_4_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "2_4_tree_add_leaf",
+        "label": "2 4 Tree Add Leaf",
+        "file": "output/core.en/sonnet/html/concept_2_4_tree_add_leaf.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "2_4_tree_remove_leaf",
+        "label": "2 4 Tree Remove Leaf",
+        "file": "output/core.en/sonnet/html/concept_2_4_tree_remove_leaf.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "amortized_potential_method",
+        "label": "Amortized Potential Method",
+        "file": "output/core.en/sonnet/html/concept_amortized_potential_method.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "avl_tree",
+        "label": "Avl Tree",
+        "file": "output/core.en/sonnet/html/concept_avl_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_search_tree",
+        "label": "Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "black_height_property",
+        "label": "Black Height Property",
+        "file": "output/core.en/sonnet/html/concept_black_height_property.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "colour_flip_push_pull",
+        "label": "Colour Flip Push Pull",
+        "file": "output/core.en/sonnet/html/concept_colour_flip_push_pull.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "left_leaning_property",
+        "label": "Left Leaning Property",
+        "file": "output/core.en/sonnet/html/concept_left_leaning_property.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "no_red_edge_property",
+        "label": "No Red Edge Property",
+        "file": "output/core.en/sonnet/html/concept_no_red_edge_property.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "red_black_2_4_correspondence",
+        "label": "Red Black 2 4 Correspondence",
+        "file": "output/core.en/sonnet/html/concept_red_black_2_4_correspondence.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "red_black_add",
+        "label": "Red Black Add",
+        "file": "output/core.en/sonnet/html/concept_red_black_add.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "red_black_performance",
+        "label": "Red Black Performance",
+        "file": "output/core.en/sonnet/html/concept_red_black_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "red_black_remove",
+        "label": "Red Black Remove",
+        "file": "output/core.en/sonnet/html/concept_red_black_remove.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "red_black_tree",
+        "label": "Red Black Tree",
+        "file": "output/core.en/sonnet/html/concept_red_black_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "rooted_tree",
+        "label": "Rooted Tree",
+        "file": "output/core.en/sonnet/html/concept_rooted_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "tree_height",
+        "label": "Tree Height",
+        "file": "output/core.en/sonnet/html/concept_tree_height.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -161,13 +879,137 @@
   },
   {
     "id": "data_structure_ch10",
-    "name": "Open Data Structures (Python) \u2014 Ch10: Heaps",
+    "name": "Open Data Structures (Python) — Ch10: Heaps",
     "capstone": "dijkstras_algorithm",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "heapsort",
+        "file": "output/core.en/sonnet/html/book_heapsort.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "absorb_operation",
+        "file": "output/core.en/sonnet/html/book_absorb_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "decrease_key",
+        "file": "output/core.en/sonnet/html/book_decrease_key.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "dijkstras_algorithm",
+        "file": "output/core.en/sonnet/html/book_dijkstras_algorithm.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "absorb_operation",
+        "label": "Absorb Operation",
+        "file": "output/core.en/sonnet/html/concept_absorb_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "array_resizing_amortization",
+        "label": "Array Resizing Amortization",
+        "file": "output/core.en/sonnet/html/concept_array_resizing_amortization.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_heap",
+        "label": "Binary Heap",
+        "file": "output/core.en/sonnet/html/concept_binary_heap.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_tree",
+        "label": "Binary Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "complete_binary_tree",
+        "label": "Complete Binary Tree",
+        "file": "output/core.en/sonnet/html/concept_complete_binary_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "decrease_key",
+        "label": "Decrease Key",
+        "file": "output/core.en/sonnet/html/concept_decrease_key.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "dijkstras_algorithm",
+        "label": "Dijkstras Algorithm",
+        "file": "output/core.en/sonnet/html/concept_dijkstras_algorithm.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "eytzinger_method",
+        "label": "Eytzinger Method",
+        "file": "output/core.en/sonnet/html/concept_eytzinger_method.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "heap_order_property",
+        "label": "Heap Order Property",
+        "file": "output/core.en/sonnet/html/concept_heap_order_property.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "heapsort",
+        "label": "Heapsort",
+        "file": "output/core.en/sonnet/html/concept_heapsort.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "meldable_heap",
+        "label": "Meldable Heap",
+        "file": "output/core.en/sonnet/html/concept_meldable_heap.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "merge_operation",
+        "label": "Merge Operation",
+        "file": "output/core.en/sonnet/html/concept_merge_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "priority_queue",
+        "label": "Priority Queue",
+        "file": "output/core.en/sonnet/html/concept_priority_queue.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "randomization_coin_toss",
+        "label": "Randomization Coin Toss",
+        "file": "output/core.en/sonnet/html/concept_randomization_coin_toss.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -181,13 +1023,84 @@
   },
   {
     "id": "data_structure_ch11",
-    "name": "Open Data Structures (Python) \u2014 Ch11: Sorting Algorithms",
+    "name": "Open Data Structures (Python) — Ch11: Sorting Algorithms",
     "capstone": "integer_sorting_via_indexing",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "integer_sorting_via_indexing",
+        "file": "output/core.en/sonnet/html/book_integer_sorting_via_indexing.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "compare_operation",
+        "label": "Compare Operation",
+        "file": "output/core.en/sonnet/html/concept_compare_operation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "comparison_based_sorting",
+        "label": "Comparison Based Sorting",
+        "file": "output/core.en/sonnet/html/concept_comparison_based_sorting.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "comparison_sorting_lower_bound",
+        "label": "Comparison Sorting Lower Bound",
+        "file": "output/core.en/sonnet/html/concept_comparison_sorting_lower_bound.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "comparison_tree",
+        "label": "Comparison Tree",
+        "file": "output/core.en/sonnet/html/concept_comparison_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "counting_sort",
+        "label": "Counting Sort",
+        "file": "output/core.en/sonnet/html/concept_counting_sort.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "integer_sorting_via_indexing",
+        "label": "Integer Sorting Via Indexing",
+        "file": "output/core.en/sonnet/html/concept_integer_sorting_via_indexing.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "non_comparison_sorting",
+        "label": "Non Comparison Sorting",
+        "file": "output/core.en/sonnet/html/concept_non_comparison_sorting.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "radix_sort",
+        "label": "Radix Sort",
+        "file": "output/core.en/sonnet/html/concept_radix_sort.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "stable_sorting",
+        "label": "Stable Sorting",
+        "file": "output/core.en/sonnet/html/concept_stable_sorting.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -201,13 +1114,117 @@
   },
   {
     "id": "data_structure_ch12",
-    "name": "Open Data Structures (Python) \u2014 Ch12: Graphs",
+    "name": "Open Data Structures (Python) — Ch12: Graphs",
     "capstone": "matrix_powers_for_paths",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "shortest_path_via_bfs",
+        "file": "output/core.en/sonnet/html/book_shortest_path_via_bfs.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "cycle_detection_via_dfs",
+        "file": "output/core.en/sonnet/html/book_cycle_detection_via_dfs.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "matrix_powers_for_paths",
+        "file": "output/core.en/sonnet/html/book_matrix_powers_for_paths.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "adjacency_list",
+        "label": "Adjacency List",
+        "file": "output/core.en/sonnet/html/concept_adjacency_list.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "adjacency_matrix",
+        "label": "Adjacency Matrix",
+        "file": "output/core.en/sonnet/html/concept_adjacency_matrix.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "breadth_first_search",
+        "label": "Breadth First Search",
+        "file": "output/core.en/sonnet/html/concept_breadth_first_search.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "cycle_detection_via_dfs",
+        "label": "Cycle Detection Via Dfs",
+        "file": "output/core.en/sonnet/html/concept_cycle_detection_via_dfs.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "depth_first_search",
+        "label": "Depth First Search",
+        "file": "output/core.en/sonnet/html/concept_depth_first_search.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "graph",
+        "label": "Graph",
+        "file": "output/core.en/sonnet/html/concept_graph.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "graph_traversal",
+        "label": "Graph Traversal",
+        "file": "output/core.en/sonnet/html/concept_graph_traversal.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "matrix_powers_for_paths",
+        "label": "Matrix Powers For Paths",
+        "file": "output/core.en/sonnet/html/concept_matrix_powers_for_paths.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "queue",
+        "label": "Queue",
+        "file": "output/core.en/sonnet/html/concept_queue.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "shortest_path_via_bfs",
+        "label": "Shortest Path Via Bfs",
+        "file": "output/core.en/sonnet/html/concept_shortest_path_via_bfs.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "stack",
+        "label": "Stack",
+        "file": "output/core.en/sonnet/html/concept_stack.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "vertex_degree",
+        "label": "Vertex Degree",
+        "file": "output/core.en/sonnet/html/concept_vertex_degree.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -221,13 +1238,131 @@
   },
   {
     "id": "data_structure_ch13",
-    "name": "Open Data Structures (Python) \u2014 Ch13: Data Structures for Integers",
+    "name": "Open Data Structures (Python) — Ch13: Data Structures for Integers",
     "capstone": "fusion_tree",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "van_emde_boas_tree",
+        "file": "output/core.en/sonnet/html/book_van_emde_boas_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "yfasttrie",
+        "file": "output/core.en/sonnet/html/book_yfasttrie.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "fusion_tree",
+        "file": "output/core.en/sonnet/html/book_fusion_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "binary_trie",
+        "label": "Binary Trie",
+        "file": "output/core.en/sonnet/html/concept_binary_trie.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_trie_operations",
+        "label": "Binary Trie Operations",
+        "file": "output/core.en/sonnet/html/concept_binary_trie_operations.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "bit_representation",
+        "label": "Bit Representation",
+        "file": "output/core.en/sonnet/html/concept_bit_representation.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "fusion_tree",
+        "label": "Fusion Tree",
+        "file": "output/core.en/sonnet/html/concept_fusion_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "hash_table",
+        "label": "Hash Table",
+        "file": "output/core.en/sonnet/html/concept_hash_table.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "jump_pointers",
+        "label": "Jump Pointers",
+        "file": "output/core.en/sonnet/html/concept_jump_pointers.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "leaf_linked_list",
+        "label": "Leaf Linked List",
+        "file": "output/core.en/sonnet/html/concept_leaf_linked_list.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "level_based_binary_search",
+        "label": "Level Based Binary Search",
+        "file": "output/core.en/sonnet/html/concept_level_based_binary_search.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "probabilistic_sampling",
+        "label": "Probabilistic Sampling",
+        "file": "output/core.en/sonnet/html/concept_probabilistic_sampling.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sset_interface",
+        "label": "Sset Interface",
+        "file": "output/core.en/sonnet/html/concept_sset_interface.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "treap",
+        "label": "Treap",
+        "file": "output/core.en/sonnet/html/concept_treap.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "van_emde_boas_tree",
+        "label": "Van Emde Boas Tree",
+        "file": "output/core.en/sonnet/html/concept_van_emde_boas_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "xfasttrie",
+        "label": "Xfasttrie",
+        "file": "output/core.en/sonnet/html/concept_xfasttrie.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "yfasttrie",
+        "label": "Yfasttrie",
+        "file": "output/core.en/sonnet/html/concept_yfasttrie.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],
@@ -241,13 +1376,69 @@
   },
   {
     "id": "data_structure_ch14",
-    "name": "Open Data Structures (Python) \u2014 Ch14: External Memory Searching",
+    "name": "Open Data Structures (Python) — Ch14: External Memory Searching",
     "capstone": "btree_filesystems_databases",
-    "default_level": "core",
+    "default_level": "college",
     "has_navigator": true,
-    "has_book": false,
-    "books": [],
-    "generated_concepts": [],
+    "has_book": true,
+    "books": [
+      {
+        "target": "b_plus_tree",
+        "file": "output/core.en/sonnet/html/book_b_plus_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "btree_filesystems_databases",
+        "file": "output/core.en/sonnet/html/book_btree_filesystems_databases.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
+    "generated_concepts": [
+      {
+        "name": "b_plus_tree",
+        "label": "B Plus Tree",
+        "file": "output/core.en/sonnet/html/concept_b_plus_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "b_tree",
+        "label": "B Tree",
+        "file": "output/core.en/sonnet/html/concept_b_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "binary_search_tree",
+        "label": "Binary Search Tree",
+        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "block_store",
+        "label": "Block Store",
+        "file": "output/core.en/sonnet/html/concept_block_store.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "btree_filesystems_databases",
+        "label": "Btree Filesystems Databases",
+        "file": "output/core.en/sonnet/html/concept_btree_filesystems_databases.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "external_memory_model",
+        "label": "External Memory Model",
+        "file": "output/core.en/sonnet/html/concept_external_memory_model.html",
+        "model": "sonnet",
+        "language": "en"
+      }
+    ],
     "tags": [
       "computer-science"
     ],

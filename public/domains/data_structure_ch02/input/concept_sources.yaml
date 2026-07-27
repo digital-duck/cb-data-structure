@@ -1,0 +1,87 @@
+domain: data_structure_ods_python
+sources:
+  backing_array:
+    label: Backing Array
+    sections:
+    - id: ch02_arraystack_fast_stack_operations_using_a
+      title: 'ArrayStack: Fast Stack Operations Using an Array'
+  list_interface:
+    label: List Interface
+    sections: []
+  amortized_analysis:
+    label: Amortized Analysis
+    sections:
+    - id: ch02_arraystack_fast_stack_operations_using_a
+      title: 'ArrayStack: Fast Stack Operations Using an Array'
+  potential_method:
+    label: Potential Method
+    sections:
+    - id: ch02_dualarraydeque_building_a_deque_from_two
+      title: 'DualArrayDeque: Building a Deque from Two Stacks'
+  modular_arithmetic:
+    label: Modular Arithmetic
+    sections:
+    - id: ch02_arrayqueue_an_array_based_queue
+      title: 'ArrayQueue: An Array-Based Queue'
+  resize_operation:
+    label: Resize Operation
+    sections:
+    - id: ch02_arraystack_fast_stack_operations_using_a
+      title: 'ArrayStack: Fast Stack Operations Using an Array'
+    - id: ch02_arrayqueue_an_array_based_queue
+      title: 'ArrayQueue: An Array-Based Queue'
+  array_stack:
+    label: ArrayStack
+    sections:
+    - id: ch02_arraystack_fast_stack_operations_using_a
+      title: 'ArrayStack: Fast Stack Operations Using an Array'
+  fast_array_stack:
+    label: FastArrayStack
+    sections:
+    - id: ch02_fastarraystack_an_optimized_arraystack
+      title: 'FastArrayStack: An Optimized ArrayStack'
+  circular_array:
+    label: Circular Array
+    sections:
+    - id: ch02_arrayqueue_an_array_based_queue
+      title: 'ArrayQueue: An Array-Based Queue'
+  array_queue:
+    label: ArrayQueue
+    sections:
+    - id: ch02_arrayqueue_an_array_based_queue
+      title: 'ArrayQueue: An Array-Based Queue'
+  array_deque:
+    label: ArrayDeque
+    sections:
+    - id: ch02_arraydeque_fast_deque_operations_using_a
+      title: 'ArrayDeque: Fast Deque Operations Using an Array'
+  dual_array_deque:
+    label: DualArrayDeque
+    sections:
+    - id: ch02_dualarraydeque_building_a_deque_from_two
+      title: 'DualArrayDeque: Building a Deque from Two Stacks'
+  balance_operation:
+    label: Balance Operation
+    sections:
+    - id: ch02_dualarraydeque_building_a_deque_from_two
+      title: 'DualArrayDeque: Building a Deque from Two Stacks'
+  rootish_array_stack:
+    label: RootishArrayStack
+    sections:
+    - id: ch02_rootisharraystack_a_space_efficient_arra
+      title: 'RootishArrayStack: A Space-Efficient Array Stack'
+  grow_shrink_operation:
+    label: Grow/Shrink Operation
+    sections:
+    - id: ch02_rootisharraystack_a_space_efficient_arra
+      title: 'RootishArrayStack: A Space-Efficient Array Stack'
+  block_index_computation:
+    label: Block Index Computation (i2b)
+    sections:
+    - id: ch02_rootisharraystack_a_space_efficient_arra
+      title: 'RootishArrayStack: A Space-Efficient Array Stack'
+  wasted_space_analysis:
+    label: Wasted Space Analysis
+    sections:
+    - id: ch02_rootisharraystack_a_space_efficient_arra
+      title: 'RootishArrayStack: A Space-Efficient Array Stack'

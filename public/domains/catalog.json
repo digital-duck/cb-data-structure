@@ -1,1 +1,262 @@
-[]
+[
+  {
+    "id": "data_structure_ch02",
+    "name": "Open Data Structures (Python) \u2014 Ch2: Array-Based Lists",
+    "capstone": "fast_array_stack",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch03",
+    "name": "Open Data Structures (Python) \u2014 Ch3: Linked Lists",
+    "capstone": "xor_list",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch04",
+    "name": "Open Data Structures (Python) \u2014 Ch4: Skiplists",
+    "capstone": "skiplist_list",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch05",
+    "name": "Open Data Structures (Python) \u2014 Ch5: Hash Tables",
+    "capstone": "hash_collision_dos",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch06",
+    "name": "Open Data Structures (Python) \u2014 Ch6: Binary Trees",
+    "capstone": "tree_balancing_strategies",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch07",
+    "name": "Open Data Structures (Python) \u2014 Ch7: Random Binary Search Trees",
+    "capstone": "treap_hashing_priorities",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch08",
+    "name": "Open Data Structures (Python) \u2014 Ch8: Scapegoat Trees",
+    "capstone": "sequence_data_structure",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch09",
+    "name": "Open Data Structures (Python) \u2014 Ch9: Red-Black Trees",
+    "capstone": "avl_tree",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch10",
+    "name": "Open Data Structures (Python) \u2014 Ch10: Heaps",
+    "capstone": "dijkstras_algorithm",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch11",
+    "name": "Open Data Structures (Python) \u2014 Ch11: Sorting Algorithms",
+    "capstone": "integer_sorting_via_indexing",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch12",
+    "name": "Open Data Structures (Python) \u2014 Ch12: Graphs",
+    "capstone": "matrix_powers_for_paths",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch13",
+    "name": "Open Data Structures (Python) \u2014 Ch13: Data Structures for Integers",
+    "capstone": "fusion_tree",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  },
+  {
+    "id": "data_structure_ch14",
+    "name": "Open Data Structures (Python) \u2014 Ch14: External Memory Searching",
+    "capstone": "btree_filesystems_databases",
+    "default_level": "core",
+    "has_navigator": true,
+    "has_book": false,
+    "books": [],
+    "generated_concepts": [],
+    "tags": [
+      "computer-science"
+    ],
+    "source": {
+      "title": "Open Data Structures (Python edition)",
+      "authors": "Pat Morin",
+      "license": "CC BY",
+      "url": "https://opendatastructures.org/ods-python.pdf",
+      "attribution": "Free online: https://opendatastructures.org/ods-python.pdf"
+    }
+  }
+]

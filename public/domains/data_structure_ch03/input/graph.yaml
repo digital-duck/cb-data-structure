@@ -1,0 +1,107 @@
+domain: data_structure_ods_python
+primitives:
+  node:
+    defines: A basic unit storing a data value and one or more references to other nodes, used to build
+      linked data structures.
+    tier: 0
+  pointer_reference:
+    defines: A value stored in a node that refers to another node, allowing nodes to be linked together
+      into a sequence.
+    tier: 0
+  bdeque:
+    defines: A fixed-capacity array-based deque, derived from ArrayDeque, that supports constant-time
+      addition or removal at either end and is used to implement blocks within an SEList.
+    tier: 0
+  amortized_analysis_potential_method:
+    defines: A technique for bounding the total cost of expensive but infrequent operations by tracking
+      a potential function over a sequence of operations.
+    tier: 0
+concepts:
+  sllist:
+    defines: A sequence of nodes where each node stores a data value and a reference to the next node,
+      with head and tail references tracking the ends of the sequence.
+    composed_of:
+    - node
+    - pointer_reference
+    tier: 1
+  dllist:
+    defines: A linked list in which each node has references to both the next and previous nodes, enabling
+      traversal in either direction.
+    composed_of:
+    - node
+    - pointer_reference
+    tier: 1
+  dummy_node:
+    defines: A placeholder node with no data that links the ends of a doubly-linked list into a cycle,
+      eliminating special cases for empty lists or boundary operations.
+    composed_of:
+    - dllist
+    tier: 2
+  get_node_search:
+    defines: A technique for locating the ith node in a DLList by searching forward from the head or backward
+      from the tail, whichever is closer.
+    composed_of:
+    - dllist
+    tier: 2
+  selist:
+    defines: A doubly-linked list of fixed-capacity blocks that reduces the per-element overhead of pointer-based
+      lists while retaining efficient insertion and removal.
+    composed_of:
+    - dllist
+    - bdeque
+    tier: 2
+  selist_space_analysis:
+    defines: An analysis showing that an SEList with block size b wastes only O(b + n/b) space, minimized
+      by choosing b close to sqrt(n).
+    composed_of:
+    - selist
+    tier: 3
+  selist_get_location:
+    defines: A method for locating the block and within-block index of the ith element by traversing blocks
+      from the front or back.
+    composed_of:
+    - selist
+    - get_node_search
+    tier: 3
+  selist_add_remove:
+    defines: Procedures for adding or removing elements in an SEList by shifting elements between neighboring
+      blocks or triggering spread/gather when blocks are full or underfull.
+    composed_of:
+    - selist_get_location
+    - bdeque
+    tier: 4
+  spread_gather:
+    defines: Methods that rebalance a run of b full or underfull blocks into evenly filled blocks, each
+      costing O(b^2) time but occurring rarely.
+    composed_of:
+    - selist_add_remove
+    - amortized_analysis_potential_method
+    tier: 5
+applications:
+  stack_operations_sllist:
+    defines: Implementing push(x) and pop() by adding and removing elements at the head of an SLList,
+      each running in O(1) time.
+    needs:
+    - sllist
+    tier: 2
+  queue_operations_sllist:
+    defines: Implementing FIFO add(x) and remove() by adding at the tail and removing at the head of an
+      SLList, each running in O(1) time.
+    needs:
+    - sllist
+    - dllist
+    tier: 2
+  dllist_list_operations:
+    defines: Implementations of get(i), set(i,x), add(i,x), and remove(i) on a DLList using get_node and
+      pointer adjustments.
+    needs:
+    - dllist
+    - get_node_search
+    tier: 3
+  xor_list:
+    defines: A space-saving doubly-linked list variant where each node stores a single field holding the
+      bitwise exclusive-or of its next and previous pointers.
+    needs:
+    - dllist
+    - pointer_reference
+    tier: 2

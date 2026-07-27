@@ -1,0 +1,70 @@
+domain: data_structure_ods_python
+sources:
+  bit_representation:
+    label: Bit Representation of Integers
+    sections:
+    - id: ch13_binarytrie_a_digital_search_tree
+      title: 'BinaryTrie: A digital search tree'
+  sset_interface:
+    label: SSet Interface
+    sections: []
+  hash_table:
+    label: Hash Table (USet)
+    sections:
+    - id: ch13_xfasttrie_searching_in_doubly_logarithmi
+      title: 'XFastTrie: Searching in Doubly-Logarithmic Time'
+  treap:
+    label: Treap
+    sections:
+    - id: ch13_yfasttrie_a_doubly_logarithmic_time_sset
+      title: 'YFastTrie: A Doubly-Logarithmic Time SSet'
+  binary_trie:
+    label: BinaryTrie
+    sections:
+    - id: ch13_binarytrie_a_digital_search_tree
+      title: 'BinaryTrie: A digital search tree'
+  jump_pointers:
+    label: Jump Pointers
+    sections:
+    - id: ch13_binarytrie_a_digital_search_tree
+      title: 'BinaryTrie: A digital search tree'
+  leaf_linked_list:
+    label: Doubly-Linked List of Leaves
+    sections:
+    - id: ch13_binarytrie_a_digital_search_tree
+      title: 'BinaryTrie: A digital search tree'
+  binary_trie_operations:
+    label: BinaryTrie add/remove/find
+    sections:
+    - id: ch13_binarytrie_a_digital_search_tree
+      title: 'BinaryTrie: A digital search tree'
+  level_based_binary_search:
+    label: Binary Search on Trie Levels
+    sections:
+    - id: ch13_xfasttrie_searching_in_doubly_logarithmi
+      title: 'XFastTrie: Searching in Doubly-Logarithmic Time'
+  xfasttrie:
+    label: XFastTrie
+    sections:
+    - id: ch13_xfasttrie_searching_in_doubly_logarithmi
+      title: 'XFastTrie: Searching in Doubly-Logarithmic Time'
+  yfasttrie:
+    label: YFastTrie
+    sections:
+    - id: ch13_yfasttrie_a_doubly_logarithmic_time_sset
+      title: 'YFastTrie: A Doubly-Logarithmic Time SSet'
+  probabilistic_sampling:
+    label: Probabilistic Sampling via Biased Coin Toss
+    sections:
+    - id: ch13_yfasttrie_a_doubly_logarithmic_time_sset
+      title: 'YFastTrie: A Doubly-Logarithmic Time SSet'
+  van_emde_boas_tree:
+    label: Van Emde Boas (Stratified) Tree
+    sections:
+    - id: ch13_discussion_and_exercises
+      title: Discussion and Exercises
+  fusion_tree:
+    label: Fusion Tree
+    sections:
+    - id: ch13_discussion_and_exercises
+      title: Discussion and Exercises

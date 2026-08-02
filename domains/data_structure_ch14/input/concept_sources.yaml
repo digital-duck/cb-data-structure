@@ -1,0 +1,82 @@
+domain: data_structure_ods_python
+sources:
+  external_memory_model:
+    label: External Memory Model
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  block_store:
+    label: Block Store
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  binary_search_tree:
+    label: Binary Search Tree
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  two_four_tree:
+    label: 2-4 Tree
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree:
+    label: B-Tree
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  find_it_binary_search:
+    label: find_it (Node Array Search)
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_find:
+    label: B-Tree Search (find(x))
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_split:
+    label: B-Tree Node Splitting
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_add:
+    label: B-Tree Insertion (add(x))
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_underflow:
+    label: B-Tree Underflow
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_borrow_merge:
+    label: B-Tree Borrowing and Merging
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_tree_remove:
+    label: B-Tree Removal (remove(x))
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  amortized_credit_scheme:
+    label: Amortized Analysis via Credit Scheme
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  word_ram_vs_external_memory_cost:
+    label: Word-RAM vs External Memory Running Time
+    sections:
+    - id: ch14_b_trees
+      title: B-Trees
+  b_plus_tree:
+    label: B+-Tree
+    sections:
+    - id: ch14_discussion_and_exercises
+      title: Discussion and Exercises
+  btree_filesystems_databases:
+    label: B-Trees in File Systems and Databases
+    sections:
+    - id: ch14_discussion_and_exercises
+      title: Discussion and Exercises

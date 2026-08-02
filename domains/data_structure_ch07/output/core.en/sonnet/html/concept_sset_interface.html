@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sset Interface | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sset-interface">Sset Interface</h2>
+<h3 id="definition">Definition</h3>
+<p>An <strong>sset</strong> (symbolic set) is a first-class mathematical object that pairs a carrier set with a declared algebraic signature. Formally, an sset $S$ is a triple</p>
+$$S = (U,\, \Sigma,\, \llbracket\cdot\rrbracket)$$
+<p>where $U$ is the <strong>universe</strong> (a Python iterable or a lazily described domain), $\Sigma = \{\sigma_1, \sigma_2, \ldots\}$ is a finite <strong>signature</strong> of named operations, and $\llbracket \sigma_i \rrbracket : U^{a_i} \to U$ is the <strong>interpretation</strong> of each $\sigma_i$ with arity $a_i$. The <em>interface</em> of an sset is the contract that any concrete implementation must satisfy: it must expose membership testing (<code>__contains__</code>), iteration (<code>__iter__</code>) over a representative sample, and an <code>.ops</code> mapping that resolves each signature symbol to a callable.</p>
+<p>In SPL, <code>sset_interface</code> is the abstract base from which every symbolic domain (integers modulo $n$, polynomial rings, graph vertex sets, and so on) inherits. It enforces a uniform protocol so that higher-order recipes—pattern matching, algebraic rewriting, automated theorem checking—can operate polymorphically across domains without knowing the concrete representation.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Consider the sset $\mathbb{Z}_5 = (\{0,1,2,3,4\},\; \{+, \times\},\; \llbracket\cdot\rrbracket)$ where $\llbracket + \rrbracket(a,b) = (a+b)\bmod 5$. Constructing it under <code>sset_interface</code> requires registering both operations in <code>.ops</code>:</p>
+<pre><code>ops = {'+': lambda a, b: (a + b) % 5,
+       '*': lambda a, b: (a * b) % 5}</code></pre>
+<p>Membership of $3$ is resolved by <code>3 in Z5</code>, and the expression $3 + 4$ is evaluated by dispatching through <code>Z5.ops['+'](3, 4)</code> to yield $2$.</p>
+<h3 id="key-theorem">Key Theorem</h3>
+<p><strong>Homomorphism Preservation.</strong> Let $S = (U, \Sigma, \llbracket\cdot\rrbracket_S)$ and $T = (V, \Sigma, \llbracket\cdot\rrbracket_T)$ be two ssets sharing the same signature. A function $\varphi : U \to V$ is a <em>homomorphism</em> if and only if for every $\sigma \in \Sigma$ and every tuple $(u_1,\ldots,u_a) \in U^a$,</p>
+$$\varphi\!\left(\llbracket\sigma\rrbracket_S(u_1,\ldots,u_a)\right) = \llbracket\sigma\rrbracket_T\!\left(\varphi(u_1),\ldots,\varphi(u_a)\right).$$
+<p>Because <code>sset_interface</code> enforces a uniform <code>.ops</code> dictionary, SPL's <code>sset_homomorphism_check</code> routine can verify this property mechanically by sampling the domain and comparing both sides—no manual proof is required for finite carriers.</p>
+<h3 id="lab-cell-sympy">Lab Cell (SymPy)</h3>
+<pre><code>from sympy import FiniteSet, Mod
+
+# Build Z_5 as an sset dictionary
+Z5 = {
+    'universe': FiniteSet(*range(5)),
+    'ops': {
+        '+': lambda a, b: Mod(a + b, 5),
+        '*': lambda a, b: Mod(a * b, 5),
+    }
+}
+
+# Verify closure under addition
+violations = [
+    (a, b)
+    for a in Z5['universe']
+    for b in Z5['universe']
+    if Z5['ops']['+'](a, b) not in Z5['universe']
+]
+print("Closure violations:", violations)   # expected: []
+
+# Compute multiplication table
+table = [[int(Z5['ops']['*'](a, b)) for b in range(5)] for a in range(5)]
+for row in table:
+    print(row)</code></pre>
+<p>Running this cell confirms that $\mathbb{Z}_5$ is closed under both operations and displays its multiplication table—an immediate, machine-checked sanity check on any sset implementation.</p>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

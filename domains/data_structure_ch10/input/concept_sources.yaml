@@ -1,0 +1,83 @@
+domain: data_structure_ods_python
+sources:
+  priority_queue:
+    label: Priority Queue
+    sections: []
+  binary_tree:
+    label: Binary Tree
+    sections: []
+  complete_binary_tree:
+    label: Complete Binary Tree
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  eytzinger_method:
+    label: Eytzinger's Method
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  heap_order_property:
+    label: Heap-Order Property
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  binary_heap:
+    label: BinaryHeap
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  bubble_up:
+    label: Bubble Up
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  trickle_down:
+    label: Trickle Down
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  array_resizing_amortization:
+    label: Amortized Array Resizing
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  heapsort:
+    label: Heapsort
+    sections:
+    - id: ch10_binaryheap_an_implicit_binary_tree
+      title: 'BinaryHeap: An Implicit Binary Tree'
+  meldable_heap:
+    label: MeldableHeap
+    sections:
+    - id: ch10_meldableheap_a_randomized_meldable_heap
+      title: 'MeldableHeap: A Randomized Meldable Heap'
+  merge_operation:
+    label: merge(h1, h2)
+    sections:
+    - id: ch10_meldableheap_a_randomized_meldable_heap
+      title: 'MeldableHeap: A Randomized Meldable Heap'
+  randomization_coin_toss:
+    label: Randomization via Coin Toss
+    sections:
+    - id: ch10_meldableheap_a_randomized_meldable_heap
+      title: 'MeldableHeap: A Randomized Meldable Heap'
+  random_walk_in_binary_tree:
+    label: Random Walk in a Binary Tree
+    sections:
+    - id: ch10_meldableheap_a_randomized_meldable_heap
+      title: 'MeldableHeap: A Randomized Meldable Heap'
+  absorb_operation:
+    label: absorb(h)
+    sections:
+    - id: ch10_meldableheap_a_randomized_meldable_heap
+      title: 'MeldableHeap: A Randomized Meldable Heap'
+  decrease_key:
+    label: decrease_key(u, y)
+    sections:
+    - id: ch10_discussion_and_exercises
+      title: Discussion and Exercises
+  dijkstras_algorithm:
+    label: Dijkstra's Shortest Path Algorithm
+    sections:
+    - id: ch10_discussion_and_exercises
+      title: Discussion and Exercises

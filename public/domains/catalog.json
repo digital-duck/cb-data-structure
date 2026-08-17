@@ -12,6 +12,12 @@
         "file": "output/core.en/sonnet/html/book_fast_array_stack.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "fast_array_stack",
+        "file": "output/college.zh/sonnet/html/book_fast_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
@@ -23,11 +29,25 @@
         "language": "en"
       },
       {
+        "name": "amortized_analysis",
+        "label": "Amortized Analysis",
+        "file": "output/college.zh/sonnet/html/concept_amortized_analysis_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "array_stack",
         "label": "Array Stack",
         "file": "output/core.en/sonnet/html/concept_array_stack.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "array_stack",
+        "label": "Array Stack",
+        "file": "output/college.zh/sonnet/html/concept_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "backing_array",
@@ -37,11 +57,25 @@
         "language": "en"
       },
       {
+        "name": "backing_array",
+        "label": "Backing Array",
+        "file": "output/college.zh/sonnet/html/concept_backing_array_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "fast_array_stack",
         "label": "Fast Array Stack",
         "file": "output/core.en/sonnet/html/concept_fast_array_stack.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "fast_array_stack",
+        "label": "Fast Array Stack",
+        "file": "output/college.zh/sonnet/html/concept_fast_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "list_interface",
@@ -51,11 +85,25 @@
         "language": "en"
       },
       {
+        "name": "list_interface",
+        "label": "List Interface",
+        "file": "output/college.zh/sonnet/html/concept_list_interface_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "resize_operation",
         "label": "Resize Operation",
         "file": "output/core.en/sonnet/html/concept_resize_operation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "resize_operation",
+        "label": "Resize Operation",
+        "file": "output/college.zh/sonnet/html/concept_resize_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [

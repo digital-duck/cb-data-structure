@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Operations | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="binary-trie-operations">Binary Trie Operations</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>binary trie</strong> (from <em>retrieval</em>) is a rooted tree in which every internal node has exactly two children, labeled $0$ and $1$. Each root-to-leaf path spells out a binary string, and the set of all such strings constitutes the <strong>language</strong> of the trie. Formally, let $\Sigma = \{0,1\}$ and $\Sigma^<em> $ denote the set of all finite binary strings. A binary trie $T$ over a finite set $S \subseteq \Sigma^</em>$ is the minimal prefix-closed tree satisfying: for every $w \in S$, every prefix of $w$ appears as a node of $T$.</p>
+<p>Three primitive operations define the interface:</p>
+<li><strong>Insert$(w)$</strong>: Follow the path $w_1, w_2, \ldots, w_n$ from the root, creating any missing nodes, and mark the terminal node.</li>
+<li><strong>Search$(w)$</strong>: Traverse the same path; return <em>true</em> if and only if the terminal node is marked.</li>
+<li><strong>Delete$(w)$</strong>: Unmark the terminal node of $w$ and prune any newly childless, unmarked nodes upward toward the root.</li>
+<p>Each operation runs in $O(|w|)$ time and $O(|w|)$ worst-case additional space, where $|w|$ is the length of the query string.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Let $S = \{010, 011, 10\}$. Insert these strings in order.</p>
+<p>After inserting $010$: nodes $\varepsilon \to 0 \to 01 \to 010^\star$ are created (${}^\star$ marks terminal).   After inserting $011$: the path shares $\varepsilon, 0, 01$; only node $011^\star$ is new.   After inserting $10$: nodes $1 \to 10^\star$ are added under the root.</p>
+<p>Searching for $01$ returns <em>false</em> because node $01$ exists but is <strong>not</strong> marked. Deleting $011$ unmarks $011$ and prunes it (no children), but $01$ is retained because it still has child $010$.</p>
+<h3 id="key-theorem">Key Theorem</h3>
+<p><strong>Theorem (Space complexity of a binary trie).</strong> A binary trie storing $n$ strings from $\Sigma^*$, each of length at most $L$, uses at most $nL$ nodes.</p>
+<p><em>Proof sketch.</em> Each insertion traces a path of length at most $L$ and creates at most $L$ new nodes. Summing over all $n$ insertions gives the bound. Shared prefixes only reduce this count; hence $nL$ is a tight upper bound. $\blacksquare$</p>
+<p>In practice, when the stored strings share long common prefixes, the actual node count is $O(nL / \log n)$ for random binary inputs.</p>
+<h3 id="lab-cell">Lab Cell</h3>
+<pre><code>from sympy import symbols, Function
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}   # keys: 0 or 1
+        self.terminal = False
+
+class BinaryTrie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, bits: str):
+        node = self.root
+        for b in bits:
+            node = node.children.setdefault(b, TrieNode())
+        node.terminal = True
+
+    def search(self, bits: str) -&gt; bool:
+        node = self.root
+        for b in bits:
+            if b not in node.children:
+                return False
+            node = node.children[b]
+        return node.terminal
+
+trie = BinaryTrie()
+for w in ["010", "011", "10"]:
+    trie.insert(w)
+
+print(trie.search("010"))   # True
+print(trie.search("01"))    # False
+print(trie.search("10"))    # True</code></pre>
+<p>Running this cell confirms the worked example: $010$ and $10$ are found; the internal prefix $01$ is not.</p>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

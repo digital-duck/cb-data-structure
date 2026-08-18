@@ -1,0 +1,112 @@
+domain: data_structure_ods_python
+primitives:
+  backing_array:
+    defines: A fixed-size array used internally to store list elements, larger than strictly necessary
+      so an integer n tracks the actual count.
+    tier: 0
+  list_interface:
+    defines: An abstract interface supporting get(i), set(i,x), add(i,x), and remove(i) operations on
+      a sequence of elements.
+    tier: 0
+  amortized_analysis:
+    defines: A technique for analyzing the total cost of a sequence of operations rather than the worst-case
+      cost of each individual operation.
+    tier: 0
+  modular_arithmetic:
+    defines: Arithmetic performed with remainders (mod), used to treat an array as circular so indices
+      wrap around.
+    tier: 0
+concepts:
+  potential_method:
+    defines: An amortized analysis technique that defines a potential function over the data structure's
+      state to bound the total cost of rebalancing operations.
+    composed_of:
+    - amortized_analysis
+    tier: 1
+  resize_operation:
+    defines: An operation that allocates a new backing array of double (or appropriate) size and copies
+      existing elements into it when the array becomes full or too empty.
+    composed_of:
+    - backing_array
+    - amortized_analysis
+    tier: 1
+  circular_array:
+    defines: A technique simulating an infinite array with a finite one by using modular arithmetic so
+      indices wrap around to the beginning.
+    composed_of:
+    - backing_array
+    - modular_arithmetic
+    tier: 1
+  rootish_array_stack:
+    defines: A space-efficient List implementation that stores n elements across O(√n) blocks (arrays)
+      of increasing size, wasting only O(√n) space.
+    composed_of:
+    - list_interface
+    - backing_array
+    tier: 1
+  array_stack:
+    defines: A List implementation using a single backing array, supporting get/set in O(1) and add/remove
+      in O(1+n-i) amortized time via resizing.
+    composed_of:
+    - list_interface
+    - backing_array
+    - resize_operation
+    tier: 2
+  array_queue:
+    defines: A FIFO queue implementation using a circular backing array, with add(x) and remove() running
+      in O(1) amortized time.
+    composed_of:
+    - circular_array
+    - list_interface
+    - resize_operation
+    tier: 2
+  array_deque:
+    defines: A List implementation using a circular array that supports efficient addition and removal
+      at both ends, with add/remove in O(1+min{i,n-i}) time.
+    composed_of:
+    - circular_array
+    - list_interface
+    - resize_operation
+    tier: 2
+  block_index_computation:
+    defines: A method for computing which block and offset within that block correspond to a given list
+      index i in a RootishArrayStack, using a quadratic formula.
+    composed_of:
+    - rootish_array_stack
+    tier: 2
+  grow_shrink_operation:
+    defines: Operations on a RootishArrayStack that add or remove a block from the list of blocks without
+      copying existing data, unlike resize().
+    composed_of:
+    - rootish_array_stack
+    - amortized_analysis
+    tier: 2
+  dual_array_deque:
+    defines: A deque implementation built from two back-to-back ArrayStacks (front and back) that achieves
+      the same asymptotic performance as ArrayDeque.
+    composed_of:
+    - array_stack
+    - list_interface
+    tier: 3
+  wasted_space_analysis:
+    defines: An analysis showing that a RootishArrayStack storing n elements wastes only O(√n) space,
+      and that this is asymptotically optimal for structures built one item at a time.
+    composed_of:
+    - rootish_array_stack
+    - block_index_computation
+    - grow_shrink_operation
+    tier: 3
+  balance_operation:
+    defines: A rebalancing operation on a DualArrayDeque that redistributes elements between the front
+      and back ArrayStacks so neither becomes too large or too small.
+    composed_of:
+    - dual_array_deque
+    - potential_method
+    tier: 4
+applications:
+  fast_array_stack:
+    defines: An optimized ArrayStack that uses low-level, highly optimized array-copying functions (e.g.,
+      System.arraycopy) instead of manual loops for shifting and copying data.
+    needs:
+    - array_stack
+    tier: 3

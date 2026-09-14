@@ -1,7 +1,7 @@
 [
   {
     "id": "data_structure_ch02",
-    "name": "Open Data Structures (Python) — Ch2: Array-Based Lists",
+    "name": "Open Data Structures (Python) \u2014 Ch2: Array-Based Lists",
     "capstone": "fast_array_stack",
     "default_level": "college",
     "has_navigator": true,
@@ -16,6 +16,12 @@
       {
         "target": "fast_array_stack",
         "file": "output/college.zh/sonnet/html/book_fast_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "fast_array_stack",
+        "file": "output/core.zh/sonnet/html/book_fast_array_stack_zh.html",
         "model": "sonnet",
         "language": "zh"
       }
@@ -36,6 +42,13 @@
         "language": "zh"
       },
       {
+        "name": "amortized_analysis",
+        "label": "Amortized Analysis",
+        "file": "output/core.zh/sonnet/html/concept_amortized_analysis_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "array_stack",
         "label": "Array Stack",
         "file": "output/core.en/sonnet/html/concept_array_stack.html",
@@ -46,6 +59,13 @@
         "name": "array_stack",
         "label": "Array Stack",
         "file": "output/college.zh/sonnet/html/concept_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "array_stack",
+        "label": "Array Stack",
+        "file": "output/core.zh/sonnet/html/concept_array_stack_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
@@ -64,6 +84,13 @@
         "language": "zh"
       },
       {
+        "name": "backing_array",
+        "label": "Backing Array",
+        "file": "output/core.zh/sonnet/html/concept_backing_array_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "fast_array_stack",
         "label": "Fast Array Stack",
         "file": "output/core.en/sonnet/html/concept_fast_array_stack.html",
@@ -74,6 +101,13 @@
         "name": "fast_array_stack",
         "label": "Fast Array Stack",
         "file": "output/college.zh/sonnet/html/concept_fast_array_stack_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "fast_array_stack",
+        "label": "Fast Array Stack",
+        "file": "output/core.zh/sonnet/html/concept_fast_array_stack_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
@@ -92,6 +126,13 @@
         "language": "zh"
       },
       {
+        "name": "list_interface",
+        "label": "List Interface",
+        "file": "output/core.zh/sonnet/html/concept_list_interface_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "resize_operation",
         "label": "Resize Operation",
         "file": "output/core.en/sonnet/html/concept_resize_operation.html",
@@ -102,6 +143,13 @@
         "name": "resize_operation",
         "label": "Resize Operation",
         "file": "output/college.zh/sonnet/html/concept_resize_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "resize_operation",
+        "label": "Resize Operation",
+        "file": "output/core.zh/sonnet/html/concept_resize_operation_zh.html",
         "model": "sonnet",
         "language": "zh"
       }
@@ -119,7 +167,7 @@
   },
   {
     "id": "data_structure_ch03",
-    "name": "Open Data Structures (Python) — Ch3: Linked Lists",
+    "name": "Open Data Structures (Python) \u2014 Ch3: Linked Lists",
     "capstone": "xor_list",
     "default_level": "college",
     "has_navigator": true,
@@ -228,7 +276,7 @@
   },
   {
     "id": "data_structure_ch04",
-    "name": "Open Data Structures (Python) — Ch4: Skiplists",
+    "name": "Open Data Structures (Python) \u2014 Ch4: Skiplists",
     "capstone": "skiplist_list",
     "default_level": "college",
     "has_navigator": true,
@@ -339,7 +387,7 @@
   },
   {
     "id": "data_structure_ch05",
-    "name": "Open Data Structures (Python) — Ch5: Hash Tables",
+    "name": "Open Data Structures (Python) \u2014 Ch5: Hash Tables",
     "capstone": "hash_collision_dos",
     "default_level": "college",
     "has_navigator": true,
@@ -402,7 +450,7 @@
   },
   {
     "id": "data_structure_ch06",
-    "name": "Open Data Structures (Python) — Ch6: Binary Trees",
+    "name": "Open Data Structures (Python) \u2014 Ch6: Binary Trees",
     "capstone": "tree_balancing_strategies",
     "default_level": "college",
     "has_navigator": true,
@@ -492,7 +540,7 @@
   },
   {
     "id": "data_structure_ch07",
-    "name": "Open Data Structures (Python) — Ch7: Random Binary Search Trees",
+    "name": "Open Data Structures (Python) \u2014 Ch7: Random Binary Search Trees",
     "capstone": "treap_hashing_priorities",
     "default_level": "college",
     "has_navigator": true,
@@ -603,7 +651,7 @@
   },
   {
     "id": "data_structure_ch08",
-    "name": "Open Data Structures (Python) — Ch8: Scapegoat Trees",
+    "name": "Open Data Structures (Python) \u2014 Ch8: Scapegoat Trees",
     "capstone": "sequence_data_structure",
     "default_level": "college",
     "has_navigator": true,
@@ -774,7 +822,7 @@
   },
   {
     "id": "data_structure_ch09",
-    "name": "Open Data Structures (Python) — Ch9: Red-Black Trees",
+    "name": "Open Data Structures (Python) \u2014 Ch9: Red-Black Trees",
     "capstone": "avl_tree",
     "default_level": "college",
     "has_navigator": true,
@@ -927,7 +975,7 @@
   },
   {
     "id": "data_structure_ch10",
-    "name": "Open Data Structures (Python) — Ch10: Heaps",
+    "name": "Open Data Structures (Python) \u2014 Ch10: Heaps",
     "capstone": "dijkstras_algorithm",
     "default_level": "college",
     "has_navigator": true,
@@ -1071,7 +1119,7 @@
   },
   {
     "id": "data_structure_ch11",
-    "name": "Open Data Structures (Python) — Ch11: Sorting Algorithms",
+    "name": "Open Data Structures (Python) \u2014 Ch11: Sorting Algorithms",
     "capstone": "integer_sorting_via_indexing",
     "default_level": "college",
     "has_navigator": true,
@@ -1162,7 +1210,7 @@
   },
   {
     "id": "data_structure_ch12",
-    "name": "Open Data Structures (Python) — Ch12: Graphs",
+    "name": "Open Data Structures (Python) \u2014 Ch12: Graphs",
     "capstone": "matrix_powers_for_paths",
     "default_level": "college",
     "has_navigator": true,
@@ -1286,7 +1334,7 @@
   },
   {
     "id": "data_structure_ch13",
-    "name": "Open Data Structures (Python) — Ch13: Data Structures for Integers",
+    "name": "Open Data Structures (Python) \u2014 Ch13: Data Structures for Integers",
     "capstone": "fusion_tree",
     "default_level": "college",
     "has_navigator": true,
@@ -1424,7 +1472,7 @@
   },
   {
     "id": "data_structure_ch14",
-    "name": "Open Data Structures (Python) — Ch14: External Memory Searching",
+    "name": "Open Data Structures (Python) \u2014 Ch14: External Memory Searching",
     "capstone": "btree_filesystems_databases",
     "default_level": "college",
     "has_navigator": true,

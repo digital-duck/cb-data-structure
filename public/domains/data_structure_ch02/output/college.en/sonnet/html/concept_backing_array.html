@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backing Array | Data Structure Ch02</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="backing-array">Backing Array</h2>
+<p>A dynamic array (Python's <code>list</code>, Java's <code>ArrayList</code>, C++'s <code>std::vector</code>) presents an interface that grows and shrinks freely, but underneath it sits on a <em>backing array</em>: a fixed-size, contiguous block of memory of some capacity $c$. A separate integer $n$, the logical size, tracks how many of those $c$ slots actually hold valid elements, with $n \le c$. The gap between $n$ and $c$ is intentional slack that absorbs future insertions without forcing a reallocation on every single append.</p>
+<p><strong>Worked example.</strong> Suppose a backing array has capacity $c = 8$ and currently holds $n = 5$ elements: <code>[3, 1, 4, 1, 5, _, _, _]</code>, where the last three slots are unused memory. Appending <code>9</code> simply writes into index 5 and increments $n$ to 6 — an $O(1)$ operation, since no new memory is allocated and no existing elements move. This is the entire performance benefit of the backing array: as long as $n < c$, appends are cheap. Only when $n$ reaches $c$ does the structure need to allocate a new, larger backing array and copy every element over, an $O(n)$ operation.</p>
+<p><strong>Problem-solving application.</strong> The design question this raises is: how much should the backing array grow when it fills up? Growing by a fixed amount (say, always adding 10 slots) seems safe but is actually a trap — if you append $n$ elements one at a time, you trigger a reallocation every 10 appends, and each reallocation costs $O(n)$, giving total cost $O(n^2)$. The standard fix is <em>geometric growth</em>: when capacity is exhausted, replace the backing array with one of size $2c$ (or $1.5c$, depending on the implementation). This makes reallocations increasingly rare as the array grows, and an amortized analysis shows the total cost of $n$ appends is $O(n)$ — averaging to $O(1)$ per append despite occasional expensive resizes.</p>
+<p>This is why understanding the backing array matters for practice, not just theory: it explains why <code>list.append</code> in Python is fast on average but can spike in latency, why pre-allocating capacity (e.g., <code>list(capacity)</code> constructors, or reserving space when the final size is known) avoids wasted copying, and why inserting at the <em>front</em> of a dynamic array is $O(n)$ — every existing element must shift one slot over in the backing array to make room, unlike appending at the back.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch2: Array-Based Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

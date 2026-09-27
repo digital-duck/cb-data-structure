@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sllist">Sllist</h2>
+<p>A singly linked list is a linear data structure consisting of a sequence of nodes, where each node holds a data value and a reference (pointer) to the next node in the sequence. Unlike an array, whose elements sit in contiguous memory, a linked list's nodes can live anywhere in memory; the chain of <code>next</code> pointers is what defines the order. Two special references — <code>head</code> and <code>tail</code> — track the first and last nodes, so that insertion at either end can be done without traversing the whole list. If a node's <code>next</code> field is null, that node marks the end of the sequence.</p>
+<p>Formally, a linked list of length $n$ can be modeled as a sequence of nodes $v_1, v_2, \dots, v_n$, where each $v_i$ stores a value $d_i$ and a pointer $\text{next}(v_i) = v_{i+1}$ for $i < n$, and $\text{next}(v_n) = \text{NULL}$. Access to $v_i$ requires following $i-1$ pointers from <code>head</code>, giving $O(i)$ time — there is no direct indexing as with arrays, whose access is $O(1)$. This trade-off is the core reason to choose a linked list: insertion and deletion at a known node take $O(1)$ time (just re-wire pointers), while random access is $O(n)$.</p>
+<p><strong>Worked example.</strong> Suppose <code>head</code> points to a node containing 3, whose <code>next</code> points to a node containing 7, whose <code>next</code> points to a node containing 9, whose <code>next</code> is null; <code>tail</code> points to the node containing 9. To insert 5 after the node containing 3: create a new node $w$ with $d(w) = 5$; set $\text{next}(w) = \text{next}(v_1)$ (currently the node with 7); set $\text{next}(v_1) = w$. The list is now $3 \to 5 \to 7 \to 9$, and this took a constant number of pointer reassignments, regardless of list length.</p>
+<p><strong>Problem-solving application.</strong> A classic exercise is reversing a singly linked list in place. Maintain three pointers, <code>prev</code>, <code>curr</code>, and <code>next_node</code>. Initialize <code>prev = NULL</code>, <code>curr = head</code>. While <code>curr</code> is not null: save <code>next_node = next(curr)</code>, set <code>next(curr) = prev</code>, then advance <code>prev = curr</code> and <code>curr = next_node</code>. After the loop, set <code>head = prev</code> (and update <code>tail</code> to the old <code>head</code>). Each node's pointer is rewired exactly once, so the algorithm runs in $O(n)$ time and $O(1)$ extra space — an efficient alternative to building a new reversed list, which would cost $O(n)$ additional memory.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

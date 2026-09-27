@@ -273,6 +273,12 @@
         "file": "output/core.en/sonnet/html/book_xor_list.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "queue_operations_sllist",
+        "file": "output/college.en/sonnet/html/book_queue_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -280,6 +286,13 @@
         "name": "dllist",
         "label": "Dllist",
         "file": "output/core.en/sonnet/html/concept_dllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "dllist",
+        "label": "Dllist",
+        "file": "output/college.en/sonnet/html/concept_dllist.html",
         "model": "sonnet",
         "language": "en"
       },
@@ -305,9 +318,23 @@
         "language": "en"
       },
       {
+        "name": "node",
+        "label": "Node",
+        "file": "output/college.en/sonnet/html/concept_node.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
         "name": "pointer_reference",
         "label": "Pointer Reference",
         "file": "output/core.en/sonnet/html/concept_pointer_reference.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "pointer_reference",
+        "label": "Pointer Reference",
+        "file": "output/college.en/sonnet/html/concept_pointer_reference.html",
         "model": "sonnet",
         "language": "en"
       },
@@ -319,9 +346,23 @@
         "language": "en"
       },
       {
+        "name": "queue_operations_sllist",
+        "label": "Queue Operations Sllist",
+        "file": "output/college.en/sonnet/html/concept_queue_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
         "name": "sllist",
         "label": "Sllist",
         "file": "output/core.en/sonnet/html/concept_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "sllist",
+        "label": "Sllist",
+        "file": "output/college.en/sonnet/html/concept_sllist.html",
         "model": "sonnet",
         "language": "en"
       },

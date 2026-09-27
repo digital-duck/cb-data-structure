@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queue Operations Sllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="queue-operations-sllist">Queue Operations Sllist</h2>
+<p>A queue is a FIFO (first-in, first-out) collection: the earliest element inserted is the first one removed, mirroring a checkout line. The two core operations are $\text{add}(x)$, which inserts $x$ at the back, and $\text{remove}()$, which deletes and returns the element at the front. A singly linked list (SLList) implements both in $O(1)$ time — provided the list maintains explicit pointers to both its head and tail, not just the head.</p>
+<p><strong>Why both pointers matter.</strong> An SLList node stores a value and a single <code>next</code> reference. Removing the front element is naturally cheap: set <code>head = head.next</code> and return the old head's value — no traversal required, so $\text{remove}()$ costs $O(1)$. Adding to the <em>front</em> would also be $O(1)$, but a queue requires inserting at the <em>back</em>. Without a tracked tail, $\text{add}(x)$ would need to walk the entire list to find the last node, costing $O(n)$. The fix is to cache a <code>tail</code> pointer alongside <code>head</code>: to add $x$, create a new node, set <code>tail.next = newNode</code>, then update <code>tail = newNode</code>. Both operations now touch only the pointers involved, independent of list length — genuinely $O(1)$, not just amortized.</p>
+<p><strong>Worked example.</strong> Start with an empty queue: <code>head = tail = null</code>. Call $\text{add}(3)$: since the list is empty, <code>head</code> and <code>tail</code> both point to the new node holding 3. Call $\text{add}(7)$: <code>tail.next</code> (node 3's <code>next</code>) is set to the new node holding 7, then <code>tail</code> moves to that node. The list is now <code>3 → 7</code>. Call $\text{remove}()$: it returns 3 and advances <code>head</code> to the node holding 7. The list correctly reflects FIFO order — 3 arrived first and left first.</p>
+<p><strong>Problem-solving application.</strong> A subtle edge case is removing the last remaining element: after <code>head = head.next</code>, <code>head</code> becomes <code>null</code>, but <code>tail</code> still references the deleted node — a dangling reference. Correct implementations must check <code>if (head == null) tail = null;</code> after every removal to preserve the invariant "<code>tail</code> is <code>null$ if and only if the queue is empty." Forgetting this check is a classic bug: the next $\text{add}(x)$ would silently attach </code>x` after the stale, disconnected node, corrupting the structure. This invariant-maintenance step is exactly the kind of detail that separates a correct $O(1)$ implementation from one that merely looks correct on non-empty inputs.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

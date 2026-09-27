@@ -11,6 +11,8 @@ MathJax = {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
@@ -28,6 +30,10 @@ footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
 footer.spl-credit a{color:#2563eb;text-decoration:none}
 footer.spl-credit span{display:block}
 footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
 .page{max-width:780px;margin:0 auto;padding:40px 32px}
 section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
 section:first-of-type{border-top:none;padding-top:0}
@@ -37,10 +43,12 @@ section:first-of-type{border-top:none;padding-top:0}
 <div class="page">
   <main>
     <h2 id="queue-operations-sllist">Queue Operations Sllist</h2>
-<p>A queue is a FIFO (first-in, first-out) collection: the earliest element inserted is the first one removed, mirroring a checkout line. The two core operations are $\text{add}(x)$, which inserts $x$ at the back, and $\text{remove}()$, which deletes and returns the element at the front. A singly linked list (SLList) implements both in $O(1)$ time — provided the list maintains explicit pointers to both its head and tail, not just the head.</p>
-<p><strong>Why both pointers matter.</strong> An SLList node stores a value and a single <code>next</code> reference. Removing the front element is naturally cheap: set <code>head = head.next</code> and return the old head's value — no traversal required, so $\text{remove}()$ costs $O(1)$. Adding to the <em>front</em> would also be $O(1)$, but a queue requires inserting at the <em>back</em>. Without a tracked tail, $\text{add}(x)$ would need to walk the entire list to find the last node, costing $O(n)$. The fix is to cache a <code>tail</code> pointer alongside <code>head</code>: to add $x$, create a new node, set <code>tail.next = newNode</code>, then update <code>tail = newNode</code>. Both operations now touch only the pointers involved, independent of list length — genuinely $O(1)$, not just amortized.</p>
-<p><strong>Worked example.</strong> Start with an empty queue: <code>head = tail = null</code>. Call $\text{add}(3)$: since the list is empty, <code>head</code> and <code>tail</code> both point to the new node holding 3. Call $\text{add}(7)$: <code>tail.next</code> (node 3's <code>next</code>) is set to the new node holding 7, then <code>tail</code> moves to that node. The list is now <code>3 → 7</code>. Call $\text{remove}()$: it returns 3 and advances <code>head</code> to the node holding 7. The list correctly reflects FIFO order — 3 arrived first and left first.</p>
-<p><strong>Problem-solving application.</strong> A subtle edge case is removing the last remaining element: after <code>head = head.next</code>, <code>head</code> becomes <code>null</code>, but <code>tail</code> still references the deleted node — a dangling reference. Correct implementations must check <code>if (head == null) tail = null;</code> after every removal to preserve the invariant "<code>tail</code> is <code>null$ if and only if the queue is empty." Forgetting this check is a classic bug: the next $\text{add}(x)$ would silently attach </code>x` after the stale, disconnected node, corrupting the structure. This invariant-maintenance step is exactly the kind of detail that separates a correct $O(1)$ implementation from one that merely looks correct on non-empty inputs.</p>
+<p>A queue is a <strong>FIFO</strong> (first-in, first-out) structure: the element that has been waiting longest is the one removed next, like a line at a checkout counter. Implementing a queue with a singly linked list (SLList) requires choosing the operations carefully — the wrong choice turns an $O(1)$ operation into an $O(n)$ one.</p>
+<p>An SLList maintains a <code>head</code> pointer (start of the list) and, in efficient implementations, a <code>tail</code> pointer (end of the list). Because each node stores a pointer only to its <em>next</em> neighbor (not its previous one), the list is cheap to modify at the head, and cheap at the tail <em>only if</em> a tail pointer is kept. This asymmetry dictates the queue design:</p>
+<li><strong><code>add(x)</code></strong> inserts at the <strong>tail</strong>: create a new node, link <code>tail.next</code> to it, then update <code>tail</code> to point to the new node. No traversal needed — $O(1)$.</li>
+<li><strong><code>remove()</code></strong> deletes at the <strong>head</strong>: read the value stored at <code>head</code>, then advance <code>head</code> to <code>head.next</code>. Again, no traversal — $O(1)$.</li>
+<p><strong>Worked example.</strong> Start with an empty queue (<code>head = tail = null</code>). Call <code>add(5)</code>: a node <code>[5]</code> is created; <code>head</code> and <code>tail</code> both point to it. Call <code>add(9)</code>: a new node <code>[9]</code> is linked after <code>[5]</code>; <code>tail</code> moves to <code>[9]</code>, while <code>head</code> still points to <code>[5]</code>. Call <code>add(2)</code>: <code>[2]</code> is linked after <code>[9]</code>; <code>tail</code> moves to <code>[2]</code>. The list is now <code>5 → 9 → 2</code>. Calling <code>remove()</code> returns <code>5</code> (the value at <code>head</code>) and moves <code>head</code> to the node holding <code>9</code>. The queue is now <code>9 → 2</code>, correctly preserving arrival order.</p>
+<p><strong>Why not the reverse mapping?</strong> If <code>add(x)</code> inserted at the head and <code>remove()</code> deleted from the tail, both operations would still need to locate the tail's <em>predecessor</em> to fix the link after deletion — but a singly linked list has no backward pointers, forcing an $O(n)$ traversal from <code>head</code> every time. Pairing "add at tail, remove at head" with an explicit <code>tail</code> pointer is the only combination that keeps both operations at $O(1)$; this is precisely the same design principle used in production data structures like Java's <code>ArrayDeque</code>-backed queues or kernel scheduler run-queues, where every microsecond of enqueue/dequeue latency matters.</p>
   </main>
   <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
 </div>

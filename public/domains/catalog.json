@@ -279,6 +279,12 @@
         "file": "output/college.en/sonnet/html/book_queue_operations_sllist.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "stack_operations_sllist",
+        "file": "output/college.en/sonnet/html/book_stack_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -370,6 +376,13 @@
         "name": "stack_operations_sllist",
         "label": "Stack Operations Sllist",
         "file": "output/core.en/sonnet/html/concept_stack_operations_sllist.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "name": "stack_operations_sllist",
+        "label": "Stack Operations Sllist",
+        "file": "output/college.en/sonnet/html/concept_stack_operations_sllist.html",
         "model": "sonnet",
         "language": "en"
       },

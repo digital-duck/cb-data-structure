@@ -18,6 +18,9 @@ primitives:
     tier: 0
 concepts:
   sllist:
+    diagram:
+      type: graph TD
+      hint: "head pointer → node1(data|next) → node2(data|next) → node3(data|next) → null; show add operation: new node's next points to current head, then head pointer updates"
     defines: A sequence of nodes where each node stores a data value and a reference to the next node,
       with head and tail references tracking the ends of the sequence.
     composed_of:
@@ -25,6 +28,9 @@ concepts:
     - pointer_reference
     tier: 1
   dllist:
+    diagram:
+      type: graph TD
+      hint: "null ← node1(prev|data|next) ↔ node2(prev|data|next) ↔ node3(prev|data|next) → null; show both prev and next arrows; contrast with singly linked list"
     defines: A linked list in which each node has references to both the next and previous nodes, enabling
       traversal in either direction.
     composed_of:

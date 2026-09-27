@@ -11,6 +11,8 @@ MathJax = {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
@@ -28,6 +30,10 @@ footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
 footer.spl-credit a{color:#2563eb;text-decoration:none}
 footer.spl-credit span{display:block}
 footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
 .page{max-width:780px;margin:0 auto;padding:40px 32px}
 section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
 section:first-of-type{border-top:none;padding-top:0}
@@ -37,25 +43,30 @@ section:first-of-type{border-top:none;padding-top:0}
 <div class="page">
   <main>
     <h2 id="node">Node</h2>
-<p>A <strong>node</strong> is the basic unit of a linked data structure: a small container holding a data value together with one or more references (pointers) to other nodes. Where an array stores its elements in contiguous memory and locates them by arithmetic on an index, a node-based structure scatters its elements across memory and stitches them together explicitly through these references. This trade-off — giving up constant-time random access in exchange for constant-time insertion and deletion at arbitrary positions — is the reason nodes underlie structures such as linked lists, trees, and graphs.</p>
-<p>Formally, a node can be defined as a record type:</p>
-$$
-\text{Node} = \langle \text{data}, \; \text{next}_1, \text{next}_2, \dots, \text{next}_k \rangle
-$$
-<p>For a <strong>singly linked list</strong>, $k = 1$: each node holds one value and one reference to the next node, with the final node's reference set to a sentinel value, typically <code>null</code> or <code>None</code>, marking the end of the chain. A <strong>doubly linked list</strong> node has $k=2$ (<code>next</code> and <code>prev</code>), and a <strong>binary tree</strong> node also has $k=2$, but the references are interpreted as <code>left</code> and <code>right</code> children rather than a sequence.</p>
-<p>In Python, a singly linked list node is commonly implemented as:</p>
+<p>A node is the basic unit of a linked data structure: a container holding a data value together with one or more references (pointers) to other nodes. Where an array stores elements in contiguous memory and locates them by arithmetic on an index, a linked structure stores elements wherever memory happens to be available and locates them by following references from node to node. This trade-off — giving up constant-time random access in exchange for constant-time insertion and deletion at any point — is the reason nodes and pointer-based structures exist at all.</p>
+<p>The simplest form is the singly linked node, defined recursively:</p>
 <pre><code>class Node:
-    def __init__(self, data, next=None):
-        self.data = data
-        self.next = next
-
-head = Node(3, Node(7, Node(12, None)))</code></pre>
-<p>Here <code>head</code> refers to the first node; each node reaches the next one via its <code>next</code> attribute, and traversal means repeatedly following that reference until <code>next</code> is <code>None</code>.</p>
-<p>Problem-solving with nodes centers on manipulating these references correctly, since a single misdirected pointer can silently corrupt the structure or create an infinite loop. Consider inserting a new node with value <code>x</code> immediately after a given node <code>p</code> in a singly linked list:</p>
-<pre><code>def insert_after(p, x):
-    new_node = Node(x, p.next)
-    p.next = new_node</code></pre>
-<p>The order matters: the new node's <code>next</code> must be set to <code>p.next</code> <em>before</em> <code>p.next</code> is overwritten, or the rest of the list would be lost. This pattern — capture the old reference, redirect the new node, then redirect the predecessor — generalizes to deletion, reversal, and cycle detection, all of which reduce to careful bookkeeping of node references rather than arithmetic on positions.</p>
+    def __init__(self, value, next=None):
+        self.value = value   # data payload
+        self.next = next     # reference to the next Node, or None</code></pre>
+<p>A <code>next</code> value of <code>None</code> marks the end of the chain. A doubly linked node adds a second reference, <code>prev</code>, enabling traversal in both directions; a tree node instead holds multiple child references (<code>left</code>/<code>right</code> for a binary tree, or a list of children for a general tree); a graph node holds an arbitrary set of neighbor references. In every case the defining feature is the same: a node bundles data with the <em>connective tissue</em> that lets the structure be traversed without an index.</p>
+<p><strong>Worked example.</strong> Suppose you build a singly linked list to represent the sequence <code>3 → 7 → 1</code>:</p>
+<pre><code>n3 = Node(1)
+n2 = Node(7, n3)
+n1 = Node(3, n2)</code></pre>
+<p>To find the sum of all values, you cannot use a <code>for i in range(len(list))</code> loop, because there is no length field and no direct indexing. Instead you traverse by following references until you reach <code>None</code>:</p>
+<pre><code>def sum_list(head):
+    total = 0
+    while head is not None:
+        total += head.value
+        head = head.next
+    return total</code></pre>
+<p><strong>Problem-solving application.</strong> Many classic pointer problems reduce to reasoning carefully about node references rather than data values — for example, detecting a cycle (Floyd's algorithm, using slow and fast pointers), reversing a list in place by redirecting each <code>next</code> pointer, or deleting a node given only a reference to it (by copying the next node's value and value and skipping over it). In each case, the skill being tested is not arithmetic but precise, defensive manipulation of references: always check for <code>None</code> before dereferencing, and always decide whether you are updating a node's <em>data</em> or its <em>link</em> before writing code.</p>
+<pre class="mermaid">graph LR
+    A["Node: 3"] --> B["Node: 7"]
+    B --> C["Node: 1"]
+    C --> D["None"]</pre>
+<p><em>A singly linked list: each node holds a value and a reference to the next node, terminating in a null reference.</em></p>
   </main>
   <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
 </div>

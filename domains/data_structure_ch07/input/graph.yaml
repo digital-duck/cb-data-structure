@@ -1,0 +1,81 @@
+domain: data_structure_ods_python
+primitives:
+  binary_search_tree:
+    defines: A tree data structure where each node stores a key and all keys in the left subtree are smaller,
+      all keys in the right subtree are larger, supporting search, add, and remove.
+    tier: 0
+  random_permutation:
+    defines: An ordering of n elements chosen so that each of the n! possible orderings is equally likely.
+    tier: 0
+  harmonic_number:
+    defines: The k-th harmonic number Hk is the sum 1 + 1/2 + 1/3 + ... + 1/k, closely approximated by
+      ln k.
+    tier: 0
+  rotation:
+    defines: A local modification to a binary search tree that swaps the parent-child relationship between
+      two nodes while preserving the binary search tree property.
+    tier: 0
+  heap_property:
+    defines: A structural condition on a tree requiring that every node's priority be smaller than the
+      priorities of its children.
+    tier: 0
+  sset_interface:
+    defines: An abstract interface requiring add(x), remove(x), and find(x) operations on a set of comparable
+      elements.
+    tier: 0
+concepts:
+  random_binary_search_tree:
+    defines: A binary search tree built by inserting a random permutation of n elements one at a time,
+      resulting in expected logarithmic height.
+    composed_of:
+    - binary_search_tree
+    - random_permutation
+    tier: 1
+  expected_search_path_length:
+    defines: The expected number of nodes visited when searching for a value in a random binary search
+      tree, expressed using harmonic numbers as Hx+1 + Hn-x - O(1).
+    composed_of:
+    - random_binary_search_tree
+    - harmonic_number
+    tier: 2
+  treap:
+    defines: A binary search tree in which each node also has a randomly assigned priority, and the tree
+      simultaneously satisfies the binary search tree property on keys and the heap property on priorities,
+      making its shape equivalent to a random binary search tree.
+    composed_of:
+    - binary_search_tree
+    - heap_property
+    - sset_interface
+    - random_binary_search_tree
+    tier: 2
+  treap_add:
+    defines: Inserting a new node as a leaf with a random priority, then using rotations (bubble up) to
+      restore the heap property in expected O(log n) time.
+    composed_of:
+    - treap
+    - rotation
+    tier: 3
+  treap_remove:
+    defines: Locating the node containing x, using rotations (trickle down) to move it to a leaf position,
+      then splicing it out, in expected O(log n) time, reversing the add(x) process.
+    composed_of:
+    - treap
+    - rotation
+    - treap_add
+    tier: 4
+applications:
+  martinez_roura_rbst:
+    defines: A Treap variant that stores subtree sizes instead of priorities and uses size-based randomized
+      probabilities to decide where to insert or how to rotate during add and remove.
+    needs:
+    - treap
+    - treap_add
+    - treap_remove
+    tier: 5
+  treap_hashing_priorities:
+    defines: A space optimization where a Treap's priorities are not stored explicitly but computed by
+      hashing each node's memory address using a min-wise independent hash function.
+    needs:
+    - treap
+    - heap_property
+    tier: 3

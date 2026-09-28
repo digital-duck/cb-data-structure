@@ -1,0 +1,110 @@
+domain: data_structure_ods_python
+primitives:
+  priority_queue:
+    defines: An abstract data type supporting add(x) and remove() operations, where remove() returns the
+      smallest stored value.
+    tier: 0
+  binary_tree:
+    defines: A tree data structure in which each node has at most two children, referred to as left and
+      right.
+    tier: 0
+  complete_binary_tree:
+    defines: A binary tree in which every level is completely filled except possibly the last, which is
+      filled from left to right.
+    tier: 0
+  heap_order_property:
+    defines: A property of a binary tree in which the value stored at any node is not smaller than the
+      value stored at its parent, except at the root.
+    tier: 0
+  array_resizing_amortization:
+    defines: The technique of growing or shrinking an underlying array so that the total cost of resizing
+      over a sequence of operations is accounted for as O(m) amortized time.
+    tier: 0
+  randomization_coin_toss:
+    defines: The use of a random bit at each step of merge to decide whether to descend into the left
+      or right subtree, avoiding the need for balance information.
+    tier: 0
+concepts:
+  eytzinger_method:
+    defines: A technique for representing a complete binary tree implicitly as an array by laying out
+      nodes in breadth-first order, so a node at index i has children at 2i+1 and 2i+2 and parent at (i-1)
+      div 2.
+    composed_of:
+    - complete_binary_tree
+    tier: 1
+  merge_operation:
+    defines: A recursive operation that combines two heap-ordered binary trees into one, using a random
+      coin toss to decide which child to recurse into.
+    composed_of:
+    - binary_tree
+    - heap_order_property
+    - randomization_coin_toss
+    tier: 1
+  random_walk_in_binary_tree:
+    defines: A process starting at the root of a binary tree that, at each step, moves to the left or
+      right child based on a coin toss until it falls off the tree, used to analyze merge's running time.
+    composed_of:
+    - binary_tree
+    - randomization_coin_toss
+    tier: 1
+  binary_heap:
+    defines: A priority Queue implementation that uses Eytzinger's method to implicitly represent a complete,
+      heap-ordered binary tree as an array.
+    composed_of:
+    - priority_queue
+    - eytzinger_method
+    - heap_order_property
+    - array_resizing_amortization
+    tier: 2
+  meldable_heap:
+    defines: A priority Queue implementation based on a heap-ordered binary tree of unrestricted shape,
+      whose add and remove operations are implemented via a merge operation.
+    composed_of:
+    - priority_queue
+    - binary_tree
+    - heap_order_property
+    - merge_operation
+    tier: 2
+  bubble_up:
+    defines: The operation of restoring the heap-order property after adding an element by repeatedly
+      swapping it with its parent until it is no longer smaller than its parent.
+    composed_of:
+    - binary_heap
+    - heap_order_property
+    tier: 3
+  trickle_down:
+    defines: The operation of restoring the heap-order property after removing the root by moving the
+      replacement element downward, swapping it with its smallest child, until the property holds.
+    composed_of:
+    - binary_heap
+    - heap_order_property
+    tier: 3
+applications:
+  heapsort:
+    defines: A sorting algorithm based on the BinaryHeap structure, noted as one of the fastest known
+      sorting algorithms.
+    needs:
+    - binary_heap
+    tier: 3
+  absorb_operation:
+    defines: An operation that adds all elements of one MeldableHeap into another, emptying the source
+      heap, implemented using merge.
+    needs:
+    - meldable_heap
+    - merge_operation
+    tier: 3
+  decrease_key:
+    defines: An operation that decreases the value stored at node u to a smaller value y, supported by
+      several heap variants, sometimes more efficiently than remove-and-add.
+    needs:
+    - priority_queue
+    - binary_heap
+    - meldable_heap
+    tier: 3
+  dijkstras_algorithm:
+    defines: A graph algorithm whose performance can be improved using heaps that support an efficient
+      decrease_key operation, such as Fibonacci heaps.
+    needs:
+    - priority_queue
+    - decrease_key
+    tier: 4

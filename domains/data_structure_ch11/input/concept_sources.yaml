@@ -1,0 +1,89 @@
+domain: data_structure_ods_python
+sources:
+  compare_operation:
+    label: Comparison Operation
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  divide_and_conquer:
+    label: Divide and Conquer
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  binary_heap:
+    label: Binary Heap
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  comparison_based_sorting:
+    label: Comparison-Based Sorting
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  merge_sort:
+    label: Merge-Sort
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  merging:
+    label: Merging
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  quicksort:
+    label: Quicksort
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  pivot_partitioning:
+    label: Pivot Partitioning
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  heap_sort:
+    label: Heap-Sort
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  bottom_up_heap_construction:
+    label: Bottom-Up Heap Construction
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  comparison_tree:
+    label: Comparison Tree
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  comparison_sorting_lower_bound:
+    label: Lower Bound for Comparison-Based Sorting
+    sections:
+    - id: ch11_comparison_based_sorting
+      title: Comparison-Based Sorting
+  non_comparison_sorting:
+    label: Non-Comparison-Based Sorting
+    sections:
+    - id: ch11_counting_sort_and_radix_sort
+      title: Counting Sort and Radix Sort
+  counting_sort:
+    label: Counting Sort
+    sections:
+    - id: ch11_counting_sort_and_radix_sort
+      title: Counting Sort and Radix Sort
+  stable_sorting:
+    label: Stable Sorting
+    sections:
+    - id: ch11_counting_sort_and_radix_sort
+      title: Counting Sort and Radix Sort
+  radix_sort:
+    label: Radix-Sort
+    sections:
+    - id: ch11_counting_sort_and_radix_sort
+      title: Counting Sort and Radix Sort
+  integer_sorting_via_indexing:
+    label: Sorting via Array Indexing
+    sections:
+    - id: ch11_counting_sort_and_radix_sort
+      title: Counting Sort and Radix Sort
+    - id: ch11_discussion_and_exercises
+      title: Discussion and Exercises

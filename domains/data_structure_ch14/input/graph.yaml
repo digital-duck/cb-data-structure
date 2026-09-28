@@ -1,0 +1,102 @@
+domain: data_structure_ods_python
+primitives:
+  external_memory_model:
+    defines: A model of computation that counts only the number of block accesses (reads/writes) to external
+      memory devices, ignoring in-memory instruction cost.
+    tier: 0
+  block_store:
+    defines: An abstraction of an external memory device that stores fixed-size blocks of B bytes, each
+      identified by an integer index, supporting read_block, write_block, place_block, and free_block
+      operations.
+    tier: 0
+  binary_search_tree:
+    defines: A tree-based search structure whose generalization to external memory, via nodes with many
+      children, motivates the B-tree.
+    tier: 0
+  two_four_tree:
+    defines: A balanced search tree that is the special case of a B-tree obtained by setting B = 2.
+    tier: 0
+concepts:
+  b_tree:
+    defines: A generalized search tree in which all leaves have equal depth and every non-root internal
+      node has between B and 2B children, storing keys in sorted arrays to guide searches.
+    composed_of:
+    - external_memory_model
+    - block_store
+    - binary_search_tree
+    tier: 1
+  find_it_binary_search:
+    defines: A binary search procedure over a node's nil-padded sorted key array that locates a key or
+      the smallest key greater than it in O(log B) time.
+    composed_of:
+    - b_tree
+    tier: 2
+  b_tree_split:
+    defines: An operation that divides an overfull node containing 2B keys into two nodes, passing the
+      median key up to the parent, used to rebalance a B-tree after insertion.
+    composed_of:
+    - b_tree
+    tier: 2
+  b_tree_underflow:
+    defines: The condition in which a node has fewer than B-1 keys after a removal, requiring correction
+      via borrowing or merging.
+    composed_of:
+    - b_tree
+    tier: 2
+  b_tree_find:
+    defines: The operation that searches a B-tree for a value x by using find_it at each node to choose
+      which child to descend into, running in O(log_B n) external memory accesses.
+    composed_of:
+    - b_tree
+    - find_it_binary_search
+    tier: 3
+  b_tree_borrow_merge:
+    defines: The two techniques for fixing an underflowing node by either taking keys from a sibling with
+      surplus keys (borrowing) or combining it with a sibling and a parent key (merging).
+    composed_of:
+    - b_tree_underflow
+    tier: 3
+  b_tree_add:
+    defines: A recursive operation that inserts a value into a B-tree leaf and propagates node splits
+      upward to maintain the B-tree's structural invariants.
+    composed_of:
+    - b_tree_split
+    - b_tree_find
+    tier: 4
+  b_tree_remove:
+    defines: A recursive operation that removes a value from a B-tree leaf (replacing internal keys with
+      a successor when needed) and corrects any resulting underflows via merges and borrows up to the
+      root.
+    composed_of:
+    - b_tree_borrow_merge
+    - b_tree_find
+    tier: 4
+  amortized_credit_scheme:
+    defines: A proof technique that assigns credits to B-tree nodes to show that the total number of splits,
+      merges, and borrows over a sequence of m operations is O(m).
+    composed_of:
+    - b_tree_split
+    - b_tree_borrow_merge
+    tier: 4
+  word_ram_vs_external_memory_cost:
+    defines: The distinction between counting every instruction (word-RAM model, giving O(log n) or O(B
+      log n) costs) versus counting only block accesses (external memory model, giving O(log_B n) costs)
+      for B-tree operations.
+    composed_of:
+    - external_memory_model
+    - b_tree_find
+    tier: 4
+applications:
+  b_plus_tree:
+    defines: A B-tree variant that stores every key in a doubly-linked list of leaves, with an overlying
+      B-tree indexing the largest value of each leaf, enabling efficient range queries.
+    needs:
+    - b_tree
+    tier: 2
+  btree_filesystems_databases:
+    defines: The real-world use of B-trees as the core indexing structure in file systems (HFS+, NTFS,
+      Ext4), database systems, and cloud key-value stores.
+    needs:
+    - b_tree
+    - b_plus_tree
+    tier: 3

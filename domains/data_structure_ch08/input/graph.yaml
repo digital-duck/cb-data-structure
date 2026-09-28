@@ -1,0 +1,114 @@
+domain: data_structure_ods_python
+primitives:
+  binary_search_tree:
+    defines: A tree-based data structure that supports the SSet interface via find, add, and remove operations,
+      used as the base structure for the ScapegoatTree.
+    tier: 0
+  tree_height:
+    defines: The length of the longest root-to-leaf path in a tree, which determines the worst-case cost
+      of search operations.
+    tier: 0
+  subtree_size:
+    defines: The number of nodes contained in the subtree rooted at a given node, used to evaluate balance
+      conditions.
+    tier: 0
+  amortized_analysis:
+    defines: A technique for analyzing the average cost per operation over a sequence of operations, used
+      here via a credit scheme to bound rebuilding costs.
+    tier: 0
+concepts:
+  scapegoat_tree:
+    defines: A BinarySearchTree that maintains a node counter n and an upper-bound counter q, guaranteeing
+      logarithmic height through partial rebuilding rather than rotations.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+  height_bound_invariant:
+    defines: The condition that a ScapegoatTree's height never exceeds log base 3/2 of q, ensuring O(log
+      n) search time.
+    composed_of:
+    - scapegoat_tree
+    - tree_height
+    tier: 2
+  rebuild_operation:
+    defines: An operation that destroys the subtree rooted at u and reconstructs it as a perfectly balanced
+      binary search tree in O(size(u)) time using build_balanced.
+    composed_of:
+    - scapegoat_tree
+    - subtree_size
+    tier: 2
+  scapegoat_node:
+    defines: An unbalanced ancestor w of a newly inserted deep node u, satisfying size(w.child)/size(w)
+      > 2/3, whose subtree is rebuilt to restore the height bound.
+    composed_of:
+    - subtree_size
+    - height_bound_invariant
+    tier: 3
+  scapegoat_existence_lemma:
+    defines: A proof (Lemma 8.1) showing that whenever a node's depth exceeds log_3/2(q), a valid scapegoat
+      node must exist on the path to the root.
+    composed_of:
+    - scapegoat_node
+    - height_bound_invariant
+    tier: 4
+  scapegoat_add:
+    defines: The insertion operation that adds a node via standard BST insertion, then finds and rebuilds
+      a scapegoat if the new node's depth exceeds log_3/2(q).
+    composed_of:
+    - scapegoat_existence_lemma
+    - rebuild_operation
+    tier: 5
+  scapegoat_remove:
+    defines: The deletion operation that removes a node via standard BST deletion, decrements n, and rebuilds
+      the entire tree if q exceeds 2n.
+    composed_of:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3
+  credit_scheme:
+    defines: An amortized analysis technique that assigns credits to nodes during insertions and deletions
+      to pay for the cost of future rebuild(u) calls, bounding total rebuilding cost at O(m log m) over
+      m operations.
+    composed_of:
+    - amortized_analysis
+    - rebuild_operation
+    tier: 3
+applications:
+  scapegoat_tree_performance:
+    defines: The summary result that a ScapegoatTree supports find(x), add(x), and remove(x) in O(log
+      n) time each, with total rebuild(u) cost O(m log m) over m operations.
+    needs:
+    - scapegoat_add
+    - scapegoat_remove
+    - credit_scheme
+    tier: 6
+  weight_balanced_tree:
+    defines: A tree variant, related to the ScapegoatTree, in which every node satisfies size(u) <= (2/3)
+      size(u.parent), rebuilding the parent subtree whenever this invariant is violated.
+    needs:
+    - scapegoat_tree
+    - subtree_size
+    - rebuild_operation
+    tier: 3
+  countdown_tree:
+    defines: A tree variant where each node keeps a decrementing timer that triggers a subtree rebuild
+      when it reaches zero, achieving amortized O(log n) operations.
+    needs:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3
+  dynamite_tree:
+    defines: A tree variant where each affected node "explodes" with probability 1/size(u) during operations,
+      triggering a rebuild of its subtree, achieving O(log n) expected time.
+    needs:
+    - scapegoat_tree
+    - subtree_size
+    - rebuild_operation
+    tier: 3
+  sequence_data_structure:
+    defines: An ordered-list structure built on a ScapegoatTree-like tree that supports add_after, remove,
+      and constant-time test_before via path-encoding labels.
+    needs:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3

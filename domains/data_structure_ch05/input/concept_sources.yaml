@@ -1,0 +1,67 @@
+domain: data_structure_ods_python
+sources:
+  hash_table:
+    label: Hash Table
+    sections: []
+  hash_function:
+    label: Hash Function
+    sections: []
+  hash_code:
+    label: Hash Code
+    sections:
+    - id: ch05_hash_codes
+      title: Hash Codes
+  load_factor_invariant:
+    label: Load Factor Invariant
+    sections:
+    - id: ch05_chainedhashtable_hashing_with_chaining
+      title: 'ChainedHashTable: Hashing with Chaining'
+    - id: ch05_linearhashtable_linear_probing
+      title: 'LinearHashTable: Linear Probing'
+  amortized_resizing:
+    label: Amortized Table Resizing
+    sections:
+    - id: ch05_chainedhashtable_hashing_with_chaining
+      title: 'ChainedHashTable: Hashing with Chaining'
+    - id: ch05_linearhashtable_linear_probing
+      title: 'LinearHashTable: Linear Probing'
+  chained_hash_table:
+    label: ChainedHashTable (Hashing with Chaining)
+    sections:
+    - id: ch05_chainedhashtable_hashing_with_chaining
+      title: 'ChainedHashTable: Hashing with Chaining'
+  multiplicative_hashing:
+    label: Multiplicative Hashing
+    sections:
+    - id: ch05_chainedhashtable_hashing_with_chaining
+      title: 'ChainedHashTable: Hashing with Chaining'
+  open_addressing:
+    label: Open Addressing
+    sections:
+    - id: ch05_linearhashtable_linear_probing
+      title: 'LinearHashTable: Linear Probing'
+  linear_hash_table:
+    label: LinearHashTable (Linear Probing)
+    sections:
+    - id: ch05_linearhashtable_linear_probing
+      title: 'LinearHashTable: Linear Probing'
+  tabulation_hashing:
+    label: Tabulation Hashing
+    sections:
+    - id: ch05_linearhashtable_linear_probing
+      title: 'LinearHashTable: Linear Probing'
+  compound_object_hashing:
+    label: Hash Codes for Compound Objects
+    sections:
+    - id: ch05_hash_codes
+      title: Hash Codes
+  polynomial_hashing:
+    label: Polynomial Hashing over Prime Fields
+    sections:
+    - id: ch05_hash_codes
+      title: Hash Codes
+  hash_collision_dos:
+    label: Denial-of-Service via Hash Collisions
+    sections:
+    - id: ch05_discussion_and_exercises
+      title: Discussion and Exercises

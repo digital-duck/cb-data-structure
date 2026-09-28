@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap">Treap</h2>
+<p><strong>Definition.</strong> A <em>treap</em> is a binary search tree (BST) in which every node stores two keys: a <em>search key</em> $k$ drawn from a totally ordered set, and a <em>priority</em> $p$ drawn uniformly at random from $\mathbb{R}$ (or a large integer range). The structure simultaneously satisfies the BST property on search keys and the max-heap property on priorities:</p>
+<li><strong>BST property:</strong> for every node $v$, all keys in its left subtree are $< k_v$ and all keys in its right subtree are $> k_v$.</li>
+<li><strong>Heap property:</strong> for every non-root node $v$ with parent $u$, $p_v < p_u$.</li>
+<p>The name is a portmanteau of <em>tree</em> and <em>heap</em>.</p>
+<p><strong>Worked Example.</strong> Insert keys $\{3, 1, 4, 1, 5\}$ (ignoring the duplicate for clarity: $\{1, 3, 4, 5\}$) with randomly assigned priorities $p_1=0.9,\; p_3=0.5,\; p_4=0.7,\; p_5=0.2$. The node with the largest priority becomes the root: node $1$ ($p=0.9$). Node $4$ ($p=0.7$) is its right child; node $3$ ($p=0.5$) is the left child of $4$; node $5$ ($p=0.2$) is the right child of $4$. One can verify that in-order traversal yields $1,3,4,5$, confirming the BST property, while every parent has a higher priority than its children, confirming the heap property.</p>
+<p><strong>Key Theorem.</strong> <em>The treap on $n$ distinct keys with independent, uniformly random priorities is identically distributed to a random BST built by inserting the same keys in a uniformly random order.</em> In particular, the expected height is $\Theta(\log n)$ and the expected cost of search, insertion, and deletion is $O(\log n)$. Insertion and deletion are implemented via standard BST pointer manipulation followed by rotations that restore the heap property; each operation requires $O(\text{depth})$ rotations in expectation.</p>
+<p>The treap's elegance lies in reducing tree balance to a probabilistic argument: because priorities are independent of keys, no adversary can construct a worst-case input sequence that forces $O(n)$ height.</p>
+<p><strong>Lab Cell.</strong></p>
+<pre><code>import random
+
+class Node:
+    def __init__(self, key):
+        self.key, self.pri = key, random.random()
+        self.left = self.right = None
+
+def rotate_right(y):
+    x = y.left; y.left = x.right; x.right = y; return x
+
+def rotate_left(x):
+    y = x.right; x.right = y.left; y.left = x; return y
+
+def insert(root, key):
+    if root is None:
+        return Node(key)
+    if key &lt; root.key:
+        root.left = insert(root.left, key)
+        if root.left.pri &gt; root.pri:
+            root = rotate_right(root)
+    else:
+        root.right = insert(root.right, key)
+        if root.right.pri &gt; root.pri:
+            root = rotate_left(root)
+    return root
+
+keys = [5, 2, 8, 1, 4, 7, 9]
+root = None
+for k in keys:
+    root = insert(root, k)
+
+def inorder(node):
+    if node is None: return []
+    return inorder(node.left) + [node.key] + inorder(node.right)
+
+print("In-order:", inorder(root))   # Expected: [1, 2, 4, 5, 7, 8, 9]
+print("Root key:", root.key, "  Root priority:", round(root.pri, 4))</code></pre>
+<p>Running the lab cell confirms that in-order traversal recovers the sorted sequence regardless of insertion order, while the root holds the node with the highest sampled priority.</p>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

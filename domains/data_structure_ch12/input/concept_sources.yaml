@@ -1,0 +1,62 @@
+domain: data_structure_ods_python
+sources:
+  graph:
+    label: Graph
+    sections: []
+  vertex_degree:
+    label: Vertex Degree
+    sections:
+    - id: ch12_adjacencylists_a_graph_as_a_collection_o
+      title: 'AdjacencyLists: A Graph as a Collection of Lists'
+  queue:
+    label: Queue
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  stack:
+    label: Stack
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  adjacency_matrix:
+    label: Adjacency Matrix
+    sections:
+    - id: ch12_adjacencymatrix_representing_a_graph_by_
+      title: 'AdjacencyMatrix: Representing a Graph by a Matrix'
+  adjacency_list:
+    label: Adjacency List
+    sections:
+    - id: ch12_adjacencylists_a_graph_as_a_collection_o
+      title: 'AdjacencyLists: A Graph as a Collection of Lists'
+  graph_traversal:
+    label: Graph Traversal
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  breadth_first_search:
+    label: Breadth-First Search (BFS)
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  depth_first_search:
+    label: Depth-First Search (DFS)
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  shortest_path_via_bfs:
+    label: Shortest Path Computation via BFS
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+  cycle_detection_via_dfs:
+    label: Cycle Detection via DFS
+    sections:
+    - id: ch12_graph_traversal
+      title: Graph Traversal
+    - id: ch12_discussion_and_exercises
+      title: Discussion and Exercises
+  matrix_powers_for_paths:
+    label: Matrix Powers for Path Counting
+    sections:
+    - id: ch12_adjacencymatrix_representing_a_graph_by_
+      title: 'AdjacencyMatrix: Representing a Graph by a Matrix'

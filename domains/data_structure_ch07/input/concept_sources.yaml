@@ -1,0 +1,65 @@
+domain: data_structure_ods_python
+sources:
+  binary_search_tree:
+    label: Binary Search Tree
+    sections: []
+  random_permutation:
+    label: Random Permutation
+    sections:
+    - id: ch07_random_binary_search_trees
+      title: Random Binary Search Trees
+  harmonic_number:
+    label: Harmonic Number
+    sections:
+    - id: ch07_random_binary_search_trees
+      title: Random Binary Search Trees
+  rotation:
+    label: Tree Rotation
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  heap_property:
+    label: Heap Property
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  sset_interface:
+    label: SSet Interface
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  random_binary_search_tree:
+    label: Random Binary Search Tree
+    sections:
+    - id: ch07_random_binary_search_trees
+      title: Random Binary Search Trees
+  expected_search_path_length:
+    label: Expected Search Path Length
+    sections:
+    - id: ch07_random_binary_search_trees
+      title: Random Binary Search Trees
+  treap:
+    label: Treap
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  treap_add:
+    label: Treap add(x) Operation
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  treap_remove:
+    label: Treap remove(x) Operation
+    sections:
+    - id: ch07_treap_a_randomized_binary_search_tree
+      title: 'Treap: A Randomized Binary Search Tree'
+  martinez_roura_rbst:
+    label: Martínez–Roura Randomized Binary Search Tree
+    sections:
+    - id: ch07_discussion_and_exercises
+      title: Discussion and Exercises
+  treap_hashing_priorities:
+    label: Priority Simulation via Hashing
+    sections:
+    - id: ch07_discussion_and_exercises
+      title: Discussion and Exercises

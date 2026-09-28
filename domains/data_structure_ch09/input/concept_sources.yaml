@@ -1,0 +1,87 @@
+domain: data_structure_ods_python
+sources:
+  rooted_tree:
+    label: Rooted Tree
+    sections:
+    - id: ch09_2_4_trees
+      title: 2-4 Trees
+  binary_search_tree:
+    label: Binary Search Tree
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  tree_height:
+    label: Tree Height
+    sections:
+    - id: ch09_2_4_trees
+      title: 2-4 Trees
+  2_4_tree:
+    label: 2-4 Tree
+    sections:
+    - id: ch09_2_4_trees
+      title: 2-4 Trees
+  2_4_tree_add_leaf:
+    label: Adding a Leaf in a 2-4 Tree
+    sections:
+    - id: ch09_2_4_trees
+      title: 2-4 Trees
+  2_4_tree_remove_leaf:
+    label: Removing a Leaf in a 2-4 Tree
+    sections:
+    - id: ch09_2_4_trees
+      title: 2-4 Trees
+  red_black_tree:
+    label: Red-Black Tree
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  black_height_property:
+    label: Black-Height Property
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  no_red_edge_property:
+    label: No-Red-Edge Property
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  left_leaning_property:
+    label: Left-Leaning Property
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  red_black_2_4_correspondence:
+    label: Red-Black to 2-4 Tree Correspondence
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  colour_flip_push_pull:
+    label: Colour Flips, Pushes, and Pulls
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  red_black_add:
+    label: Red-Black Tree Addition
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  red_black_remove:
+    label: Red-Black Tree Removal
+    sections:
+    - id: ch09_redblacktree_a_simulated_2_4_tree
+      title: 'RedBlackTree: A Simulated 2-4 Tree'
+  red_black_performance:
+    label: Red-Black Tree Performance
+    sections:
+    - id: ch09_summary
+      title: Summary
+  amortized_potential_method:
+    label: Amortized Analysis via the Potential Method
+    sections:
+    - id: ch09_summary
+      title: Summary
+  avl_tree:
+    label: AVL Tree
+    sections:
+    - id: ch09_discussion_and_exercises
+      title: Discussion and Exercises

@@ -1,0 +1,110 @@
+domain: data_structure_ods_python
+primitives:
+  rooted_tree:
+    defines: A tree data structure with a distinguished root node from which all other nodes descend.
+    tier: 0
+  binary_search_tree:
+    defines: A binary tree in which each node has at most two children and supports search, addition,
+      and removal by key comparison.
+    tier: 0
+  tree_height:
+    defines: The length of the longest root-to-leaf path in a tree, used to bound the cost of operations.
+    tier: 0
+  amortized_potential_method:
+    defines: A technique assigning a potential function to a data structure's state to bound the total
+      cost of a sequence of operations, used to show O(m) total fixup work over m red-black tree updates.
+    tier: 0
+concepts:
+  2_4_tree:
+    defines: A rooted tree in which all leaves have the same depth and every internal node has 2, 3, or
+      4 children, giving logarithmic height.
+    composed_of:
+    - rooted_tree
+    - tree_height
+    tier: 1
+  2_4_tree_add_leaf:
+    defines: Inserting a leaf under a node on the second-last level and recursively splitting overfull
+      nodes (more than 4 children) up toward the root to restore the degree property.
+    composed_of:
+    - 2_4_tree
+    tier: 2
+  2_4_tree_remove_leaf:
+    defines: Deleting a leaf and recursively borrowing from or merging with a sibling to restore the degree
+      property when a node is left with too few children.
+    composed_of:
+    - 2_4_tree
+    tier: 2
+  red_black_tree:
+    defines: A binary search tree in which each node is coloured red or black, satisfying the black-height
+      and no-red-edge properties, used to efficiently simulate a 2-4 tree.
+    composed_of:
+    - binary_search_tree
+    - black_height_property
+    - no_red_edge_property
+    tier: 1
+  black_height_property:
+    defines: The property that every root-to-leaf path in a red-black tree contains the same number of
+      black nodes.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+  no_red_edge_property:
+    defines: The property that no two red nodes are adjacent in a red-black tree.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+  left_leaning_property:
+    defines: The additional red-black tree property that if a node's left child is black, its right child
+      must also be black, ensuring a unique correspondence to 2-4 trees.
+    composed_of:
+    - red_black_tree
+    tier: 2
+  red_black_2_4_correspondence:
+    defines: The transformation that removes red nodes and merges them into their black parents, showing
+      every red-black tree corresponds to a 2-4 tree and bounding red-black tree height at 2logn.
+    composed_of:
+    - red_black_tree
+    - left_leaning_property
+    - 2_4_tree
+    tier: 3
+  colour_flip_push_pull:
+    defines: The subroutines push_black, pull_black, flip_left, and flip_right that manipulate node colours
+      and perform rotations while preserving the black-height property.
+    composed_of:
+    - red_black_tree
+    - black_height_property
+    tier: 2
+  red_black_add:
+    defines: Inserting a new red leaf via standard binary search tree insertion, then restoring the left-leaning
+      and no-red-edge properties with add_fixup, simulating a 2-4 tree split.
+    composed_of:
+    - red_black_tree
+    - left_leaning_property
+    - colour_flip_push_pull
+    - 2_4_tree_add_leaf
+    tier: 3
+  red_black_remove:
+    defines: Splicing out a node with at most one child and resolving the resulting double-black colour
+      with remove_fixup, simulating 2-4 tree merging and borrowing.
+    composed_of:
+    - red_black_tree
+    - colour_flip_push_pull
+    - 2_4_tree_remove_leaf
+    tier: 3
+applications:
+  red_black_performance:
+    defines: The result that a RedBlackTree supports add, remove, and find in O(logn) worst-case time,
+      with amortized O(1) time per update across a sequence of operations.
+    needs:
+    - red_black_add
+    - red_black_remove
+    - red_black_2_4_correspondence
+    - amortized_potential_method
+    tier: 4
+  avl_tree:
+    defines: A height-balanced binary search tree in which the heights of a node's two subtrees differ
+      by at most one, yielding height at most 1.44logn.
+    needs:
+    - binary_search_tree
+    - tree_height
+    tier: 1

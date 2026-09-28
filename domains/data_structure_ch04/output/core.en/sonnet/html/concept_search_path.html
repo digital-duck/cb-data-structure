@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Path | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="search-path">Search Path</h2>
+<p><strong>Definition.</strong> Let $G = (V, E)$ be a directed graph where $V$ is a finite set of <em>vertices</em> (states) and $E \subseteq V \times V$ is a set of <em>edges</em> (transitions). A <strong>search path</strong> from a source vertex $s \in V$ to a target vertex $t \in V$ is a finite sequence</p>
+$$\pi = \langle v_0, v_1, \ldots, v_k \rangle, \quad v_i \in V,$$
+<p>such that $v_0 = s$, $v_k = t$, and $(v_{i}, v_{i+1}) \in E$ for every $0 \le i < k$. The <em>length</em> of $\pi$ is $|\pi| = k$ (the number of edges traversed). A search path is called <strong>simple</strong> if all vertices $v_0, \ldots, v_k$ are distinct. The set of all simple search paths from $s$ to $t$ is denoted $\Pi(s, t)$.</p>
+<p>In the context of heuristic search, each edge $(u, v)$ may carry a non-negative cost $c(u, v) \ge 0$. The <strong>path cost</strong> is then $\operatorname{cost}(\pi) = \sum_{i=0}^{k-1} c(v_i, v_{i+1})$, and finding an optimal search path reduces to minimising $\operatorname{cost}(\pi)$ over $\Pi(s, t)$.</p>
+<p><strong>Worked example.</strong> Consider the graph $G$ with $V = \{A, B, C, D\}$ and weighted edges</p>
+$$A \xrightarrow{1} B, \quad A \xrightarrow{4} C, \quad B \xrightarrow{2} C, \quad B \xrightarrow{5} D, \quad C \xrightarrow{1} D.$$
+<p>Two search paths from $A$ to $D$ exist: $\pi_1 = \langle A, B, D \rangle$ with $\operatorname{cost}(\pi_1) = 1 + 5 = 6$, and $\pi_2 = \langle A, B, C, D \rangle$ with $\operatorname{cost}(\pi_2) = 1 + 2 + 1 = 4$. Thus $\pi_2$ is the optimal search path.</p>
+<p><strong>Key theorem (Bellman's optimality principle).</strong> Let $\pi^* = \langle v_0, \ldots, v_k \rangle$ be an optimal search path from $s = v_0$ to $t = v_k$. Then for every $0 \le i \le j \le k$, the sub-sequence $\langle v_i, \ldots, v_j \rangle$ is an optimal search path from $v_i$ to $v_j$.</p>
+<p><em>Proof sketch.</em> Suppose some sub-path $\langle v_i, \ldots, v_j \rangle$ were not optimal; let $\pi'$ be a cheaper path from $v_i$ to $v_j$. Substituting $\pi'$ into $\pi^<em>$ yields a path from $s$ to $t$ with strictly lower cost, contradicting the optimality of $\pi^</em>$. $\square$</p>
+<p>This principle underlies dynamic-programming algorithms such as Dijkstra's algorithm and the Bellman–Ford algorithm.</p>
+<p><strong>Lab cell (SymPy).</strong></p>
+<pre><code>import sympy as sp
+from sympy.combinatorics.named_groups import SymmetricGroup
+
+# Represent the example graph as an adjacency dictionary with costs
+graph = {'A': [('B', 1), ('C', 4)],
+         'B': [('C', 2), ('D', 5)],
+         'C': [('D', 1)],
+         'D': []}
+
+def all_paths(graph, src, tgt, path=None):
+    path = (path or []) + [src]
+    if src == tgt:
+        return [path]
+    return [p for nbr, _ in graph.get(src, [])
+              if nbr not in path
+              for p in all_paths(graph, nbr, tgt, path)]
+
+def path_cost(graph, path):
+    costs = {(u, v): w for u, es in graph.items() for v, w in es}
+    return sum(costs[(path[i], path[i+1])] for i in range(len(path)-1))
+
+paths = all_paths(graph, 'A', 'D')
+for p in paths:
+    print(p, '-&gt;', path_cost(graph, p))</code></pre>
+<p>Running this cell enumerates every simple search path from $A$ to $D$ and prints its cost, confirming that $\langle A, B, C, D \rangle$ achieves the minimum cost of $4$.</p>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

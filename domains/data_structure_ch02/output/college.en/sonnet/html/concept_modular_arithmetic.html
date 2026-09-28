@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modular Arithmetic | Data Structure Ch02</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="modular-arithmetic">Modular Arithmetic</h2>
+<p>Modular arithmetic is arithmetic on remainders. For an integer $a$ and a positive integer $n$ (the <em>modulus</em>), we define</p>
+$$a \bmod n = r, \quad \text{where } a = qn + r, \; 0 \le r < n, \; q = \left\lfloor \frac{a}{n} \right\rfloor.$$
+<p>Two integers $a$ and $b$ are <em>congruent modulo</em> $n$, written $a \equiv b \pmod{n}$, if they leave the same remainder when divided by $n$ — equivalently, if $n$ divides $a - b$. Congruence is an equivalence relation: it partitions all integers into exactly $n$ classes, $\{0, 1, \dots, n-1\}$, and addition, subtraction, and multiplication all respect it: if $a \equiv b$ and $c \equiv d \pmod n$, then $a+c \equiv b+d$ and $ac \equiv bd \pmod n$. This is what makes modular arithmetic a genuine algebraic structure (the ring $\mathbb{Z}/n\mathbb{Z}$), not just a bookkeeping trick.</p>
+<p><strong>Worked example.</strong> Compute $47 \bmod 7$. Since $47 = 6 \cdot 7 + 5$, we get $47 \bmod 7 = 5$. Now compute $(-3) \bmod 7$: because $-3 = (-1)\cdot 7 + 4$, the remainder is $4$, not $-3$ — a subtlety that matters in programming, since some languages (C, Java) return $-3 \bmod 7 = -3$, while mathematically consistent "floored" modulo returns $4$. Python's <code>%</code> operator follows the floored convention, matching the mathematical definition above.</p>
+<p><strong>Problem-solving application: circular indexing.</strong> Suppose an array <code>arr</code> has length $n$, and you want to move an index <code>i</code> forward by <code>k</code> positions, wrapping past the end back to the start — this is exactly how ring buffers, circular queues, and hash-table probing work. The wrapped index is</p>
+$$i' = (i + k) \bmod n.$$
+<p>For example, with $n = 5$ and $i = 3$, advancing by $k = 4$ gives $i' = (3+4) \bmod 5 = 7 \bmod 5 = 2$: index 3 moves forward 4 steps, wraps around the end, and lands on index 2. This single formula replaces a fragile chain of conditional checks (<code>if index &gt;= length, subtract length</code>) with one arithmetic expression that is correct for any offset, including negative ones, provided you use the floored-modulo convention. This is the core idea behind circular buffers in operating systems, round-robin scheduling, and hashing schemes where a key's bucket is computed as <code>hash(key) mod table_size</code>.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch2: Array-Based Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array Stack | Data Structure Ch02</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="array-stack">Array Stack</h2>
+<p>An <strong>array stack</strong> implements the List interface using a single backing array <code>a</code> together with a size counter <code>n</code> tracking how many of the array's slots hold valid elements. Because array indexing is direct memory-offset access, <code>get(i)</code> and <code>set(i, x)</code> run in $O(1)$ time — the position of element $i$ is computed as <code>base_address + i * element_size</code>, requiring no traversal.</p>
+<p>Insertion and removal are more delicate. To <code>add(i, x)</code>, every element at index $i$ or later must shift one slot to the right to make room, then <code>a[i] = x</code>. Removal shifts elements left to close the gap. Both operations cost $O(1 + n - i)$: constant work plus the number of elements that must move. Inserting or removing near the end (large $i$) is cheap; near the beginning (small $i$) is expensive, since almost the whole array shifts.</p>
+<p>The remaining challenge is that the backing array has fixed capacity. When <code>n</code> reaches the array's length, <code>add</code> cannot proceed until the array grows. The standard technique is <strong>array doubling</strong>: allocate a new array of twice the size, copy all $n$ elements over, then continue. Symmetrically, if $n$ shrinks to a quarter of the capacity, the array is halved to reclaim space. Though a single doubling costs $O(n)$, it happens rarely enough that its cost, spread — or <em>amortized</em> — over the sequence of operations, adds only $O(1)$ per <code>add</code>/<code>remove</code> on average.</p>
+<p><strong>Worked example.</strong> Suppose an array stack holds <code>[3, 7, 1, 9]</code> with capacity 4. Calling <code>add(4, 5)</code> (append) triggers doubling: a new array of capacity 8 is allocated, <code>[3, 7, 1, 9]</code> is copied in, then <code>5</code> is placed at index 4, giving <code>[3, 7, 1, 9, 5]</code>. A later <code>add(1, 2)</code> requires shifting <code>9, 1, 7</code>... rather, shifting elements from index 1 onward right by one, costing $O(1 + n - 1) = O(n)$ for that single call, since $i$ is small.</p>
+<p><strong>Problem-solving application.</strong> When choosing between an array stack and a linked list for a List ADT, examine the access pattern: if the workload is dominated by appends/removals at the tail (as in a stack) or by random <code>get</code>/<code>set</code> calls, array stacks are optimal. If the workload frequently inserts or deletes near the front or middle, the $O(n)$ shifting cost makes a linked structure preferable. The amortized-doubling analysis also generalizes: any data structure that grows/shrinks by a constant factor rather than a constant amount achieves amortized $O(1)$ resizing cost — a pattern reused in dynamic arrays across virtually every standard library.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch2: Array-Based Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

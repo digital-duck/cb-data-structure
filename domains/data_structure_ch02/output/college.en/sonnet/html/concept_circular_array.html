@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circular Array | Data Structure Ch02</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="circular-array">Circular Array</h2>
+<p>A circular array simulates an unbounded, wrap-around sequence using a fixed-size block of memory. Instead of allocating new space when an array "runs out of room" at its end, a circular array reuses the freed slots at its beginning. The mechanism is modular arithmetic: for an array of capacity $n$, the physical index corresponding to logical position $i$ is</p>
+$$
+\text{index}(i) = i \bmod n.
+$$
+<p>Because the remainder of division by $n$ always lies in $\{0, 1, \dots, n-1\}$, any integer $i$ — no matter how large — maps back into valid bounds. This is what makes the array behave as if it wraps: incrementing past index $n-1$ returns to index $0$.</p>
+<p>The structure is defined by two pointers, <code>head</code> and <code>tail</code>, plus a <code>count</code> of active elements. Enqueuing appends at <code>tail</code> and sets <code>tail = (tail + 1) mod n</code>; dequeuing removes from <code>head</code> and sets <code>head = (head + 1) mod n</code>. The array is full when <code>count == n</code> and empty when <code>count == 0</code> — tracking <code>count</code> explicitly avoids the ambiguity of <code>head == tail</code> meaning either "empty" or "full."</p>
+<p><strong>Worked example.</strong> Suppose $n = 5$, and we perform: enqueue A, B, C (head = 0, tail = 3, count = 3); dequeue twice (head = 2, count = 1); enqueue D, E, F. The third enqueue computes <code>tail = (4 + 1) mod 5 = 0</code>, placing F at physical index 0 — the slot vacated by A. The array's logical order (C, D, E, F) is preserved even though the elements physically wrap around the end.</p>
+<p><strong>Problem-solving application.</strong> Circular arrays are the standard implementation for queues, ring buffers in streaming I/O, and fixed-window algorithms (e.g., a sliding-window maximum over the last $k$ elements, or a circular buffer feeding an audio device in real time). The key design decision is choosing $n$: too small forces overwrites or blocking; too large wastes memory. A common interview task is: "Implement a queue with $O(1)$ enqueue/dequeue using a fixed array" — the solution is exactly this modular-index scheme, since a naive array-shifting queue costs $O(n)$ per dequeue. Recognizing when a problem exhibits a fixed-capacity, FIFO-with-eviction pattern is the signal to reach for a circular array rather than a dynamic list.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch2: Array-Based Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

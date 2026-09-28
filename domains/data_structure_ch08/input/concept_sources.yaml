@@ -1,0 +1,79 @@
+domain: data_structure_ods_python
+sources:
+  binary_search_tree:
+    label: Binary Search Tree
+    sections: []
+  tree_height:
+    label: Tree Height
+    sections: []
+  subtree_size:
+    label: Subtree Size
+    sections: []
+  amortized_analysis:
+    label: Amortized Analysis
+    sections: []
+  scapegoat_tree:
+    label: ScapegoatTree
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  height_bound_invariant:
+    label: Height Bound Invariant
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  rebuild_operation:
+    label: rebuild(u)
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  scapegoat_node:
+    label: Scapegoat Node
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  scapegoat_add:
+    label: ScapegoatTree add(x)
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  scapegoat_remove:
+    label: ScapegoatTree remove(x)
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  scapegoat_existence_lemma:
+    label: Scapegoat Existence Lemma
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  credit_scheme:
+    label: Credit Scheme
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  scapegoat_tree_performance:
+    label: ScapegoatTree Performance Theorem
+    sections:
+    - id: ch08_scapegoattree_a_binary_search_tree_with_
+      title: 'ScapegoatTree: A Binary Search Tree with Partial Rebuilding'
+  weight_balanced_tree:
+    label: Weight-Balanced Tree
+    sections:
+    - id: ch08_discussion_and_exercises
+      title: Discussion and Exercises
+  countdown_tree:
+    label: Countdown Tree
+    sections:
+    - id: ch08_discussion_and_exercises
+      title: Discussion and Exercises
+  dynamite_tree:
+    label: Dynamite Tree
+    sections:
+    - id: ch08_discussion_and_exercises
+      title: Discussion and Exercises
+  sequence_data_structure:
+    label: Sequence Data Structure
+    sections:
+    - id: ch08_discussion_and_exercises
+      title: Discussion and Exercises

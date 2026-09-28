@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="node">Node</h2>
+<p>A node is the basic unit of a linked data structure: a container holding a data value together with one or more references (pointers) to other nodes. Where an array stores elements in contiguous memory and locates them by arithmetic on an index, a linked structure stores elements wherever memory happens to be available and locates them by following references from node to node. This trade-off — giving up constant-time random access in exchange for constant-time insertion and deletion at any point — is the reason nodes and pointer-based structures exist at all.</p>
+<p>The simplest form is the singly linked node, defined recursively:</p>
+<pre><code>class Node:
+    def __init__(self, value, next=None):
+        self.value = value   # data payload
+        self.next = next     # reference to the next Node, or None</code></pre>
+<p>A <code>next</code> value of <code>None</code> marks the end of the chain. A doubly linked node adds a second reference, <code>prev</code>, enabling traversal in both directions; a tree node instead holds multiple child references (<code>left</code>/<code>right</code> for a binary tree, or a list of children for a general tree); a graph node holds an arbitrary set of neighbor references. In every case the defining feature is the same: a node bundles data with the <em>connective tissue</em> that lets the structure be traversed without an index.</p>
+<p><strong>Worked example.</strong> Suppose you build a singly linked list to represent the sequence <code>3 → 7 → 1</code>:</p>
+<pre><code>n3 = Node(1)
+n2 = Node(7, n3)
+n1 = Node(3, n2)</code></pre>
+<p>To find the sum of all values, you cannot use a <code>for i in range(len(list))</code> loop, because there is no length field and no direct indexing. Instead you traverse by following references until you reach <code>None</code>:</p>
+<pre><code>def sum_list(head):
+    total = 0
+    while head is not None:
+        total += head.value
+        head = head.next
+    return total</code></pre>
+<p><strong>Problem-solving application.</strong> Many classic pointer problems reduce to reasoning carefully about node references rather than data values — for example, detecting a cycle (Floyd's algorithm, using slow and fast pointers), reversing a list in place by redirecting each <code>next</code> pointer, or deleting a node given only a reference to it (by copying the next node's value and value and skipping over it). In each case, the skill being tested is not arithmetic but precise, defensive manipulation of references: always check for <code>None</code> before dereferencing, and always decide whether you are updating a node's <em>data</em> or its <em>link</em> before writing code.</p>
+<pre class="mermaid">graph LR
+    A["Node: 3"] --> B["Node: 7"]
+    B --> C["Node: 1"]
+    C --> D["None"]</pre>
+<p><em>A singly linked list: each node holds a value and a reference to the next node, terminating in a null reference.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+domain: data_structure_ods_python
+sources:
+  node:
+    label: Node
+    sections: []
+  pointer_reference:
+    label: Pointer/Reference
+    sections: []
+  sllist:
+    label: Singly-Linked List (SLList)
+    sections:
+    - id: ch03_sllist_a_singly_linked_list
+      title: 'SLList: A Singly-Linked List'
+  stack_operations_sllist:
+    label: Stack Operations via SLList
+    sections:
+    - id: ch03_sllist_a_singly_linked_list
+      title: 'SLList: A Singly-Linked List'
+  queue_operations_sllist:
+    label: Queue Operations via SLList
+    sections:
+    - id: ch03_sllist_a_singly_linked_list
+      title: 'SLList: A Singly-Linked List'
+    - id: ch03_dllist_a_doubly_linked_list
+      title: 'DLList: A Doubly-Linked List'
+  dllist:
+    label: Doubly-Linked List (DLList)
+    sections:
+    - id: ch03_dllist_a_doubly_linked_list
+      title: 'DLList: A Doubly-Linked List'
+  dummy_node:
+    label: Dummy Node
+    sections:
+    - id: ch03_dllist_a_doubly_linked_list
+      title: 'DLList: A Doubly-Linked List'
+  get_node_search:
+    label: Bidirectional Node Search (get_node)
+    sections:
+    - id: ch03_dllist_a_doubly_linked_list
+      title: 'DLList: A Doubly-Linked List'
+  dllist_list_operations:
+    label: DLList List Interface Operations
+    sections:
+    - id: ch03_dllist_a_doubly_linked_list
+      title: 'DLList: A Doubly-Linked List'
+  bdeque:
+    label: Bounded Deque (BDeque)
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  selist:
+    label: Space-Efficient List (SEList)
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  selist_space_analysis:
+    label: SEList Space Requirements
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  selist_get_location:
+    label: SEList Element Location (get_location)
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  selist_add_remove:
+    label: SEList Addition and Removal
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  spread_gather:
+    label: Spread and Gather Operations
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  amortized_analysis_potential_method:
+    label: Amortized Analysis via the Potential Method
+    sections:
+    - id: ch03_selist_a_space_efficient_linked_list
+      title: 'SEList: A Space-Efficient Linked List'
+  xor_list:
+    label: XOR-List
+    sections:
+    - id: ch03_discussion_and_exercises
+      title: Discussion and Exercises

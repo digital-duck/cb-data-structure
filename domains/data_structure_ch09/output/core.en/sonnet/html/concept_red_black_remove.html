@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Remove | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-remove">Red Black Remove</h2>
+<p><strong>Definition.</strong> A <em>red-black tree</em> is a binary search tree in which every node carries a colour attribute $c \in \{\text{RED}, \text{BLACK}\}$ and the following invariants hold: (I) the root is BLACK; (II) every RED node has two BLACK children; (III) every root-to-null path contains the same number of BLACK nodes, called the <em>black-height</em> $\text{bh}(T)$. The <strong>red-black remove</strong> operation deletes a key $k$ while restoring all four invariants through a bounded sequence of recolouring steps and rotations.</p>
+<p><strong>Procedure.</strong> Deletion proceeds in two phases.</p>
+<p><em>Phase 1 — BST splice.</em> Locate the node $u$ holding key $k$. If $u$ has two non-null children, replace $k$ with its in-order successor $v$ (the minimum of the right subtree) and redirect deletion to $v$, which has at most one non-null child. Let $x$ be the child that replaces the spliced node (possibly a sentinel null, conceptually coloured BLACK).</p>
+<p><em>Phase 2 — Fixup.</em> If the removed node was RED, no invariant is violated and the procedure terminates. If it was BLACK, the path through $x$ loses one black unit, creating a <em>double-black</em> deficit. The fixup loop propagates or resolves this deficit via four cases keyed on the colour of $x$'s sibling $s$:</p>
+<p>| Case | Condition | Action | |------|-----------|--------| | 1 | $s$ is RED | Rotate parent toward $x$; recolour — transforms to case 2, 3, or 4 | | 2 | $s$ is BLACK, both children of $s$ BLACK | Recolour $s$ RED; push deficit to parent | | 3 | $s$ is BLACK, $s$'s far child BLACK, near child RED | Rotate $s$ away from $x$; recolour — transforms to case 4 | | 4 | $s$ is BLACK, $s$'s far child RED | Rotate parent toward $x$; recolour far child and parent BLACK |</p>
+<p>Each iteration either terminates (cases 1→4, 3→4, case 4) or moves the deficit one level up (case 2), so the loop executes $O(\log n)$ times.</p>
+<p><strong>Key Theorem.</strong> Red-black remove runs in $O(\log n)$ time and performs at most three rotations.</p>
+<p><em>Proof sketch.</em> The BST splice is $O(\log n)$ by tree height. The fixup loop ascends at most $O(\log n)$ levels. Cases 1 and 3 each trigger exactly one rotation before reaching a terminal case; case 4 is always terminal with one rotation. Hence total rotations $\leq 3$. $\blacksquare$</p>
+<p><strong>Worked Example.</strong> Delete $15$ from the tree with keys $\{10, 15, 20\}$ where $15$ is the BLACK root, $10$ and $20$ are RED leaves. The in-order successor of $15$ is $20$; splice replaces $15$ with $20$ and removes $20$'s original node (RED) — no fixup required. The resulting tree has BLACK root $20$ and RED left child $10$, satisfying all invariants.</p>
+<pre><code># Lab cell — verify invariants after deletion with SymPy-adjacent logic
+from sympy import symbols, Rational
+
+def black_height(node, bh=0):
+    """Return black-height of a sentinel-terminated path (recursive)."""
+    if node is None:
+        return bh
+    new_bh = bh + (1 if node['color'] == 'BLACK' else 0)
+    left  = black_height(node.get('left'),  new_bh)
+    right = black_height(node.get('right'), new_bh)
+    assert left == right, f"Black-height violation: {left} vs {right}"
+    return left
+
+root = {'key': 20, 'color': 'BLACK',
+        'left': {'key': 10, 'color': 'RED', 'left': None, 'right': None},
+        'right': None}
+print("Black-height:", black_height(root))  # Expected: 1</code></pre>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

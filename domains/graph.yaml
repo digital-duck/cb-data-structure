@@ -1,0 +1,1482 @@
+# Book-level super-graph — AUTO-GENERATED, do not edit by hand.
+# Run:  python scripts/build_super_graph.py
+#
+# Merges all chapter graphs; each node carries source_domain (canonical
+# definition) and optionally also_in (other chapters that reuse it).
+# Cross-domain primitives (concepts in an earlier chapter re-declared as
+# primitives in a later one) appear here with their full composed_of chain.
+# This file is never used for SPL generation — it exists for validation
+# and future book-level graph visualisation.
+domain: data_structure
+chapters:
+- data_structure_ch02
+- data_structure_ch03
+- data_structure_ch04
+- data_structure_ch05
+- data_structure_ch06
+- data_structure_ch07
+- data_structure_ch08
+- data_structure_ch09
+- data_structure_ch10
+- data_structure_ch11
+- data_structure_ch12
+- data_structure_ch13
+- data_structure_ch14
+primitives:
+  backing_array:
+    defines: A fixed-size array used internally to store list elements, larger than
+      strictly necessary so an integer n tracks the actual count.
+    tier: 0
+    source_domain: data_structure_ch02
+  list_interface:
+    defines: An abstract interface supporting get(i), set(i,x), add(i,x), and remove(i)
+      operations on a sequence of elements.
+    tier: 0
+    source_domain: data_structure_ch02
+  amortized_analysis:
+    defines: A technique for analyzing the total cost of a sequence of operations
+      rather than the worst-case cost of each individual operation.
+    tier: 0
+    source_domain: data_structure_ch02
+    also_in:
+    - data_structure_ch08
+  modular_arithmetic:
+    defines: Arithmetic performed with remainders (mod), used to treat an array as
+      circular so indices wrap around.
+    tier: 0
+    source_domain: data_structure_ch02
+  node:
+    defines: A basic unit storing a data value and one or more references to other
+      nodes, used to build linked data structures.
+    tier: 0
+    source_domain: data_structure_ch03
+  pointer_reference:
+    defines: A value stored in a node that refers to another node, allowing nodes
+      to be linked together into a sequence.
+    tier: 0
+    source_domain: data_structure_ch03
+  bdeque:
+    defines: A fixed-capacity array-based deque, derived from ArrayDeque, that supports
+      constant-time addition or removal at either end and is used to implement blocks
+      within an SEList.
+    tier: 0
+    source_domain: data_structure_ch03
+  amortized_analysis_potential_method:
+    defines: A technique for bounding the total cost of expensive but infrequent operations
+      by tracking a potential function over a sequence of operations.
+    tier: 0
+    source_domain: data_structure_ch03
+  coin_toss_randomization:
+    defines: A random binary choice (heads/tails) used to make probabilistic decisions
+      in a data structure, with performance analyzed via expectation over these tosses.
+    tier: 0
+    source_domain: data_structure_ch04
+  pseudo_random_generator:
+    defines: A mechanism (e.g., random.getrandbits) used in an implementation to simulate
+      coin tosses for determining node heights.
+    tier: 0
+    source_domain: data_structure_ch04
+  sentinel_node:
+    defines: A special dummy node at the head of every list in a skiplist that anchors
+      the start of all search paths.
+    tier: 0
+    source_domain: data_structure_ch04
+  singly_linked_list_hierarchy:
+    defines: A skiplist is conceptually a sequence of singly-linked lists L0,...,Lh
+      where each list is a random subset of the one below it.
+    tier: 0
+    source_domain: data_structure_ch04
+  hash_table:
+    defines: A data structure for storing a small number n of items from a large key
+      range U, mapping keys to a small number of table locations via a hash function.
+    tier: 0
+    source_domain: data_structure_ch05
+    also_in:
+    - data_structure_ch13
+  hash_function:
+    defines: A function hash(x) mapping a key x to an integer in {0,...,length(t)-1}
+      indicating where x should be stored in the hash table.
+    tier: 0
+    source_domain: data_structure_ch05
+  hash_code:
+    defines: A w-bit integer derived from a non-integer data item so that it can be
+      used as a key in a hash table, satisfying equal objects have equal codes and
+      unequal objects rarely collide.
+    tier: 0
+    source_domain: data_structure_ch05
+  binary_tree:
+    defines: A rooted tree in which each node has at most two children, referred to
+      as the left child and right child, with external nodes filling any missing child
+      positions.
+    tier: 0
+    source_domain: data_structure_ch06
+    also_in:
+    - data_structure_ch10
+  node_representation:
+    defines: A binary tree node is represented by storing references to its left child,
+      right child, and parent, using nil for any neighbour that is not present.
+    tier: 0
+    source_domain: data_structure_ch06
+  total_order:
+    defines: An ordering relation over data values (such as numbers) that allows any
+      two values to be compared, used as the basis for storing comparable data in
+      a binary search tree.
+    tier: 0
+    source_domain: data_structure_ch06
+  random_permutation:
+    defines: An ordering of n elements chosen so that each of the n! possible orderings
+      is equally likely.
+    tier: 0
+    source_domain: data_structure_ch07
+  harmonic_number:
+    defines: The k-th harmonic number Hk is the sum 1 + 1/2 + 1/3 + ... + 1/k, closely
+      approximated by ln k.
+    tier: 0
+    source_domain: data_structure_ch07
+  rotation:
+    defines: A local modification to a binary search tree that swaps the parent-child
+      relationship between two nodes while preserving the binary search tree property.
+    tier: 0
+    source_domain: data_structure_ch07
+  heap_property:
+    defines: A structural condition on a tree requiring that every node's priority
+      be smaller than the priorities of its children.
+    tier: 0
+    source_domain: data_structure_ch07
+  sset_interface:
+    defines: An abstract interface requiring add(x), remove(x), and find(x) operations
+      on a set of comparable elements.
+    tier: 0
+    source_domain: data_structure_ch07
+    also_in:
+    - data_structure_ch13
+  subtree_size:
+    defines: The number of nodes contained in the subtree rooted at a given node,
+      used to evaluate balance conditions.
+    tier: 0
+    source_domain: data_structure_ch08
+  rooted_tree:
+    defines: A tree data structure with a distinguished root node from which all other
+      nodes descend.
+    tier: 0
+    source_domain: data_structure_ch09
+  amortized_potential_method:
+    defines: A technique assigning a potential function to a data structure's state
+      to bound the total cost of a sequence of operations, used to show O(m) total
+      fixup work over m red-black tree updates.
+    tier: 0
+    source_domain: data_structure_ch09
+  priority_queue:
+    defines: An abstract data type supporting add(x) and remove() operations, where
+      remove() returns the smallest stored value.
+    tier: 0
+    source_domain: data_structure_ch10
+  complete_binary_tree:
+    defines: A binary tree in which every level is completely filled except possibly
+      the last, which is filled from left to right.
+    tier: 0
+    source_domain: data_structure_ch10
+  heap_order_property:
+    defines: A property of a binary tree in which the value stored at any node is
+      not smaller than the value stored at its parent, except at the root.
+    tier: 0
+    source_domain: data_structure_ch10
+  array_resizing_amortization:
+    defines: The technique of growing or shrinking an underlying array so that the
+      total cost of resizing over a sequence of operations is accounted for as O(m)
+      amortized time.
+    tier: 0
+    source_domain: data_structure_ch10
+  randomization_coin_toss:
+    defines: The use of a random bit at each step of merge to decide whether to descend
+      into the left or right subtree, avoiding the need for balance information.
+    tier: 0
+    source_domain: data_structure_ch10
+  compare_operation:
+    defines: A primitive compare(a,b) method that returns negative, positive, or zero
+      depending on whether a < b, a > b, or a = b.
+    tier: 0
+    source_domain: data_structure_ch11
+  divide_and_conquer:
+    defines: An algorithmic strategy that splits a problem into smaller subproblems,
+      solves them recursively, and combines their solutions.
+    tier: 0
+    source_domain: data_structure_ch11
+  graph:
+    defines: A structure G = (V, E) consisting of a set of vertices V and a set of
+      directed edges E between them.
+    tier: 0
+    source_domain: data_structure_ch12
+  vertex_degree:
+    defines: The number of edges in E that have a given vertex i as their source,
+      denoted deg(i).
+    tier: 0
+    source_domain: data_structure_ch12
+  queue:
+    defines: A first-in-first-out collection used to order the vertices to be visited
+      during traversal.
+    tier: 0
+    source_domain: data_structure_ch12
+  stack:
+    defines: A last-in-first-out collection used as an alternative to recursion for
+      controlling traversal order.
+    tier: 0
+    source_domain: data_structure_ch12
+  bit_representation:
+    defines: A w-bit integer can be represented as a fixed-length binary string, allowing
+      its value to be encoded as a sequence of bits.
+    tier: 0
+    source_domain: data_structure_ch13
+  external_memory_model:
+    defines: A model of computation that counts only the number of block accesses
+      (reads/writes) to external memory devices, ignoring in-memory instruction cost.
+    tier: 0
+    source_domain: data_structure_ch14
+  block_store:
+    defines: An abstraction of an external memory device that stores fixed-size blocks
+      of B bytes, each identified by an integer index, supporting read_block, write_block,
+      place_block, and free_block operations.
+    tier: 0
+    source_domain: data_structure_ch14
+  two_four_tree:
+    defines: A balanced search tree that is the special case of a B-tree obtained
+      by setting B = 2.
+    tier: 0
+    source_domain: data_structure_ch14
+concepts:
+  potential_method:
+    defines: An amortized analysis technique that defines a potential function over
+      the data structure's state to bound the total cost of rebalancing operations.
+    composed_of:
+    - amortized_analysis
+    tier: 1
+    source_domain: data_structure_ch02
+  resize_operation:
+    defines: An operation that allocates a new backing array of double (or appropriate)
+      size and copies existing elements into it when the array becomes full or too
+      empty.
+    composed_of:
+    - backing_array
+    - amortized_analysis
+    tier: 1
+    source_domain: data_structure_ch02
+  circular_array:
+    defines: A technique simulating an infinite array with a finite one by using modular
+      arithmetic so indices wrap around to the beginning.
+    composed_of:
+    - backing_array
+    - modular_arithmetic
+    tier: 1
+    source_domain: data_structure_ch02
+  rootish_array_stack:
+    defines: A space-efficient List implementation that stores n elements across O(√n)
+      blocks (arrays) of increasing size, wasting only O(√n) space.
+    composed_of:
+    - list_interface
+    - backing_array
+    tier: 1
+    source_domain: data_structure_ch02
+  array_stack:
+    defines: A List implementation using a single backing array, supporting get/set
+      in O(1) and add/remove in O(1+n-i) amortized time via resizing.
+    composed_of:
+    - list_interface
+    - backing_array
+    - resize_operation
+    tier: 2
+    source_domain: data_structure_ch02
+  array_queue:
+    defines: A FIFO queue implementation using a circular backing array, with add(x)
+      and remove() running in O(1) amortized time.
+    composed_of:
+    - circular_array
+    - list_interface
+    - resize_operation
+    tier: 2
+    source_domain: data_structure_ch02
+  array_deque:
+    defines: A List implementation using a circular array that supports efficient
+      addition and removal at both ends, with add/remove in O(1+min{i,n-i}) time.
+    composed_of:
+    - circular_array
+    - list_interface
+    - resize_operation
+    tier: 2
+    source_domain: data_structure_ch02
+  block_index_computation:
+    defines: A method for computing which block and offset within that block correspond
+      to a given list index i in a RootishArrayStack, using a quadratic formula.
+    composed_of:
+    - rootish_array_stack
+    tier: 2
+    source_domain: data_structure_ch02
+  grow_shrink_operation:
+    defines: Operations on a RootishArrayStack that add or remove a block from the
+      list of blocks without copying existing data, unlike resize().
+    composed_of:
+    - rootish_array_stack
+    - amortized_analysis
+    tier: 2
+    source_domain: data_structure_ch02
+  dual_array_deque:
+    defines: A deque implementation built from two back-to-back ArrayStacks (front
+      and back) that achieves the same asymptotic performance as ArrayDeque.
+    composed_of:
+    - array_stack
+    - list_interface
+    tier: 3
+    source_domain: data_structure_ch02
+  wasted_space_analysis:
+    defines: An analysis showing that a RootishArrayStack storing n elements wastes
+      only O(√n) space, and that this is asymptotically optimal for structures built
+      one item at a time.
+    composed_of:
+    - rootish_array_stack
+    - block_index_computation
+    - grow_shrink_operation
+    tier: 3
+    source_domain: data_structure_ch02
+  balance_operation:
+    defines: A rebalancing operation on a DualArrayDeque that redistributes elements
+      between the front and back ArrayStacks so neither becomes too large or too small.
+    composed_of:
+    - dual_array_deque
+    - potential_method
+    tier: 4
+    source_domain: data_structure_ch02
+  sllist:
+    defines: A sequence of nodes where each node stores a data value and a reference
+      to the next node, with head and tail references tracking the ends of the sequence.
+    composed_of:
+    - node
+    - pointer_reference
+    tier: 1
+    source_domain: data_structure_ch03
+  dllist:
+    defines: A linked list in which each node has references to both the next and
+      previous nodes, enabling traversal in either direction.
+    composed_of:
+    - node
+    - pointer_reference
+    tier: 1
+    source_domain: data_structure_ch03
+  dummy_node:
+    defines: A placeholder node with no data that links the ends of a doubly-linked
+      list into a cycle, eliminating special cases for empty lists or boundary operations.
+    composed_of:
+    - dllist
+    tier: 2
+    source_domain: data_structure_ch03
+  get_node_search:
+    defines: A technique for locating the ith node in a DLList by searching forward
+      from the head or backward from the tail, whichever is closer.
+    composed_of:
+    - dllist
+    tier: 2
+    source_domain: data_structure_ch03
+  selist:
+    defines: A doubly-linked list of fixed-capacity blocks that reduces the per-element
+      overhead of pointer-based lists while retaining efficient insertion and removal.
+    composed_of:
+    - dllist
+    - bdeque
+    tier: 2
+    source_domain: data_structure_ch03
+  selist_space_analysis:
+    defines: An analysis showing that an SEList with block size b wastes only O(b
+      + n/b) space, minimized by choosing b close to sqrt(n).
+    composed_of:
+    - selist
+    tier: 3
+    source_domain: data_structure_ch03
+  selist_get_location:
+    defines: A method for locating the block and within-block index of the ith element
+      by traversing blocks from the front or back.
+    composed_of:
+    - selist
+    - get_node_search
+    tier: 3
+    source_domain: data_structure_ch03
+  selist_add_remove:
+    defines: Procedures for adding or removing elements in an SEList by shifting elements
+      between neighboring blocks or triggering spread/gather when blocks are full
+      or underfull.
+    composed_of:
+    - selist_get_location
+    - bdeque
+    tier: 4
+    source_domain: data_structure_ch03
+  spread_gather:
+    defines: Methods that rebalance a run of b full or underfull blocks into evenly
+      filled blocks, each costing O(b^2) time but occurring rarely.
+    composed_of:
+    - selist_add_remove
+    - amortized_analysis_potential_method
+    tier: 5
+    source_domain: data_structure_ch03
+  node_height:
+    defines: For an element x in a skiplist, the largest index r such that x appears
+      in list Lr, determined by repeated coin tosses.
+    composed_of:
+    - coin_toss_randomization
+    tier: 1
+    source_domain: data_structure_ch04
+  skiplist:
+    defines: A randomized data structure built from a hierarchy of linked lists that
+      supports efficient search, insertion, and deletion via short search paths.
+    composed_of:
+    - singly_linked_list_hierarchy
+    - sentinel_node
+    - node_height
+    tier: 2
+    source_domain: data_structure_ch04
+  pick_height_procedure:
+    defines: An algorithm that determines the height of a newly inserted node by counting
+      trailing 1-bits of a random integer, simulating coin tosses.
+    composed_of:
+    - pseudo_random_generator
+    - coin_toss_randomization
+    - node_height
+    tier: 2
+    source_domain: data_structure_ch04
+  search_path:
+    defines: The short path from the sentinel in the top list Lh down to a target
+      node in L0, formed by moving right until overshooting then stepping down.
+    composed_of:
+    - skiplist
+    - sentinel_node
+    tier: 3
+    source_domain: data_structure_ch04
+  edge_length:
+    defines: For an edge in list Lr, the number of edges in L0 that lie below it,
+      used to track position while navigating a skiplist by index.
+    composed_of:
+    - skiplist
+    tier: 3
+    source_domain: data_structure_ch04
+  expected_height_analysis:
+    defines: A probabilistic analysis showing the expected height of a skiplist with
+      n elements is at most log n + 2, derived using indicator variables over coin
+      tosses.
+    composed_of:
+    - skiplist
+    - node_height
+    - coin_toss_randomization
+    tier: 3
+    source_domain: data_structure_ch04
+  expected_size_analysis:
+    defines: A probabilistic analysis showing the expected number of nodes in a skiplist
+      with n elements is 2n (plus O(log n) for sentinels).
+    composed_of:
+    - skiplist
+    - node_height
+    tier: 3
+    source_domain: data_structure_ch04
+  expected_search_path_length:
+    defines: A probabilistic analysis showing the expected length of a search path
+      in a skiplist with n elements is at most 2 log n + O(1).
+    composed_of:
+    - search_path
+    - expected_height_analysis
+    tier: 4
+    source_domain: data_structure_ch04
+    also_in:
+    - data_structure_ch07
+  load_factor_invariant:
+    defines: The maintained relationship between the number of stored items n and
+      the table length that bounds expected list/probe lengths and triggers resizing.
+    composed_of:
+    - hash_table
+    tier: 1
+    source_domain: data_structure_ch05
+  multiplicative_hashing:
+    defines: A hash function hash(x) = ((z*x) mod 2^w) div 2^(w-d) using a random
+      odd multiplier z, which provably bounds collision probability.
+    composed_of:
+    - hash_function
+    tier: 1
+    source_domain: data_structure_ch05
+  open_addressing:
+    defines: A hash table strategy that stores elements directly in array slots, resolving
+      collisions by probing alternative locations.
+    composed_of:
+    - hash_table
+    - hash_function
+    tier: 1
+    source_domain: data_structure_ch05
+  tabulation_hashing:
+    defines: A hash function construction that splits a key's bits into small chunks
+      used as indices into precomputed random tables, combined with XOR.
+    composed_of:
+    - hash_function
+    tier: 1
+    source_domain: data_structure_ch05
+  polynomial_hashing:
+    defines: A hash code method for variable-length sequences that evaluates a polynomial
+      with sequence elements as coefficients modulo a prime.
+    composed_of:
+    - hash_code
+    tier: 1
+    source_domain: data_structure_ch05
+  amortized_resizing:
+    defines: Doubling/shrinking the underlying array and rehashing all elements when
+      the load factor invariant is violated, with amortized O(m) total cost.
+    composed_of:
+    - load_factor_invariant
+    tier: 2
+    source_domain: data_structure_ch05
+  chained_hash_table:
+    defines: A hash table implementation storing an array of lists, where items with
+      the same hash value are appended to the list at that index.
+    composed_of:
+    - hash_table
+    - hash_function
+    - load_factor_invariant
+    tier: 2
+    source_domain: data_structure_ch05
+  linear_hash_table:
+    defines: An open-addressing hash table that resolves collisions by scanning subsequent
+      array slots until finding a nil, del, or matching entry.
+    composed_of:
+    - open_addressing
+    - load_factor_invariant
+    tier: 2
+    source_domain: data_structure_ch05
+  compound_object_hashing:
+    defines: A method for combining hash codes of an object's fixed set of parts into
+      a single hash code using randomized coefficients and multiplicative hashing.
+    composed_of:
+    - hash_code
+    - multiplicative_hashing
+    tier: 2
+    source_domain: data_structure_ch05
+  node_depth:
+    defines: The depth of a node u is the number of steps on the path from u to the
+      root, computed by following parent pointers until reaching the root.
+    composed_of:
+    - binary_tree
+    - node_representation
+    tier: 1
+    source_domain: data_structure_ch06
+  tree_size:
+    defines: The number of nodes in a binary tree rooted at u, computed recursively
+      as one plus the sizes of its left and right subtrees.
+    composed_of:
+    - binary_tree
+    tier: 1
+    source_domain: data_structure_ch06
+  tree_height:
+    defines: The height of a node u is one plus the maximum of the heights of its
+      left and right subtrees, representing the length of the longest root-to-leaf
+      path.
+    composed_of:
+    - binary_tree
+    tier: 1
+    source_domain: data_structure_ch06
+    also_in:
+    - data_structure_ch08
+    - data_structure_ch09
+  recursive_tree_traversal:
+    defines: A traversal that visits all nodes of a binary tree by recursively traversing
+      the left subtree, then the right subtree, using simple but stack-space-limited
+      recursive calls.
+    composed_of:
+    - binary_tree
+    tier: 1
+    source_domain: data_structure_ch06
+  nonrecursive_tree_traversal:
+    defines: A traversal that visits all nodes of a binary tree without recursion
+      by using parent pointers and tracking the previously visited node to determine
+      the next node to visit.
+    composed_of:
+    - binary_tree
+    - node_representation
+    tier: 1
+    source_domain: data_structure_ch06
+  breadth_first_traversal:
+    defines: A traversal that visits the nodes of a binary tree level-by-level from
+      top to bottom and left to right within each level, implemented using a queue.
+    composed_of:
+    - binary_tree
+    tier: 1
+    source_domain: data_structure_ch06
+  binary_search_tree:
+    defines: A binary tree in which each node stores a data value from a total order,
+      satisfying the property that every value in a node's left subtree is smaller
+      and every value in its right subtree is larger than the node's value.
+    composed_of:
+    - binary_tree
+    - total_order
+    tier: 1
+    source_domain: data_structure_ch06
+    also_in:
+    - data_structure_ch07
+    - data_structure_ch08
+    - data_structure_ch09
+    - data_structure_ch14
+  pre_in_post_order_traversal:
+    defines: Traversal orders that visit a node before its children (pre-order), between
+      its left and right subtrees (in-order), or after all its subtree nodes (post-order),
+      used to number the nodes of a tree.
+    composed_of:
+    - recursive_tree_traversal
+    tier: 2
+    source_domain: data_structure_ch06
+  bst_search:
+    defines: The operation of locating a value x in a binary search tree by comparing
+      x to the current node and moving left or right accordingly, starting at the
+      root.
+    composed_of:
+    - binary_search_tree
+    tier: 2
+    source_domain: data_structure_ch06
+  bst_addition:
+    defines: The operation of inserting a new value into a binary search tree by searching
+      for it and attaching it as a leaf child of the last node encountered during
+      the search.
+    composed_of:
+    - bst_search
+    tier: 3
+    source_domain: data_structure_ch06
+  bst_removal:
+    defines: The operation of deleting a value from a binary search tree, splicing
+      out nodes with at most one child directly, or replacing a two-child node's value
+      with the smallest value in its right subtree before splicing that node out.
+    composed_of:
+    - bst_search
+    tier: 3
+    source_domain: data_structure_ch06
+  random_binary_search_tree:
+    defines: A binary search tree built by inserting a random permutation of n elements
+      one at a time, resulting in expected logarithmic height.
+    composed_of:
+    - binary_search_tree
+    - random_permutation
+    tier: 1
+    source_domain: data_structure_ch07
+  treap:
+    defines: A binary search tree in which each node also has a randomly assigned
+      priority, and the tree simultaneously satisfies the binary search tree property
+      on keys and the heap property on priorities, making its shape equivalent to
+      a random binary search tree.
+    composed_of:
+    - binary_search_tree
+    - heap_property
+    - sset_interface
+    - random_binary_search_tree
+    tier: 2
+    source_domain: data_structure_ch07
+    also_in:
+    - data_structure_ch13
+  treap_add:
+    defines: Inserting a new node as a leaf with a random priority, then using rotations
+      (bubble up) to restore the heap property in expected O(log n) time.
+    composed_of:
+    - treap
+    - rotation
+    tier: 3
+    source_domain: data_structure_ch07
+  treap_remove:
+    defines: Locating the node containing x, using rotations (trickle down) to move
+      it to a leaf position, then splicing it out, in expected O(log n) time, reversing
+      the add(x) process.
+    composed_of:
+    - treap
+    - rotation
+    - treap_add
+    tier: 4
+    source_domain: data_structure_ch07
+  scapegoat_tree:
+    defines: A BinarySearchTree that maintains a node counter n and an upper-bound
+      counter q, guaranteeing logarithmic height through partial rebuilding rather
+      than rotations.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+    source_domain: data_structure_ch08
+  height_bound_invariant:
+    defines: The condition that a ScapegoatTree's height never exceeds log base 3/2
+      of q, ensuring O(log n) search time.
+    composed_of:
+    - scapegoat_tree
+    - tree_height
+    tier: 2
+    source_domain: data_structure_ch08
+  rebuild_operation:
+    defines: An operation that destroys the subtree rooted at u and reconstructs it
+      as a perfectly balanced binary search tree in O(size(u)) time using build_balanced.
+    composed_of:
+    - scapegoat_tree
+    - subtree_size
+    tier: 2
+    source_domain: data_structure_ch08
+  scapegoat_node:
+    defines: An unbalanced ancestor w of a newly inserted deep node u, satisfying
+      size(w.child)/size(w) > 2/3, whose subtree is rebuilt to restore the height
+      bound.
+    composed_of:
+    - subtree_size
+    - height_bound_invariant
+    tier: 3
+    source_domain: data_structure_ch08
+  scapegoat_existence_lemma:
+    defines: A proof (Lemma 8.1) showing that whenever a node's depth exceeds log_3/2(q),
+      a valid scapegoat node must exist on the path to the root.
+    composed_of:
+    - scapegoat_node
+    - height_bound_invariant
+    tier: 4
+    source_domain: data_structure_ch08
+  scapegoat_add:
+    defines: The insertion operation that adds a node via standard BST insertion,
+      then finds and rebuilds a scapegoat if the new node's depth exceeds log_3/2(q).
+    composed_of:
+    - scapegoat_existence_lemma
+    - rebuild_operation
+    tier: 5
+    source_domain: data_structure_ch08
+  scapegoat_remove:
+    defines: The deletion operation that removes a node via standard BST deletion,
+      decrements n, and rebuilds the entire tree if q exceeds 2n.
+    composed_of:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  credit_scheme:
+    defines: An amortized analysis technique that assigns credits to nodes during
+      insertions and deletions to pay for the cost of future rebuild(u) calls, bounding
+      total rebuilding cost at O(m log m) over m operations.
+    composed_of:
+    - amortized_analysis
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  2_4_tree:
+    defines: A rooted tree in which all leaves have the same depth and every internal
+      node has 2, 3, or 4 children, giving logarithmic height.
+    composed_of:
+    - rooted_tree
+    - tree_height
+    tier: 1
+    source_domain: data_structure_ch09
+  2_4_tree_add_leaf:
+    defines: Inserting a leaf under a node on the second-last level and recursively
+      splitting overfull nodes (more than 4 children) up toward the root to restore
+      the degree property.
+    composed_of:
+    - 2_4_tree
+    tier: 2
+    source_domain: data_structure_ch09
+  2_4_tree_remove_leaf:
+    defines: Deleting a leaf and recursively borrowing from or merging with a sibling
+      to restore the degree property when a node is left with too few children.
+    composed_of:
+    - 2_4_tree
+    tier: 2
+    source_domain: data_structure_ch09
+  red_black_tree:
+    defines: A binary search tree in which each node is coloured red or black, satisfying
+      the black-height and no-red-edge properties, used to efficiently simulate a
+      2-4 tree.
+    composed_of:
+    - binary_search_tree
+    - black_height_property
+    - no_red_edge_property
+    tier: 1
+    source_domain: data_structure_ch09
+  black_height_property:
+    defines: The property that every root-to-leaf path in a red-black tree contains
+      the same number of black nodes.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+    source_domain: data_structure_ch09
+  no_red_edge_property:
+    defines: The property that no two red nodes are adjacent in a red-black tree.
+    composed_of:
+    - binary_search_tree
+    tier: 1
+    source_domain: data_structure_ch09
+  left_leaning_property:
+    defines: The additional red-black tree property that if a node's left child is
+      black, its right child must also be black, ensuring a unique correspondence
+      to 2-4 trees.
+    composed_of:
+    - red_black_tree
+    tier: 2
+    source_domain: data_structure_ch09
+  red_black_2_4_correspondence:
+    defines: The transformation that removes red nodes and merges them into their
+      black parents, showing every red-black tree corresponds to a 2-4 tree and bounding
+      red-black tree height at 2logn.
+    composed_of:
+    - red_black_tree
+    - left_leaning_property
+    - 2_4_tree
+    tier: 3
+    source_domain: data_structure_ch09
+  colour_flip_push_pull:
+    defines: The subroutines push_black, pull_black, flip_left, and flip_right that
+      manipulate node colours and perform rotations while preserving the black-height
+      property.
+    composed_of:
+    - red_black_tree
+    - black_height_property
+    tier: 2
+    source_domain: data_structure_ch09
+  red_black_add:
+    defines: Inserting a new red leaf via standard binary search tree insertion, then
+      restoring the left-leaning and no-red-edge properties with add_fixup, simulating
+      a 2-4 tree split.
+    composed_of:
+    - red_black_tree
+    - left_leaning_property
+    - colour_flip_push_pull
+    - 2_4_tree_add_leaf
+    tier: 3
+    source_domain: data_structure_ch09
+  red_black_remove:
+    defines: Splicing out a node with at most one child and resolving the resulting
+      double-black colour with remove_fixup, simulating 2-4 tree merging and borrowing.
+    composed_of:
+    - red_black_tree
+    - colour_flip_push_pull
+    - 2_4_tree_remove_leaf
+    tier: 3
+    source_domain: data_structure_ch09
+  eytzinger_method:
+    defines: A technique for representing a complete binary tree implicitly as an
+      array by laying out nodes in breadth-first order, so a node at index i has children
+      at 2i+1 and 2i+2 and parent at (i-1) div 2.
+    composed_of:
+    - complete_binary_tree
+    tier: 1
+    source_domain: data_structure_ch10
+  merge_operation:
+    defines: A recursive operation that combines two heap-ordered binary trees into
+      one, using a random coin toss to decide which child to recurse into.
+    composed_of:
+    - binary_tree
+    - heap_order_property
+    - randomization_coin_toss
+    tier: 1
+    source_domain: data_structure_ch10
+  random_walk_in_binary_tree:
+    defines: A process starting at the root of a binary tree that, at each step, moves
+      to the left or right child based on a coin toss until it falls off the tree,
+      used to analyze merge's running time.
+    composed_of:
+    - binary_tree
+    - randomization_coin_toss
+    tier: 1
+    source_domain: data_structure_ch10
+  binary_heap:
+    defines: A priority Queue implementation that uses Eytzinger's method to implicitly
+      represent a complete, heap-ordered binary tree as an array.
+    composed_of:
+    - priority_queue
+    - eytzinger_method
+    - heap_order_property
+    - array_resizing_amortization
+    tier: 2
+    source_domain: data_structure_ch10
+    also_in:
+    - data_structure_ch11
+  meldable_heap:
+    defines: A priority Queue implementation based on a heap-ordered binary tree of
+      unrestricted shape, whose add and remove operations are implemented via a merge
+      operation.
+    composed_of:
+    - priority_queue
+    - binary_tree
+    - heap_order_property
+    - merge_operation
+    tier: 2
+    source_domain: data_structure_ch10
+  bubble_up:
+    defines: The operation of restoring the heap-order property after adding an element
+      by repeatedly swapping it with its parent until it is no longer smaller than
+      its parent.
+    composed_of:
+    - binary_heap
+    - heap_order_property
+    tier: 3
+    source_domain: data_structure_ch10
+  trickle_down:
+    defines: The operation of restoring the heap-order property after removing the
+      root by moving the replacement element downward, swapping it with its smallest
+      child, until the property holds.
+    composed_of:
+    - binary_heap
+    - heap_order_property
+    tier: 3
+    source_domain: data_structure_ch10
+  comparison_based_sorting:
+    defines: A class of sorting algorithms that only compare pairs of elements using
+      compare(a,b) to determine their order, without inspecting the elements' internal
+      representation.
+    composed_of:
+    - compare_operation
+    tier: 1
+    source_domain: data_structure_ch11
+  merging:
+    defines: The process of combining two already-sorted arrays into a single sorted
+      array by repeatedly selecting the smaller of the two next elements.
+    composed_of:
+    - compare_operation
+    tier: 1
+    source_domain: data_structure_ch11
+  pivot_partitioning:
+    defines: An in-place technique that rearranges an array around a chosen pivot
+      element x so that elements less than x, equal to x, and greater than x form
+      contiguous blocks.
+    composed_of:
+    - compare_operation
+    tier: 1
+    source_domain: data_structure_ch11
+  bottom_up_heap_construction:
+    defines: An O(n)-time method for converting an unsorted array into a valid binary
+      heap by calling trickle_down on nodes from the last internal node down to the
+      root.
+    composed_of:
+    - binary_heap
+    tier: 1
+    source_domain: data_structure_ch11
+  stable_sorting:
+    defines: A property of a sorting algorithm whereby it preserves the relative order
+      of elements that compare as equal.
+    composed_of:
+    - comparison_based_sorting
+    tier: 2
+    source_domain: data_structure_ch11
+  merge_sort:
+    defines: A comparison-based, divide-and-conquer sorting algorithm that recursively
+      sorts two halves of an array and merges the sorted halves in O(n log n) time
+      using at most n log n comparisons.
+    composed_of:
+    - comparison_based_sorting
+    - divide_and_conquer
+    - merging
+    tier: 2
+    source_domain: data_structure_ch11
+  quicksort:
+    defines: A randomized, in-place, divide-and-conquer sorting algorithm that partitions
+      an array around a randomly chosen pivot and recursively sorts the partitions,
+      running in O(n log n) expected time.
+    composed_of:
+    - comparison_based_sorting
+    - divide_and_conquer
+    - pivot_partitioning
+    tier: 2
+    source_domain: data_structure_ch11
+  heap_sort:
+    defines: An in-place, deterministic sorting algorithm that converts an array into
+      a binary heap and repeatedly extracts the minimum element, running in O(n log
+      n) time with at most 2n log n + O(n) comparisons.
+    composed_of:
+    - comparison_based_sorting
+    - binary_heap
+    - bottom_up_heap_construction
+    tier: 2
+    source_domain: data_structure_ch11
+  comparison_tree:
+    defines: A rooted binary tree model of a comparison-based sorting algorithm's
+      execution, where internal nodes represent comparisons and leaves represent output
+      permutations.
+    composed_of:
+    - comparison_based_sorting
+    tier: 2
+    source_domain: data_structure_ch11
+  comparison_sorting_lower_bound:
+    defines: The theorem that any deterministic or randomized comparison-based sorting
+      algorithm must perform at least log(n!) = n log n − O(n) comparisons in the
+      worst case (or expected case), derived from the fact that a correct comparison
+      tree needs at least n! leaves.
+    composed_of:
+    - comparison_tree
+    tier: 3
+    source_domain: data_structure_ch11
+  non_comparison_sorting:
+    defines: Sorting algorithms specialized for small integers that use element values
+      as array indices rather than pairwise comparisons, allowing them to beat the
+      comparison-based lower bound.
+    composed_of:
+    - comparison_sorting_lower_bound
+    tier: 4
+    source_domain: data_structure_ch11
+  counting_sort:
+    defines: A non-comparison-based, stable sorting algorithm that sorts n integers
+      in the range {0,...,k-1} in O(n+k) time by counting occurrences of each value
+      and using running sums as output positions.
+    composed_of:
+    - non_comparison_sorting
+    - stable_sorting
+    tier: 5
+    source_domain: data_structure_ch11
+  radix_sort:
+    defines: A non-comparison-based sorting algorithm that sorts w-bit integers by
+      applying multiple passes of counting-sort on d-bit digit groups, from least
+      to most significant, running in O((w/d)(n+2^d)) time.
+    composed_of:
+    - counting_sort
+    - non_comparison_sorting
+    tier: 6
+    source_domain: data_structure_ch11
+  adjacency_matrix:
+    defines: A representation of an n-vertex graph as an n x n boolean matrix a, where
+      a[i][j] is true if and only if (i,j) is an edge, giving O(1) edge queries/updates
+      but O(n) time for in_edges/out_edges and O(n^2) space.
+    composed_of:
+    - graph
+    tier: 1
+    source_domain: data_structure_ch12
+  adjacency_list:
+    defines: A vertex-centric representation of a graph as an array adj of lists,
+      where adj[i] contains all vertices j such that (i,j) is an edge, giving O(1)
+      add_edge and O(deg(i)) has_edge/remove_edge, with O(n+m) space.
+    composed_of:
+    - graph
+    - vertex_degree
+    tier: 1
+    source_domain: data_structure_ch12
+  graph_traversal:
+    defines: The general problem of exploring a graph starting from a vertex i to
+      find all vertices reachable from i, best supported by an adjacency list representation.
+    composed_of:
+    - adjacency_list
+    tier: 2
+    source_domain: data_structure_ch12
+  breadth_first_search:
+    defines: A traversal algorithm that visits a start vertex's neighbours, then neighbours-of-neighbours,
+      and so on, using a queue and a seen array, running in O(n+m) time on an AdjacencyLists.
+    composed_of:
+    - graph_traversal
+    - queue
+    tier: 3
+    source_domain: data_structure_ch12
+  depth_first_search:
+    defines: A traversal algorithm that fully explores one branch from a vertex before
+      backtracking, implemented recursively or with an explicit stack and a white/grey/black
+      colouring scheme, running in O(n+m) time on an AdjacencyLists.
+    composed_of:
+    - graph_traversal
+    - stack
+    tier: 3
+    source_domain: data_structure_ch12
+  binary_trie:
+    defines: A binary tree that encodes a set of w-bit integers as root-to-leaf paths,
+      where the path for x turns left or right at each level according to the corresponding
+      bit of x.
+    composed_of:
+    - bit_representation
+    - sset_interface
+    tier: 1
+    source_domain: data_structure_ch13
+  jump_pointers:
+    defines: Auxiliary pointers stored at each trie node that, when a child is missing,
+      point to the smallest or largest leaf in that node's subtree, enabling find(x)
+      to jump past missing branches.
+    composed_of:
+    - binary_trie
+    tier: 2
+    source_domain: data_structure_ch13
+  leaf_linked_list:
+    defines: A doubly-linked list connecting all leaves of a BinaryTrie in sorted
+      order, reusing child pointers, used to find successors/predecessors after a
+      jump.
+    composed_of:
+    - binary_trie
+    tier: 2
+    source_domain: data_structure_ch13
+  level_based_binary_search:
+    defines: A technique for locating the deepest node on an integer's search path
+      by binary searching over levels using per-level hash tables of node labels.
+    composed_of:
+    - binary_trie
+    - hash_table
+    tier: 2
+    source_domain: data_structure_ch13
+  binary_trie_operations:
+    defines: The O(w)-time operations for searching, inserting, and deleting integers
+      in a BinaryTrie by walking the search path and updating jump pointers and the
+      leaf list.
+    composed_of:
+    - binary_trie
+    - jump_pointers
+    - leaf_linked_list
+    tier: 3
+    source_domain: data_structure_ch13
+  xfasttrie:
+    defines: A BinaryTrie augmented with one hash table per level, enabling find(x)
+      in O(log w) expected time while add/remove remain O(w).
+    composed_of:
+    - binary_trie_operations
+    - level_based_binary_search
+    tier: 4
+    source_domain: data_structure_ch13
+  probabilistic_sampling:
+    defines: A technique where each inserted element is included in the XFastTrie
+      sample independently with probability 1/w, controlling the expected size of
+      secondary treaps.
+    composed_of:
+    - xfasttrie
+    tier: 5
+    source_domain: data_structure_ch13
+  b_tree:
+    defines: A generalized search tree in which all leaves have equal depth and every
+      non-root internal node has between B and 2B children, storing keys in sorted
+      arrays to guide searches.
+    composed_of:
+    - external_memory_model
+    - block_store
+    - binary_search_tree
+    tier: 1
+    source_domain: data_structure_ch14
+  find_it_binary_search:
+    defines: A binary search procedure over a node's nil-padded sorted key array that
+      locates a key or the smallest key greater than it in O(log B) time.
+    composed_of:
+    - b_tree
+    tier: 2
+    source_domain: data_structure_ch14
+  b_tree_split:
+    defines: An operation that divides an overfull node containing 2B keys into two
+      nodes, passing the median key up to the parent, used to rebalance a B-tree after
+      insertion.
+    composed_of:
+    - b_tree
+    tier: 2
+    source_domain: data_structure_ch14
+  b_tree_underflow:
+    defines: The condition in which a node has fewer than B-1 keys after a removal,
+      requiring correction via borrowing or merging.
+    composed_of:
+    - b_tree
+    tier: 2
+    source_domain: data_structure_ch14
+  b_tree_find:
+    defines: The operation that searches a B-tree for a value x by using find_it at
+      each node to choose which child to descend into, running in O(log_B n) external
+      memory accesses.
+    composed_of:
+    - b_tree
+    - find_it_binary_search
+    tier: 3
+    source_domain: data_structure_ch14
+  b_tree_borrow_merge:
+    defines: The two techniques for fixing an underflowing node by either taking keys
+      from a sibling with surplus keys (borrowing) or combining it with a sibling
+      and a parent key (merging).
+    composed_of:
+    - b_tree_underflow
+    tier: 3
+    source_domain: data_structure_ch14
+  b_tree_add:
+    defines: A recursive operation that inserts a value into a B-tree leaf and propagates
+      node splits upward to maintain the B-tree's structural invariants.
+    composed_of:
+    - b_tree_split
+    - b_tree_find
+    tier: 4
+    source_domain: data_structure_ch14
+  b_tree_remove:
+    defines: A recursive operation that removes a value from a B-tree leaf (replacing
+      internal keys with a successor when needed) and corrects any resulting underflows
+      via merges and borrows up to the root.
+    composed_of:
+    - b_tree_borrow_merge
+    - b_tree_find
+    tier: 4
+    source_domain: data_structure_ch14
+  amortized_credit_scheme:
+    defines: A proof technique that assigns credits to B-tree nodes to show that the
+      total number of splits, merges, and borrows over a sequence of m operations
+      is O(m).
+    composed_of:
+    - b_tree_split
+    - b_tree_borrow_merge
+    tier: 4
+    source_domain: data_structure_ch14
+  word_ram_vs_external_memory_cost:
+    defines: The distinction between counting every instruction (word-RAM model, giving
+      O(log n) or O(B log n) costs) versus counting only block accesses (external
+      memory model, giving O(log_B n) costs) for B-tree operations.
+    composed_of:
+    - external_memory_model
+    - b_tree_find
+    tier: 4
+    source_domain: data_structure_ch14
+applications:
+  fast_array_stack:
+    defines: An optimized ArrayStack that uses low-level, highly optimized array-copying
+      functions (e.g., System.arraycopy) instead of manual loops for shifting and
+      copying data.
+    needs:
+    - array_stack
+    tier: 3
+    source_domain: data_structure_ch02
+  stack_operations_sllist:
+    defines: Implementing push(x) and pop() by adding and removing elements at the
+      head of an SLList, each running in O(1) time.
+    needs:
+    - sllist
+    tier: 2
+    source_domain: data_structure_ch03
+  queue_operations_sllist:
+    defines: Implementing FIFO add(x) and remove() by adding at the tail and removing
+      at the head of an SLList, each running in O(1) time.
+    needs:
+    - sllist
+    - dllist
+    tier: 2
+    source_domain: data_structure_ch03
+  dllist_list_operations:
+    defines: Implementations of get(i), set(i,x), add(i,x), and remove(i) on a DLList
+      using get_node and pointer adjustments.
+    needs:
+    - dllist
+    - get_node_search
+    tier: 3
+    source_domain: data_structure_ch03
+  xor_list:
+    defines: A space-saving doubly-linked list variant where each node stores a single
+      field holding the bitwise exclusive-or of its next and previous pointers.
+    needs:
+    - dllist
+    - pointer_reference
+    tier: 2
+    source_domain: data_structure_ch03
+  skiplist_sset:
+    defines: An implementation of the SSet interface using a skiplist, where L0 stores
+      elements in sorted order and find/add/remove run in O(log n) expected time.
+    needs:
+    - skiplist
+    - search_path
+    - pick_height_procedure
+    tier: 4
+    source_domain: data_structure_ch04
+  skiplist_list:
+    defines: An implementation of the List interface using a skiplist with edge lengths,
+      supporting get(i), set(i,x), add(i,x), and remove(i) in O(log n) expected time.
+    needs:
+    - skiplist
+    - edge_length
+    - search_path
+    - pick_height_procedure
+    tier: 4
+    source_domain: data_structure_ch04
+  hash_collision_dos:
+    defines: A real-world attack in which an adversary crafts many keys that hash
+      to the same table location, degrading hash table operations to linear time and
+      overwhelming a server.
+    needs:
+    - chained_hash_table
+    tier: 3
+    source_domain: data_structure_ch05
+  unbalanced_bst_performance:
+    defines: The result that find(x), add(x), and remove(x) in an unbalanced BinarySearchTree
+      each take O(n) time in the worst case because the tree can degenerate into a
+      long chain.
+    needs:
+    - bst_search
+    - bst_addition
+    - bst_removal
+    tier: 4
+    source_domain: data_structure_ch06
+  tree_balancing_strategies:
+    defines: Approaches such as randomization, partial rebuilding, or non-binary simulated
+      trees that keep binary search tree operations to O(log n) time by preventing
+      the tree from becoming unbalanced.
+    needs:
+    - unbalanced_bst_performance
+    tier: 5
+    source_domain: data_structure_ch06
+  martinez_roura_rbst:
+    defines: A Treap variant that stores subtree sizes instead of priorities and uses
+      size-based randomized probabilities to decide where to insert or how to rotate
+      during add and remove.
+    needs:
+    - treap
+    - treap_add
+    - treap_remove
+    tier: 5
+    source_domain: data_structure_ch07
+  treap_hashing_priorities:
+    defines: A space optimization where a Treap's priorities are not stored explicitly
+      but computed by hashing each node's memory address using a min-wise independent
+      hash function.
+    needs:
+    - treap
+    - heap_property
+    tier: 3
+    source_domain: data_structure_ch07
+  scapegoat_tree_performance:
+    defines: The summary result that a ScapegoatTree supports find(x), add(x), and
+      remove(x) in O(log n) time each, with total rebuild(u) cost O(m log m) over
+      m operations.
+    needs:
+    - scapegoat_add
+    - scapegoat_remove
+    - credit_scheme
+    tier: 6
+    source_domain: data_structure_ch08
+  weight_balanced_tree:
+    defines: A tree variant, related to the ScapegoatTree, in which every node satisfies
+      size(u) <= (2/3) size(u.parent), rebuilding the parent subtree whenever this
+      invariant is violated.
+    needs:
+    - scapegoat_tree
+    - subtree_size
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  countdown_tree:
+    defines: A tree variant where each node keeps a decrementing timer that triggers
+      a subtree rebuild when it reaches zero, achieving amortized O(log n) operations.
+    needs:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  dynamite_tree:
+    defines: A tree variant where each affected node "explodes" with probability 1/size(u)
+      during operations, triggering a rebuild of its subtree, achieving O(log n) expected
+      time.
+    needs:
+    - scapegoat_tree
+    - subtree_size
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  sequence_data_structure:
+    defines: An ordered-list structure built on a ScapegoatTree-like tree that supports
+      add_after, remove, and constant-time test_before via path-encoding labels.
+    needs:
+    - scapegoat_tree
+    - rebuild_operation
+    tier: 3
+    source_domain: data_structure_ch08
+  red_black_performance:
+    defines: The result that a RedBlackTree supports add, remove, and find in O(logn)
+      worst-case time, with amortized O(1) time per update across a sequence of operations.
+    needs:
+    - red_black_add
+    - red_black_remove
+    - red_black_2_4_correspondence
+    - amortized_potential_method
+    tier: 4
+    source_domain: data_structure_ch09
+  avl_tree:
+    defines: A height-balanced binary search tree in which the heights of a node's
+      two subtrees differ by at most one, yielding height at most 1.44logn.
+    needs:
+    - binary_search_tree
+    - tree_height
+    tier: 1
+    source_domain: data_structure_ch09
+  heapsort:
+    defines: A sorting algorithm based on the BinaryHeap structure, noted as one of
+      the fastest known sorting algorithms.
+    needs:
+    - binary_heap
+    tier: 3
+    source_domain: data_structure_ch10
+  absorb_operation:
+    defines: An operation that adds all elements of one MeldableHeap into another,
+      emptying the source heap, implemented using merge.
+    needs:
+    - meldable_heap
+    - merge_operation
+    tier: 3
+    source_domain: data_structure_ch10
+  decrease_key:
+    defines: An operation that decreases the value stored at node u to a smaller value
+      y, supported by several heap variants, sometimes more efficiently than remove-and-add.
+    needs:
+    - priority_queue
+    - binary_heap
+    - meldable_heap
+    tier: 3
+    source_domain: data_structure_ch10
+  dijkstras_algorithm:
+    defines: A graph algorithm whose performance can be improved using heaps that
+      support an efficient decrease_key operation, such as Fibonacci heaps.
+    needs:
+    - priority_queue
+    - decrease_key
+    tier: 4
+    source_domain: data_structure_ch10
+  integer_sorting_via_indexing:
+    defines: The application of counting-sort and radix-sort to sort n integers in
+      the range {0,...,n^c−1} in O(cn) time by exploiting array indexing rather than
+      comparisons.
+    needs:
+    - counting_sort
+    - radix_sort
+    tier: 7
+    source_domain: data_structure_ch11
+  shortest_path_via_bfs:
+    defines: An application of breadth-first search that records a predecessor array
+      p so that the shortest path from r to any reachable vertex j can be reconstructed
+      by repeated lookups of p.
+    needs:
+    - breadth_first_search
+    tier: 4
+    source_domain: data_structure_ch12
+  cycle_detection_via_dfs:
+    defines: An application of depth-first search that uses vertex colouring to detect
+      that a back edge to a currently-grey vertex implies the existence of a cycle.
+    needs:
+    - depth_first_search
+    tier: 4
+    source_domain: data_structure_ch12
+  matrix_powers_for_paths:
+    defines: An application of adjacency matrices where squaring the matrix (via matrix
+      multiplication) counts the number of length-two paths between each pair of vertices,
+      forming the basis of all-pairs shortest path algorithms using O(log n) multiplications.
+    needs:
+    - adjacency_matrix
+    tier: 2
+    source_domain: data_structure_ch12
+  van_emde_boas_tree:
+    defines: The original data structure providing O(log w) time add, remove, and
+      find operations, using arrays instead of hash tables at each level.
+    needs:
+    - xfasttrie
+    tier: 5
+    source_domain: data_structure_ch13
+  yfasttrie:
+    defines: A structure combining an XFastTrie storing a sparse O(n/w)-sized sample
+      of elements with secondary treaps storing the remaining elements, achieving
+      O(log w) expected time for add, remove, and find using only O(n) space.
+    needs:
+    - xfasttrie
+    - treap
+    - probabilistic_sampling
+    tier: 6
+    source_domain: data_structure_ch13
+  fusion_tree:
+    defines: A structure storing n w-bit integers in O(n) space with find(x) running
+      in O(log n / log w) time, combinable with YFastTrie to achieve O(sqrt(log n))
+      find time.
+    needs:
+    - yfasttrie
+    tier: 7
+    source_domain: data_structure_ch13
+  b_plus_tree:
+    defines: A B-tree variant that stores every key in a doubly-linked list of leaves,
+      with an overlying B-tree indexing the largest value of each leaf, enabling efficient
+      range queries.
+    needs:
+    - b_tree
+    tier: 2
+    source_domain: data_structure_ch14
+  btree_filesystems_databases:
+    defines: The real-world use of B-trees as the core indexing structure in file
+      systems (HFS+, NTFS, Ext4), database systems, and cloud key-value stores.
+    needs:
+    - b_tree
+    - b_plus_tree
+    tier: 3
+    source_domain: data_structure_ch14

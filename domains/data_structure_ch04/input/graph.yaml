@@ -1,0 +1,94 @@
+domain: data_structure_ods_python
+primitives:
+  coin_toss_randomization:
+    defines: A random binary choice (heads/tails) used to make probabilistic decisions in a data structure,
+      with performance analyzed via expectation over these tosses.
+    tier: 0
+  pseudo_random_generator:
+    defines: A mechanism (e.g., random.getrandbits) used in an implementation to simulate coin tosses
+      for determining node heights.
+    tier: 0
+  sentinel_node:
+    defines: A special dummy node at the head of every list in a skiplist that anchors the start of all
+      search paths.
+    tier: 0
+  singly_linked_list_hierarchy:
+    defines: A skiplist is conceptually a sequence of singly-linked lists L0,...,Lh where each list is
+      a random subset of the one below it.
+    tier: 0
+concepts:
+  node_height:
+    defines: For an element x in a skiplist, the largest index r such that x appears in list Lr, determined
+      by repeated coin tosses.
+    composed_of:
+    - coin_toss_randomization
+    tier: 1
+  skiplist:
+    defines: A randomized data structure built from a hierarchy of linked lists that supports efficient
+      search, insertion, and deletion via short search paths.
+    composed_of:
+    - singly_linked_list_hierarchy
+    - sentinel_node
+    - node_height
+    tier: 2
+  pick_height_procedure:
+    defines: An algorithm that determines the height of a newly inserted node by counting trailing 1-bits
+      of a random integer, simulating coin tosses.
+    composed_of:
+    - pseudo_random_generator
+    - coin_toss_randomization
+    - node_height
+    tier: 2
+  search_path:
+    defines: The short path from the sentinel in the top list Lh down to a target node in L0, formed by
+      moving right until overshooting then stepping down.
+    composed_of:
+    - skiplist
+    - sentinel_node
+    tier: 3
+  edge_length:
+    defines: For an edge in list Lr, the number of edges in L0 that lie below it, used to track position
+      while navigating a skiplist by index.
+    composed_of:
+    - skiplist
+    tier: 3
+  expected_height_analysis:
+    defines: A probabilistic analysis showing the expected height of a skiplist with n elements is at
+      most log n + 2, derived using indicator variables over coin tosses.
+    composed_of:
+    - skiplist
+    - node_height
+    - coin_toss_randomization
+    tier: 3
+  expected_size_analysis:
+    defines: A probabilistic analysis showing the expected number of nodes in a skiplist with n elements
+      is 2n (plus O(log n) for sentinels).
+    composed_of:
+    - skiplist
+    - node_height
+    tier: 3
+  expected_search_path_length:
+    defines: A probabilistic analysis showing the expected length of a search path in a skiplist with
+      n elements is at most 2 log n + O(1).
+    composed_of:
+    - search_path
+    - expected_height_analysis
+    tier: 4
+applications:
+  skiplist_sset:
+    defines: An implementation of the SSet interface using a skiplist, where L0 stores elements in sorted
+      order and find/add/remove run in O(log n) expected time.
+    needs:
+    - skiplist
+    - search_path
+    - pick_height_procedure
+    tier: 4
+  skiplist_list:
+    defines: An implementation of the List interface using a skiplist with edge lengths, supporting get(i),
+      set(i,x), add(i,x), and remove(i) in O(log n) expected time.
+    needs:
+    - skiplist
+    - edge_length
+    - search_path
+    - pick_height_procedure
+    tier: 4

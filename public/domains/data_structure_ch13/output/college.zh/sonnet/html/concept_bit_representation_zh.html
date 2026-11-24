@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bit Representation | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="位表示">位表示</h2>
+<p><strong>定义。</strong> 一个 $w$ 位整数可以用长度固定为 $w$ 的二进制串 $x = x_{w-1}x_{w-2}\cdots x_1x_0$ 来编码,其中每个 $x_i\in\{0,1\}$。对于无符号整数,其数值为</p>
+$$
+B2U_w(x)=\sum_{i=0}^{w-1} x_i\,2^i .
+$$
+<p>$x_{w-1}$ 称为最高有效位(MSB),$x_0$ 称为最低有效位(LSB)。由于共有 $2^w$ 种不同的位串,$w$ 位无符号数能表示的范围是 $0$ 到 $2^w-1$。</p>
+<p>对于补码(二进制补码)表示的有符号整数,最高位带有负权重:</p>
+$$
+B2T_w(x)=-x_{w-1}2^{w-1}+\sum_{i=0}^{w-2} x_i\,2^i ,
+$$
+<p>表示范围为 $-2^{w-1}$ 到 $2^{w-1}-1$。</p>
+<p><strong>例题。</strong> 取 $w=8$,位串 $x=10110101$。</p>
+<li>作为无符号数:$128+32+16+4+1=181$。</li>
+<li>作为补码:$-128+32+16+4+1=-75$。</li>
+<p>同一个位串,按不同规则解释,得到不同的数值。差值恰为 $2^w=256$($181-(-75)=256$),这是因为最高位的权重从 $+2^{w-1}$ 变成了 $-2^{w-1}$,差值为 $2\cdot 2^{w-1}=2^w$。</p>
+<p><strong>问题求解应用。</strong> </p>
+<p><em>问题 1:</em> 用 8 位补码表示 $-37$。</p>
+<p>解:先写出 $37=00100101$。补码取反加一:取反得 $11011010$,加 $1$ 得 $11011011$。验证:$-128+64+16+8+2+1=-37$ ✓。</p>
+<p><em>问题 2:</em> 需要多少位才能为 $n=1000$ 个不同的对象编号?</p>
+<p>解:需要 $2^w\ge 1000$,即 $w\ge\lceil\log_2 1000\rceil=10$(因为 $2^{9}=512<1000\le 1024=2^{10}$)。</p>
+<p><em>问题 3(溢出):</em> 在 8 位补码中计算 $100+50$。</p>
+<p>解:真实结果 $150$ 超出上限 $127$。二进制 $01100100+00110010=10010110$,按补码解释为 $-128+16+4+2=-106$。这正是 $150-256=-106$,即结果按模 $2^w$ 回绕。</p>
+<p>用 Python 可以直接验证:</p>
+<pre><code>w = 8
+x = 0b10110101
+print(x)                           # 181(无符号)
+print(x - (1 &lt;&lt; w) if x &gt;&gt; (w-1) else x)  # -75(补码)
+print(((100 + 50) + 128) % 256 - 128)     # -106(溢出回绕)</code></pre>
+<p><strong>小结。</strong> 位表示的核心是:固定宽度 $w$ 决定了有限的取值范围 $2^w$ 个,而"如何解释最高位"决定了这些位串对应哪些整数。理解这一点,就能预测溢出、类型转换和位运算的行为。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

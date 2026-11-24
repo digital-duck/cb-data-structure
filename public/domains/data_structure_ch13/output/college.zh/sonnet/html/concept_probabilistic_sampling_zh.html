@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilistic Sampling | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="概率采样">概率采样</h2>
+<h3 id="定义">定义</h3>
+<p>在 x-快速字典树(XFastTrie)与其辅助平衡结构(treap)的组合中,设 $w$ 为机器字长(键的位数)。<strong>概率采样</strong>是指:每个被插入的元素以相互独立的概率 $\frac{1}{w}$ 进入 XFastTrie 的"样本集",其余元素只保存在下层的二级 treap 中。</p>
+<p>设插入 $n$ 个元素,令指示变量 $X_i=1$ 表示第 $i$ 个元素被采样,则</p>
+$$
+\Pr[X_i=1]=\frac{1}{w},\qquad S=\sum_{i=1}^{n}X_i .
+$$
+<p>由期望的线性性(无需独立性即可成立),样本大小为</p>
+$$
+\mathbb{E}[S]=\frac{n}{w}.
+$$
+<p>XFastTrie 只存储 $S$ 个键,每个键占 $O(w)$ 空间(每层一个哈希项),所以总空间为</p>
+$$
+O\!\left(w\cdot \frac{n}{w}\right)=O(n),
+$$
+<p>达到线性空间。这正是 $1/w$ 这个概率的由来:它恰好抵消了每个键在 trie 中 $w$ 倍的存储开销。</p>
+<h3 id="例题">例题</h3>
+<p>取 $w=64$、$n=6400$。</p>
+<li>期望样本数:$\mathbb{E}[S]=6400/64=100$,trie 约存 $100\times 64=6400$ 个哈希项,与 $n$ 同阶。</li>
+<li>相邻两个样本之间的元素构成一个二级 treap。第一个样本之前的元素个数是几何分布,每个间隔长度 $G$ 满足</li>
+$$
+\Pr[G=k]=\left(1-\tfrac1w\right)^{k}\tfrac1w,\qquad \mathbb{E}[G]=w-1 .
+$$
+<p>所以平均每个 treap 约含 $63$ 个元素。</p>
+<h3 id="问题求解应用-查询时间">问题求解应用:查询时间</h3>
+<p>对前驱查询,先在 XFastTrie 中用 $O(\log w)$ 时间找到样本中的前驱,再进入对应的 treap 完成查找。由于 treap 的期望深度是 $O(\log m)$($m$ 为其大小),需要估计 $m$ 的大小。</p>
+<p><strong>命题</strong>:某个间隔长度超过 $t$ 的概率为 $\left(1-\frac1w\right)^{t}\le e^{-t/w}$。 取 $t=cw\ln n$,则该概率不超过 $n^{-c}$。对全部至多 $n$ 个间隔做并集界,以至少 $1-n^{1-c}$ 的概率,所有 treap 的大小都是 $O(w\log n)$。</p>
+<p>于是 treap 内部查找耗时</p>
+$$
+O(\log(w\log n))=O(\log w+\log\log n),
+$$
+<p>总查询时间为 $O(\log w+\log\log n)$。当 $w=\Theta(\log n)$ 时就是 $O(\log\log n)$。</p>
+<p><strong>练习</strong>:若改用概率 $p=\frac{1}{w^2}$ 采样,分别计算期望空间与期望 treap 大小,并判断哪一项变差。(提示:空间降为 $O(n/w)$,但 treap 期望大小增至 $\Theta(w^2)$,查询变慢,且空间已低于线性,收益并不值得。)</p>
+<pre class="mermaid">flowchart LR
+    A[插入元素] --> B{以概率 1/w 抽样}
+    B -->|是| C[进入 XFastTrie]
+    B -->|否| D[只进入二级 treap]
+    C --> E[划分出间隔]
+    D --> E
+    E --> F[每个 treap 期望约 w 个元素]</pre>
+<p><em>图:每个元素独立抽样;被采样者成为 XFastTrie 的锚点,其余元素落入相邻锚点之间的 treap。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

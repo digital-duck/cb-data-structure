@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="栈">栈</h2>
+<p><strong>定义。</strong> 栈(stack)是一种<strong>后进先出</strong>(LIFO, Last-In-First-Out)的线性集合。它只允许在同一端(栈顶)操作,核心操作有三个:</p>
+<li><code>push(x)</code>:把元素 $x$ 压入栈顶;</li>
+<li><code>pop()</code>:弹出并返回栈顶元素;</li>
+<li><code>peek()</code>:查看栈顶元素但不删除。</li>
+<p>在合适的实现(如数组末尾或链表头)下,三个操作的时间复杂度均为 $O(1)$。递归之所以能工作,正是因为系统维护了一个"调用栈";而显式使用栈,就是把这个隐含的结构交到自己手中,从而<strong>自主控制遍历顺序</strong>,并避免递归过深导致的栈溢出。</p>
+<p><strong>例题:用栈做二叉树的前序遍历。</strong> 考虑二叉树:根为 $A$,左孩子为 $B$,右孩子为 $C$;$B$ 的左孩子为 $D$,右孩子为 $E$。</p>
+<p>算法:先把根压栈;每次弹出一个节点并访问,然后<strong>先压右孩子,再压左孩子</strong>(这样左孩子后进先出,会先被处理)。</p>
+<p>| 步骤 | 弹出并访问 | 压入后的栈(右端为栈顶) | |---|---|---| | 初始 | — | $[A]$ | | 1 | $A$ | $[C, B]$ | | 2 | $B$ | $[C, E, D]$ | | 3 | $D$ | $[C, E]$ | | 4 | $E$ | $[C]$ | | 5 | $C$ | $[\ ]$ |</p>
+<p>访问顺序为 $A, B, D, E, C$,正是前序遍历。</p>
+<pre><code>def preorder(root):
+    result, stack = [], [root]
+    while stack:
+        node = stack.pop()
+        if node is None:
+            continue
+        result.append(node.val)
+        stack.append(node.right)   # 先压右
+        stack.append(node.left)    # 后压左,先被弹出
+    return result</code></pre>
+<p><strong>问题求解应用。</strong> 栈不仅能改写递归,还能改变遍历的性质:</p>
+<li><strong>深度优先搜索(DFS)</strong>:在图上把"前序遍历"中的左右孩子换成所有未访问的邻居即可。若把栈换成先进先出的队列,同一段代码就变成广度优先搜索(BFS)——<strong>仅靠更换容器就能切换遍历顺序</strong>。</li>
+<li><strong>括号匹配</strong>:遇到左括号压栈,遇到右括号则弹出并检查是否配对。对 <code>{[()]}</code> 逐字符处理,栈在末尾为空则合法;若中途弹空或结尾非空,则不合法。</li>
+<li><strong>深度限制</strong>:Python 默认递归深度约 1000 层;对一条含 $10^5$ 个节点的链状树,递归会崩溃,而显式栈只受内存限制。</li>
+<p><strong>复杂度分析。</strong> 每个节点恰好入栈、出栈各一次,总时间为 $O(n)$;额外空间最坏为 $O(n)$(链状树),平衡树时仅为 $O(h)$,其中 $h$ 为树高。</p>
+<pre class="mermaid">flowchart TD
+    A["初始化:根节点入栈"] --> B{"栈是否为空?"}
+    B -- "否" --> C["弹出栈顶并访问"]
+    C --> D["右孩子入栈"]
+    D --> E["左孩子入栈"]
+    E --> B
+    B -- "是" --> F["遍历结束"]</pre>
+<p><em>用显式栈实现前序遍历的流程:循环"弹出、访问、先压右后压左",直到栈空。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

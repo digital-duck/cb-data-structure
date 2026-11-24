@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Table | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="哈希表">哈希表</h2>
+<p><strong>定义。</strong> 当我们只需要存储全域 $U$ 中的少量键（$n \ll |U|$）时，为每个可能的键都分配一个位置既浪费又不现实。<em>哈希表</em>（hash table）使用一个长度为 $m$ 的数组 $T[0..m-1]$，并通过<strong>哈希函数</strong> $h: U \to \{0,1,\dots,m-1\}$ 把键 $k$ 映射到槽位 $h(k)$。因为 $|U| > m$，不同的键可能映射到同一个槽位，这称为<strong>冲突</strong>（collision）。</p>
+<p>最常用的冲突处理方法是<strong>链地址法</strong>：每个槽位保存一个链表，所有哈希值相同的键都放入同一条链中。</p>
+<p>定义<strong>装载因子</strong> $\alpha = n/m$。在"简单均匀哈希"假设下（每个键等可能地落入任一槽位，且相互独立），一条链的期望长度就是 $\alpha$。因此：</p>
+<li>不成功查找的期望时间为 $\Theta(1+\alpha)$；</li>
+<li>成功查找的期望时间同样为 $\Theta(1+\alpha)$。</li>
+<p>若保持 $m = \Theta(n)$，则 $\alpha = O(1)$，查找、插入、删除的期望时间均为 $O(1)$。</p>
+<p><strong>例题。</strong> 取 $m=7$，$h(k) = k \bmod 7$，依次插入键 $50, 700, 76, 85, 92, 73$：</p>
+<p>| 键 | $k \bmod 7$ | 槽位 | |---|---|---| | 50 | 1 | 1 | | 700 | 0 | 0 | | 76 | 6 | 6 | | 85 | 1 | 1（与 50 冲突） | | 92 | 1 | 1（再次冲突） | | 73 | 3 | 3 |</p>
+<p>最终槽位 1 的链为 $92 \to 85 \to 50$（新元素插在链头），其余槽位各有 0 或 1 个元素。此时 $n=6,\ m=7$，$\alpha \approx 0.86$。查找 85 时，先计算 $h(85)=1$，再沿链比较，只需 2 次比较。</p>
+<pre class="mermaid">graph LR
+    A["键 85"] --> B["哈希函数 h(k)=k mod 7"]
+    B --> C["槽位 1"]
+    C --> D["92"]
+    D --> E["85"]
+    E --> F["50"]</pre>
+<p><em>图：键 85 经哈希函数定位到槽位 1，再沿链表查找。</em></p>
+<p><strong>问题求解应用。</strong> </p>
+<p><em>问题：</em> 给定整数数组 $a$ 和目标值 $t$，判断是否存在两个元素之和等于 $t$。</p>
+<p><em>思路：</em> 暴力枚举需要 $O(n^2)$。改用哈希表：遍历每个 $x$，先查询 $t-x$ 是否已在表中；若在，则找到答案；否则把 $x$ 插入表中。</p>
+<pre><code>def two_sum(a, t):
+    seen = set()          # 基于哈希表实现
+    for x in a:
+        if t - x in seen:
+            return True
+        seen.add(x)
+    return False</code></pre>
+<p>每个元素只做一次期望 $O(1)$ 的查询和一次插入，总期望时间为 $O(n)$，空间为 $O(n)$。这正是用空间换时间的典型例子。</p>
+<p><strong>注意事项。</strong> 当 $\alpha$ 过大时，链会变长，性能退化，最坏情况下所有键落入同一槽位，操作退化为 $O(n)$。实际实现会在 $\alpha$ 超过阈值（如 $0.75$）时将 $m$ 加倍并重新哈希所有键，使均摊代价仍为 $O(1)$。此外，好的哈希函数应使键尽量均匀分布；例如取模时，$m$ 宜选为远离 2 的幂的素数。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

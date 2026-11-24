@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="二叉字典树-binary-trie">二叉字典树(Binary Trie)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>二叉字典树</strong>是一棵二叉树,用来把一组 $w$ 位整数 $S\subseteq\{0,1,\dots,2^w-1\}$ 编码为从根到叶的路径。设 $x$ 的二进制表示为 $b_1b_2\cdots b_w$($b_1$ 为最高位)。从根出发,在第 $i$ 层:若 $b_i=0$ 就走向左孩子,若 $b_i=1$ 就走向右孩子。因此,$x\in S$ 当且仅当存在一条深度为 $w$ 的根到叶路径,恰好读出 $x$ 的各位。</p>
+<p>关键性质:</p>
+<li>树高恒为 $w$,与集合大小 $n=|S|$ 无关;</li>
+<li><code>insert</code>、<code>delete</code>、<code>contains</code> 都只需沿一条路径走 $w$ 步,时间为 $O(w)$;</li>
+<li>空间最坏为 $O(nw)$,因为每个元素最多贡献 $w$ 个结点,但相邻元素会共享公共前缀;</li>
+<li>叶子按从左到右的顺序恰好是 $S$ 的升序排列,所以也能支持前驱/后继查询。</li>
+<h3 id="例题">例题</h3>
+<p>取 $w=4$,$S=\{2,5,6,13\}$。其二进制为 $0010,\ 0101,\ 0110,\ 1101$。</p>
+<li>查找 $x=6=0110$:根 $\to$ 左(0)$\to$ 右(1)$\to$ 右(1)$\to$ 左(0),到达叶子,所以 $6\in S$。</li>
+<li>查找 $x=7=0111$:前三步与 $6$ 共享路径,第 4 步需向右,但该孩子不存在,所以 $7\notin S$。</li>
+<li>结点总数:根 1 个;第 1 层 2 个(前缀 $0$、$1$);第 2 层 3 个($00,01,11$);第 3 层 4 个($001,010,011,110$);第 4 层 4 个。共 $1+2+3+4+4=14$ 个,少于不共享时的 $1+4\cdot4=17$ 个。</li>
+<pre class="mermaid">graph TD
+  R["根"] -->|0| A["前缀 0"]
+  R -->|1| B["前缀 1"]
+  A -->|0| C["前缀 00"]
+  A -->|1| D["前缀 01"]
+  B -->|1| E["前缀 11"]
+  C -->|1| F["叶 0010 = 2"]
+  D -->|0| G["叶 0101 = 5"]
+  D -->|1| H["叶 0110 = 6"]
+  E -->|0| I["叶 1101 = 13"]</pre>
+<p><em>图中为 $S=\{2,5,6,13\}$ 的二叉字典树(省略了单链路径上的中间结点,边上标注该层读取的比特)。</em></p>
+<h3 id="问题求解应用-求后继">问题求解应用:求后继</h3>
+<p><strong>问题</strong>:在上面的集合中,求大于等于 $7$ 的最小元素。</p>
+<p><strong>方法</strong>:先沿 $7=0111$ 的比特向下走,走到无法继续的位置(前缀 $011$,下一步需向右但不存在)。然后回溯:在路径上找到最深的一个"本可向右、而该右孩子存在"的结点,转入该右子树后,一路尽量向左走到叶子。</p>
+<li>前缀 $011$ 处:右孩子不存在,继续回溯;</li>
+<li>前缀 $01$ 处:我们走的是右边(比特 1),没有更大的分支;</li>
+<li>前缀 $0$ 处:我们走的是右边的前缀 $01$,其右侧无更大分支……回到根:我们走的是左边(比特 0),而右孩子(前缀 $1$)存在。</li>
+<p>转入前缀 $1$ 的子树,一路向左:$1\to 11\to 110\to 1101$,得到 $13$。所以后继为 $13$。</p>
+<p><strong>复杂度</strong>:下行至多 $w$ 步,回溯至多 $w$ 步,再下行至多 $w$ 步,总计 $O(w)$。</p>
+<p>这说明二叉字典树的耗时取决于<strong>位数 $w$</strong>,而不是元素个数 $n$。当 $n\gg w$(例如 $w=32$、$n=10^6$)时,它比 $O(\log n)$ 的平衡搜索树更快;代价是空间可能达到 $O(nw)$。后续的 x-fast trie 与 y-fast trie 正是为了降低这一空间代价、并把查询加速到 $O(\log w)$ 而设计的。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

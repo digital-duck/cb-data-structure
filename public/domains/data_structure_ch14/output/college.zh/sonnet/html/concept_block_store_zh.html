@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block Store | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="块存储-block-store">块存储(Block Store)</h2>
+<p><strong>定义。</strong> 块存储是对外部存储设备(如磁盘、SSD)的一种抽象:设备被划分为若干大小固定、均为 $B$ 字节的<strong>块</strong>,每个块由一个整数索引 $i \in \{0,1,\dots,N-1\}$ 标识。数据的传输总是以整块为单位,而不是按单个字节。它支持四种操作:</p>
+<li><code>read_block(i)</code>:把第 $i$ 块的 $B$ 字节读入内存;</li>
+<li><code>write_block(i, data)</code>:用 $B$ 字节数据覆盖第 $i$ 块;</li>
+<li><code>place_block(data)</code>:找到一个空闲块,写入数据,并返回其索引;</li>
+<li><code>free_block(i)</code>:把第 $i$ 块标记为空闲,以供回收。</li>
+<p>在外存模型(I/O 模型)中,代价以<strong>块传输次数</strong>(I/O 次数)衡量,而不是 CPU 指令数。每调用一次 <code>read_block</code> 或 <code>write_block</code>,代价为 $1$ 次 I/O。</p>
+<p><strong>例题。</strong> 设 $B = 4096$ 字节,一个整数占 $8$ 字节。(1)每块能存放多少个整数?(2)顺序扫描 $n = 10^6$ 个整数需要多少次 I/O?</p>
+<p>解:(1)每块容纳 $\lfloor 4096/8 \rfloor = 512$ 个整数。 (2)这些整数连续存放,共需</p>
+$$\left\lceil \frac{n}{512} \right\rceil = \left\lceil \frac{10^6}{512} \right\rceil = 1954$$
+<p>块,因此顺序扫描需要 $1954$ 次 I/O。若每个整数各自存放在不同的块中,则需要 $10^6$ 次 I/O,相差近 $512$ 倍。一般地,顺序扫描 $n$ 个元素的代价为 $\lceil n/b \rceil$,其中 $b = B/(\text{元素大小})$ 是每块容纳的元素个数。</p>
+<p><strong>问题求解应用。</strong> 设计一个简单的链表,并保存在块存储上,每个结点占一整块,其中包含数据和下一结点的索引。</p>
+<pre><code>def insert_front(store, head, value):
+    node = (value, head)            # 新结点指向旧表头
+    return store.place_block(node)  # 返回新表头的索引
+
+def delete_front(store, head):
+    value, nxt = store.read_block(head)  # 1 次 I/O
+    store.free_block(head)               # 释放该块以便复用
+    return value, nxt</code></pre>
+<p>分析代价:<code>insert_front</code> 只用 $1$ 次 I/O(一次放置);<code>delete_front</code> 用 $1$ 次读取,<code>free_block</code> 仅修改空闲记录。但遍历长度为 $n$ 的链表需要 $n$ 次 I/O,因为每个结点占一块;若改为每块存放 $b$ 个结点,则遍历仅需 $\lceil n/b \rceil$ 次 I/O,这正是 B 树等外存数据结构以"每结点一块"为设计原则的原因。</p>
+<p><strong>小结。</strong> 块存储的关键在于:传输以块为单位,索引是块的"地址",<code>place_block</code> 与 <code>free_block</code> 负责空间的分配与回收。设计外存算法时,应尽量让每次读入的 $B$ 字节都被充分利用。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

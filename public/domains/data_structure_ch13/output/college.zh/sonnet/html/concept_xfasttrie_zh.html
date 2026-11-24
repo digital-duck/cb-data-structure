@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xfasttrie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="x-fast-trie-x-快速前缀树">X-fast Trie(X 快速前缀树)</h2>
+<p><strong>定义。</strong> 设宇宙为 $U=\{0,1,\dots,2^w-1\}$,每个键是 $w$ 位二进制串。<strong>BinaryTrie</strong> 以根到叶的路径表示键,深度为 $w$,因此 <code>add</code>、<code>remove</code>、<code>find</code> 都需 $O(w)$ 时间。<strong>X-fast trie</strong> 在其上为每一层 $i\in\{0,\dots,w\}$ 增设一张哈希表 $H_i$,存放该层所有存在的节点(即所有键的长度为 $i$ 的前缀)。叶子再串成一条有序双向链表,每个内部节点在缺少某个孩子时,保存一条指向其子树中最小或最大叶子的"跳转指针"。</p>
+<p>这样,"长度为 $i$ 的前缀 $p$ 是否在 trie 中"变成一次期望 $O(1)$ 的哈希查找。</p>
+<p><strong>查找 $\text{find}(x)$(返回不小于 $x$ 的最小键)。</strong> 关键事实:若 $x$ 的长度为 $i$ 的前缀在 trie 中,则所有更短的前缀也在。该性质关于 $i$ <strong>单调</strong>,故可对层数做二分搜索:</p>
+<li>在 $[0,w]$ 上二分,用 $H_i$ 判断 $x$ 的 $i$ 位前缀是否存在,找到最长存在的前缀,其所在节点为 $u$。</li>
+<li>该节点缺少 $x$ 所指方向的孩子,沿其跳转指针到达某个叶子,再借助链表前进或后退一步,即得后继。</li>
+<p>共进行 $\lceil\log_2(w+1)\rceil$ 次哈希查找,因此</p>
+$$T_{\text{find}}=O(\log w)\ \text{(期望)}.$$
+<p><strong>更新代价。</strong> <code>add</code>/<code>remove</code> 要沿整条路径修改 $w$ 个节点,同时更新每层哈希表与跳转指针,所以仍是 $O(w)$。空间为 $O(nw)$。</p>
+<p><strong>例题。</strong> 取 $w=4$,键集 $\{2,3,9\}=\{0010,0011,1001\}$。求 $\text{find}(6)$,$6=0110$。</p>
+<li>二分第一步 $i=2$:前缀 <code>01</code> 不在 $H_2$ 中 ⇒ 最长前缀长度 $<2$。</li>
+<li>第二步 $i=1$:前缀 <code>0</code> 在 $H_1$ 中 ⇒ 最长前缀长度 $\ge 1$。</li>
+<li>因此最长前缀为 <code>0</code>,对应节点 $u$。$6$ 想走右孩子(<code>01</code>),但它不存在,故 $u$ 的跳转指针指向其子树的<strong>最大</strong>叶子 $3$。</li>
+<li>$3<6$,沿链表前进一步得到 $9$。</li>
+<p>答案为 $9$,只用了 2 次哈希查找(而 $\lceil\log_2 5\rceil=3$),远少于 $w=4$ 层逐层下降。</p>
+<p><strong>应用。</strong> 当 $w=32$ 时,二分仅需约 $5$ 次哈希查找,而朴素 trie 需 $32$ 步。若以 $n$ 个键为界,典型取 $w=\Theta(\log n)$,则 <code>find</code> 为 $O(\log\log n)$,优于平衡树的 $O(\log n)$。代价是更新较慢、空间较大。这一不对称正是 <strong>Y-fast trie</strong> 的动机:它把键分块,每块用平衡树存储,仅将代表元放入 X-fast trie,使更新降到 $O(\log w)$ 且空间降为 $O(n)$。</p>
+<pre class="mermaid">graph TD
+    A["开始:区间 0 到 w"] --> B["取中间层 i"]
+    B --> C{"H_i 中有 x 的 i 位前缀?"}
+    C -->|"有"| D["搜索区间右移,层数更深"]
+    C -->|"无"| E["搜索区间左移,层数更浅"]
+    D --> F{"区间是否缩为一点?"}
+    E --> F
+    F -->|"否"| B
+    F -->|"是"| G["得到最长存在前缀节点 u"]
+    G --> H["沿跳转指针到叶子"]
+    H --> I["借助链表一步得到后继"]</pre>
+<p><em>图:X-fast trie 的 <code>find</code> 流程。对层数做二分搜索,每次一次哈希查找,最后用跳转指针与链表定位后继。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

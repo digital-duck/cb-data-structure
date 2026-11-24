@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B Plus Tree | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="b-树">B+ 树</h2>
+<p><strong>定义。</strong> B+ 树是 B 树的一种变体,专为磁盘与数据库索引设计。它有三条核心性质:</p>
+<li>所有键(及其对应记录)只存放在<strong>叶子结点</strong>中;</li>
+<li>叶子结点按键的大小顺序用<strong>双向链表</strong>相连;</li>
+<li>内部结点只保存"路标"(如每个叶子的最大键),用来引导查找,构成覆盖在叶子层之上的索引树。</li>
+<p>设阶数为 $m$,则每个结点至多有 $m$ 个孩子,除根外至少有 $\lceil m/2\rceil$ 个孩子。所有叶子位于同一深度,因此树始终保持平衡。若共有 $N$ 个键,树高为 $h$,则</p>
+$$h = O(\log_{\lceil m/2\rceil} N).$$
+<p>磁盘中一个结点通常对应一页,$m$ 可达数百,所以即使 $N=10^9$,高度也只有 3 到 4 层,即一次查找只需几次磁盘读取。</p>
+<p><strong>与 B 树的区别。</strong> B 树的内部结点也存储数据,而 B+ 树的内部结点只存索引。于是同样大小的一页能容纳更多路标,$m$ 更大,树更矮;并且任何查找都要走到叶子,耗时稳定。</p>
+<p><strong>例题。</strong> 设 $m=4$,叶子依次为 $[3,5]\to[8,12]\to[15,20]\to[24,30]$,上层索引存各叶子的最大值 $5,12,20,30$。</p>
+<p><em>点查询</em> 查找 $15$:根据路标,$12<15\le 20$,进入第三个叶子,在其中找到 $15$。</p>
+<p><em>范围查询</em> 查找 $[10,25]$:</p>
+<li>在索引中定位 $10$:$5<10\le12$,到达第二个叶子 $[8,12]$;</li>
+<li>在叶内取出 $12$;</li>
+<li>沿链表依次读取 $[15,20]$,取出 $15,20$;</li>
+<li>到达 $[24,30]$,取出 $24$;下一个键 $30>25$,停止。</li>
+<p>结果为 $\{12,15,20,24\}$。整个过程只做了<strong>一次</strong>自顶向下查找,之后全靠叶子链表顺序扫描。</p>
+<p><strong>问题求解应用。</strong> 分析范围查询的代价:设结果含 $k$ 个键,每个叶子至少装 $\lceil m/2\rceil-1$ 个键(此处取近似 $m/2$),则需访问的叶子数约为 $\lceil 2k/m\rceil$,总代价为</p>
+$$O\!\left(\log_{m/2} N + \frac{k}{m}\right)\ \text{次页读取}.$$
+<p>若改用普通 B 树,范围查询需要反复中序遍历、在层间来回回溯,代价约为 $O(k\log N)$ 次结点访问;而 B+ 树把"定位"与"扫描"分离,后者是顺序读取,对磁盘尤为友好。</p>
+<p><strong>插入时的分裂。</strong> 向已满的叶子插入键时,把它分成两半,并把左半的最大键作为新路标上推到父结点。例如向 $[24,30]$ 所在的满叶(设容量为 2)插入 $27$,得到 $[24,27]$ 与 $[30]$,父结点新增路标 $27$;若父结点也溢出,则继续向上分裂,最坏情况下树高加 1。</p>
+<pre class="mermaid">graph TD
+    R["根:12 | 20"]
+    R --> L1["叶子:3,5,8,12"]
+    R --> L2["叶子:15,20"]
+    R --> L3["叶子:24,30"]
+    L1 <--> L2
+    L2 <--> L3</pre>
+<p><em>上层为索引结点,下层叶子通过双向链表相连,范围查询只需定位起点后沿链表扫描。</em></p>
+<p><strong>小结。</strong> B+ 树用"索引与数据分离 + 叶子链表"的设计,同时获得了 $O(\log N)$ 的点查询和高效的范围扫描,这正是数据库索引普遍采用它的原因。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sllist">Sllist</h2>
+<p>A singly linked list (<code>sllist</code>) is a data structure that stores a sequence of elements as a chain of nodes. Each node holds two fields: a data value and a reference (pointer) to the next node in the chain. A <code>head</code> pointer tracks the first node, and often a <code>tail</code> pointer tracks the last node so that appending to the end doesn't require traversing the whole list. The final node's <code>next</code> reference is <code>null</code>, marking the end of the sequence.</p>
+<p>Unlike an array, a linked list does not store elements in contiguous memory, so there is no notion of an "index" you can jump to directly — reaching the $k$-th node requires walking $k$ steps from <code>head</code>. This trade-off defines the structure's complexity profile: insertion or deletion at the front is $O(1)$, because it only requires rewiring a constant number of pointers, while access or search by position is $O(n)$ in the worst case, since it may require traversing the entire list.</p>
+<p><strong>Worked example.</strong> Suppose we build a list by repeatedly inserting at the head — a common pattern called <code>push_front</code>. Starting from an empty list (<code>head = null</code>), inserting values 3, 7, 1 in that order proceeds as follows: create a node for 3, set its <code>next</code> to the current <code>head</code> (<code>null</code>), then update <code>head</code> to point to this new node. Repeat for 7: its <code>next</code> points to the node holding 3, and <code>head</code> now points to 7. Repeat for 1: its <code>next</code> points to 7, and <code>head</code> now points to 1. The resulting list, read from <code>head</code>, is $1 \to 7 \to 3 \to \text{null}$ — the reverse of insertion order, since each new node displaces the previous head.</p>
+<p><strong>Problem-solving application.</strong> A frequent interview-style task is reversing a linked list in place, using only $O(1)$ extra space. The technique mirrors the insertion logic above: walk the list while maintaining three pointers — <code>prev</code> (initially <code>null</code>), <code>curr</code> (initially <code>head</code>), and a temporary <code>next_node</code>. At each step, save <code>curr.next</code> into <code>next_node</code>, redirect <code>curr.next</code> to <code>prev</code>, then advance <code>prev</code> to <code>curr</code> and <code>curr</code> to <code>next_node</code>. After the loop terminates, <code>prev</code> becomes the new head. This runs in $O(n)$ time and $O(1)$ space, in contrast to an array reversal, which also runs in $O(n)$ time but benefits from index-based swapping rather than pointer rewiring.</p>
+<pre class="mermaid">graph TD
+    H[head] --> N1["node: data=1, next"]
+    N1 --> N2["node: data=7, next"]
+    N2 --> N3["node: data=3, next"]
+    N3 --> X[null]</pre>
+<p><em>A singly linked list after three head-insertions (3, then 7, then 1); each new node's <code>next</code> points to the prior head before <code>head</code> is reassigned.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

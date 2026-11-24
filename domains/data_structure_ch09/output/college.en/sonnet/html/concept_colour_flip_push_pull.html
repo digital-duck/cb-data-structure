@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colour Flip Push Pull | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="colour-flip-push-pull">Colour Flip Push Pull</h2>
+<p><strong>Definition.</strong> In a left-leaning or relaxed red-black tree, four local subroutines repair colour violations without changing the black-height $bh(v)$, the number of black nodes on any path from $v$ down to a leaf.</p>
+<li><strong>push_black($v$)</strong> (colour flip down): if $v$ is black with two red children, recolour $v$ red and both children black. Each path through $v$ keeps the same black count: it loses $v$ but gains a black child.</li>
+<li><strong>pull_black($v$)</strong> (colour flip up): the inverse. If $v$ is red with two black children, recolour $v$ black and both children red.</li>
+<li><strong>flip_left($u$)</strong>: let $w=u.\text{right}$. Make $w$ the subtree root, $u$ its left child, and $w$'s old left subtree $u$'s right subtree. Swap the colours of $u$ and $w$.</li>
+<li><strong>flip_right($u$)</strong>: the mirror image, using $w=u.\text{left}$.</li>
+<p>Rotations preserve in-order key order. Swapping colours means the subtree root keeps its original colour. Every root-to-leaf path therefore sees the same number of black nodes as before.</p>
+<p><strong>Worked example.</strong> Take black $v=20$ with red children $10$ and $30$. Let $10$ have a red left child $5$. This is a red-red violation.</p>
+<p>Call push_black(20). Now $20$ is red and $10$, $30$ are black. Node $5$ is red under black $10$, so the violation is gone locally. Check black-height: before, any path through $20$ counted $20$ as one black. After, it counts $10$ or $30$ as one black. The count is unchanged. The only new risk is that $20$ is red and its parent might be red.</p>
+<p>If instead $10$ is black and $20$'s right child $30$ is red with a red right child, apply flip_left on $20$'s right-leaning link. Let $u=20$ black and $w=30$ red. After rotating, $30$ is the root of the subtree and takes colour black. $20$ becomes red. The subtree's black-height is unchanged, since the root was black before and is black after.</p>
+<p><strong>Problem-solving application.</strong> In insertion fix-up, suppose a new red node $x$ has a red parent $p$ and a red uncle $s$. Decide the case as follows:</p>
+<li><strong>Uncle red:</strong> $p$'s parent $g$ is black with two red children. Call push_black($g$). The violation may now sit at $g$ and its parent, so move up and repeat. This takes at most $O(\log n)$ steps since the height is $O(\log n)$.</li>
+<li><strong>Uncle black, $x$ an inner child:</strong> rotate $p$ first (flip_left or flip_right) to make $x$ an outer child.</li>
+<li><strong>Uncle black, $x$ an outer child:</strong> flip $g$ in the opposite direction. The two colour swaps leave a black subtree root with two red children.</li>
+<p>Deletion uses pull_black when a "double black" deficit must be moved up. Pulling blackness from a red parent with two black children makes the parent black and both children red, which moves the extra black one level closer to the root. If the deficit reaches the root, it is simply dropped. Dropping it is valid because every path loses one black node, so all paths still have equal black counts.</p>
+<p><strong>Why correctness holds.</strong> Let $b(P)$ be the black count along path $P$. push_black changes $b(P)$ by $-1+1=0$ on every path through $v$. flip operations only reorder nodes within a subtree and preserve the black node multiset on each path. Hence every operation keeps $b(P)$ equal for all root-to-leaf paths, which is exactly the black-height invariant.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

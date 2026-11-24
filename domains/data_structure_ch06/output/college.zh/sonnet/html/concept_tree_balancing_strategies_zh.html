@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Balancing Strategies | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="树平衡策略">树平衡策略</h2>
+<p><strong>定义。</strong> 二叉搜索树(BST)的各项操作(查找、插入、删除)耗时为 $O(h)$,其中 $h$ 为树高。若 $n$ 个键按升序依次插入,树会退化为一条链,$h=n$,操作退化为 $O(n)$。<strong>树平衡策略</strong>就是通过各种手段使 $h=O(\log n)$,从而保证操作为 $O(\log n)$。常见思路有三类:</p>
+<li><strong>随机化</strong>:随机化 BST(如 Treap)为每个键分配随机优先级,使树的形状等价于随机插入顺序所得的树,期望高度为 $O(\log n)$。</li>
+<li><strong>部分重建</strong>:如替罪羊树(Scapegoat Tree)。当某个节点的子树过于倾斜,即 $\text{size}(\text{child}) > \alpha\cdot\text{size}(v)$($\tfrac12<\alpha<1$)时,找到"替罪羊"节点,把它的整棵子树重建为完全平衡的树。</li>
+<li><strong>非二叉模拟</strong>:如 2-3-4 树与红黑树的对应关系。用多路节点保证所有叶子深度相同,再将其编码为二叉树,借助颜色约束维持 $h\le 2\log_2(n+1)$。</li>
+<p><strong>例题。</strong> 设 $\alpha=\tfrac23$,某子树节点 $v$ 满足 $\text{size}(v)=9$,其左子树大小为 $7$。判断是否需要重建。</p>
+<p>因为 $7>\tfrac23\times 9=6$,该节点失衡,需要重建。将这 $9$ 个键中序展开为有序数组,取中位数作根,递归构造左右子树,得到高度 $\lceil\log_2 10\rceil=4$ 的平衡树(根深度记为 $1$)。重建代价为 $O(\text{size}(v))=O(9)$。</p>
+<p><strong>问题求解应用。</strong> 为什么部分重建仍能保证效率?关键在于<strong>摊还分析</strong>。</p>
+<p>替罪羊树满足高度 $h\le\log_{1/\alpha} n+1$。一次重建一棵大小为 $s$ 的子树需要 $O(s)$ 时间,但刚重建完的子树是完全平衡的,要再次变得失衡,至少需要在该子树内再插入 $\Omega(s)$ 个节点。于是重建费用可以均摊到这些插入上;每次插入又会影响其路径上 $O(\log n)$ 个祖先,因此</p>
+$$
+\text{摊还插入代价}=O(\log n).
+$$
+<p>再看随机化:对 Treap,键 $x_j$ 是 $x_i$ 的祖先的概率为 $\dfrac{1}{|i-j|+1}$(当 $x_j$ 的优先级是区间 $[i,j]$ 中最大者时),因此期望深度为</p>
+$$
+\sum_{j\ne i}\frac{1}{|i-j|+1}\le 2H_n-2=O(\log n).
+$$
+<p><strong>策略选择。</strong></p>
+<p>| 策略 | 保证类型 | 特点 | |---|---|---| | 随机化(Treap) | 期望 $O(\log n)$ | 代码简短,依赖随机数 | | 部分重建(替罪羊树) | 摊还 $O(\log n)$ | 无需额外存储平衡信息 | | 非二叉模拟(红黑树) | 最坏 $O(\log n)$ | 实现复杂,保证最强 |</p>
+<p>当需要严格的最坏情况延迟(如实时系统)时选红黑树;追求实现简洁且可接受概率保证时选 Treap;内存紧张时可考虑替罪羊树。</p>
+<pre class="mermaid">flowchart TD
+    A[二叉搜索树退化风险] --> B[随机化]
+    A --> C[部分重建]
+    A --> D[非二叉模拟]
+    B --> E[期望对数高度]
+    C --> F[摊还对数时间]
+    D --> G[最坏对数高度]</pre>
+<p><em>图:三类平衡策略及其所提供的复杂度保证类型。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

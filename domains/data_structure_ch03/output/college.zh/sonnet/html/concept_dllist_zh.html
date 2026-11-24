@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="双向链表-dllist">双向链表(Dllist)</h2>
+<p><strong>定义。</strong> 双向链表(doubly linked list)是一种线性数据结构:每个节点保存三个字段——<code>prev</code>(指向前驱节点的引用)、<code>data</code>(数据)和 <code>next</code>(指向后继节点的引用)。头节点的 <code>prev</code> 与尾节点的 <code>next</code> 均为 <code>null</code>。与单向链表相比,它多付出一个引用的空间,换来<strong>双向遍历</strong>的能力,并使"已知某节点就能在 $O(1)$ 时间内删除它"成为可能。</p>
+<pre class="mermaid">graph TD
+    N0["空 null"] --- A
+    A["节点1: 前驱 | 数据 | 后继"] -->|后继 next| B["节点2: 前驱 | 数据 | 后继"]
+    B -->|前驱 prev| A
+    B -->|后继 next| C["节点3: 前驱 | 数据 | 后继"]
+    C -->|前驱 prev| B
+    C --- N1["空 null"]</pre>
+<p><em>图:双向链表中每个节点同时保存 prev 与 next 引用,相邻节点互相指向;单向链表则只有向右的 next 箭头。</em></p>
+<p><strong>节点定义与删除示例。</strong></p>
+<pre><code>class Node:
+    def __init__(self, data):
+        self.data = data
+        self.prev = None
+        self.next = None
+
+def remove(node):
+    # 先把前后邻居彼此连接,再处理边界
+    if node.prev: node.prev.next = node.next
+    if node.next: node.next.prev = node.prev</code></pre>
+<p>设链表为 $A \leftrightarrow B \leftrightarrow C$,要删除 $B$。执行 <code>remove(B)</code> 后:$A.\text{next}=C$,$C.\text{prev}=A$,即 $A \leftrightarrow C$。整个过程只改动两个引用,无需从头查找 $B$ 的前驱,时间为 $O(1)$。在单向链表中,同样的操作必须先从头遍历找到 $B$ 的前驱,代价为 $O(n)$。</p>
+<p><strong>问题求解应用。</strong> 在节点 $p$ 之后插入新节点 $q$,需要按正确顺序更新四个引用:</p>
+<li><code>q.prev = p</code></li>
+<li><code>q.next = p.next</code></li>
+<li>若 <code>p.next</code> 不为空,则 <code>p.next.prev = q</code></li>
+<li><code>p.next = q</code></li>
+<p>顺序很关键:若先执行第 4 步,<code>p.next</code> 的原值就丢失了,后继节点将无法接回。这类"断链"错误是双向链表最常见的 bug。</p>
+<p><strong>复杂度比较。</strong> 设链表长度为 $n$:</p>
+<p>| 操作 | 单向链表 | 双向链表 | |---|---|---| | 已知节点,删除该节点 | $O(n)$ | $O(1)$ | | 在已知节点后插入 | $O(1)$ | $O(1)$ | | 从尾部向前遍历 | 不能直接做到 | $O(n)$ | | 按下标访问第 $k$ 个 | $O(k)$ | $O(\min(k,\,n-k))$ |</p>
+<p>最后一行说明:若同时保存头、尾指针,可从离目标更近的一端出发,最坏只需走 $n/2$ 步。</p>
+<p><strong>应用场景。</strong> 浏览器的前进/后退历史、文本编辑器的撤销/重做栈,以及 LRU 缓存(哈希表配合双向链表,在 $O(1)$ 时间内把节点移到表头并淘汰表尾)都依赖这一结构。代价是每个节点多占一个指针的空间,且每次修改都要维护两个方向的一致性。</p>
+<p><strong>练习。</strong> 写出在节点 $p$ <strong>之前</strong>插入节点 $q$ 的四步操作,并说明当 $p$ 是头节点时需要额外更新什么。(提示:需要更新链表的 <code>head</code> 引用。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

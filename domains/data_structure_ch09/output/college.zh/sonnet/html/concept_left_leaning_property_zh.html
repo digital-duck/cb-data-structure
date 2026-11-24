@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Left Leaning Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="左倾性质">左倾性质</h2>
+<p><strong>定义。</strong> 红黑树的标准性质（根为黑、红节点的子节点为黑、每条路径黑高相同）允许某些红节点出现在右侧。<strong>左倾性质</strong>是一条附加约束：</p>
+<p>> 若一个节点的左孩子是黑色，则它的右孩子也必须是黑色。</p>
+<p>等价地说：<strong>红色孩子只能是左孩子，且若存在红色右孩子，则左孩子也必须是红色。</strong> 因此，一个节点要么有一个红色左孩子（与它合并成一个 3-节点），要么有两个红色孩子（合并成一个 4-节点），要么没有红色孩子（2-节点）。</p>
+<p>这条性质使红黑树与 2-3-4 树（简称 2-4 树）之间形成<strong>唯一</strong>对应：把每个黑节点与其红色孩子合并，得到的 2-4 树节点是确定的。若没有它，一个 3-节点可以表示成"黑节点带红左孩子"或"黑节点带红右孩子"两种形式，对应关系不唯一。</p>
+<p><strong>例题。</strong> 判断下列结构是否满足左倾性质（$B$ 表示黑，$R$ 表示红）：</p>
+<li>树 (a)：节点 $x$（黑），左孩子 $B$，右孩子 $R$。</li>
+<li>树 (b)：节点 $x$（黑），左孩子 $R$，右孩子 $B$。</li>
+<li>树 (c)：节点 $x$（黑），左孩子 $R$，右孩子 $R$。</li>
+<p><strong>解：</strong></p>
+<li>(a) 左孩子为黑，但右孩子为红，<strong>违反</strong>性质。它本来想表示一个 3-节点，却把红边放在了右侧。</li>
+<li>(b) 左孩子为红，条件的前提不成立，<strong>满足</strong>。对应 3-节点。</li>
+<li>(c) 左孩子为红，<strong>满足</strong>。对应 4-节点。</li>
+<p><strong>问题求解应用。</strong> 给定一个 3-节点，内含键 $\{10, 20\}$，用红黑树表示。</p>
+<p>由于必须满足左倾性质，只有一种合法写法：黑节点存较大的键 $20$，红色左孩子存 $10$。若写成黑节点 $10$ 带红色右孩子 $20$，则其左孩子（空，视为黑）为黑而右孩子为红，违反性质，必须通过<strong>左旋</strong>修复：</p>
+$$
+\text{rotateLeft}: \quad 10_B \,\to\, 20_R \quad \Longrightarrow \quad 20_B \leftarrow 10_R
+$$
+<p>旋转后黑高不变，且红色边转到左侧。这正是插入操作中"右红则左旋"这一修复步骤的来源。</p>
+<p><strong>为什么重要。</strong> 设 2-4 树中 3-节点和 4-节点的数目有限，则每个 2-4 树恰好对应一棵满足左倾性质的红黑树。因此红黑树的高度满足：设黑高为 $h_b$，则</p>
+$$
+h_b \le h \le 2h_b,
+$$
+<p>其中 $h$ 为树高（红节点不连续出现）。对 $n$ 个键有 $h = O(\log n)$。左倾性质并不改变这一对数界，它的价值在于<strong>简化实现</strong>：只需处理"红色左链"这一种情形，使插入、删除的分类讨论显著减少。</p>
+<pre class="mermaid">graph TD
+    A["2-4 树节点: 10 20"] --> B["黑 20"]
+    B --> C["红左孩子 10"]
+    B --> D["黑 右孩子（空）"]
+    E["非法: 黑 10"] --> F["黑 左孩子（空）"]
+    E --> G["红右孩子 20"]
+    G -. "左旋修复" .-> B</pre>
+<p><em>图：3-节点的唯一合法表示（左红）与违反左倾性质的右红写法，后者经左旋转化为前者。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array Resizing Amortization | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="array-resizing-amortization">Array Resizing Amortization</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>dynamic array</strong> stores its elements in a fixed-capacity block of memory. When an append finds the block full, the array allocates a new block of larger capacity, copies every element over, and frees the old block. A single resize costs $\Theta(n)$ for $n$ stored elements, yet it happens rarely. <strong>Amortized analysis</strong> averages cost over a whole sequence: if any sequence of $m$ operations costs $T(m)$ in total, the amortized cost per operation is $T(m)/m$.</p>
+<p>With a <strong>geometric growth policy</strong> (multiply capacity by a constant factor, typically $2$), the total cost of $m$ appends is $O(m)$. So each append is $O(1)$ amortized, even though an individual append can cost $\Theta(m)$.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Start with capacity $1$ and append $m = 2^k$ items. Count one unit per element written and one unit per element copied.</p>
+<p>A resize happens when the array holds $1, 2, 4, \dots, 2^{k-1}$ elements, and it copies that many items. Total copying cost:</p>
+$$\sum_{i=0}^{k-1} 2^i = 2^k - 1 < m.$$
+<p>Adding the $m$ writes gives</p>
+$$T(m) < m + m = 2m = O(m).$$
+<p>The amortized cost per append is below $2$.</p>
+<p><strong>Accounting (banking) view.</strong> Charge each append $3$ units. One unit pays for writing the item. The other two go into a bank. When the array doubles from capacity $c$ to $2c$, the $c/2$ items added since the last resize have banked $2 \cdot (c/2) = c$ units. That is exactly enough to copy all $c$ elements. The bank never goes negative, so the amortized cost is $3 = O(1)$.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A dynamic array grows by a <em>fixed increment</em> of $10$ slots instead of doubling. Find the total cost of $m$ appends.</p>
+<p><strong>Solution.</strong> Resizes occur at sizes $10, 20, 30, \dots$, so there are about $m/10$ of them. The $j$-th resize copies $10j$ elements:</p>
+$$\sum_{j=1}^{m/10} 10j = 10\cdot\frac{(m/10)(m/10+1)}{2} = \Theta(m^2).$$
+<p>The amortized cost per append is $\Theta(m)$. Additive growth fails. Geometric growth succeeds.</p>
+<p><strong>Generalization.</strong> For any growth factor $\alpha > 1$, resize copies form a geometric series bounded by</p>
+$$\sum_{i} \alpha^i \le \frac{m}{\alpha - 1} \cdot \alpha = O(m).$$
+<p>A larger $\alpha$ means fewer copies but more wasted space.</p>
+<p><strong>Shrinking.</strong> Do not halve the array as soon as it is half full. Suppose the array has just doubled and is exactly full. An append and a delete, repeated, would then trigger a resize on every operation, which costs $\Theta(n)$ each time. The standard fix is to shrink by half only when the load falls to $1/4$ of capacity. After any resize the array is then half full. At least $n/2$ further operations must happen before the next resize, which pays for the $\Theta(n)$ copy. Mixed appends and deletes therefore also cost $O(m)$ in total.</p>
+<pre class="mermaid">flowchart LR
+A["Append"] --> B{"Array full?"}
+B -- "No" --> C["Write item: cost 1"]
+B -- "Yes" --> D["Allocate 2x capacity"]
+D --> E["Copy n items: cost n"]
+E --> C</pre>
+<p><em>Most appends cost $1$. A full array triggers a rare doubling that costs $n$ copies. Banked credit from earlier appends pays for it.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="dllist">Dllist</h2>
+<p>A doubly linked list (dllist) is a linear data structure in which each node stores three components: a data value, a reference (<code>next</code>) to the following node, and a reference (<code>prev</code>) to the preceding node. This bidirectional linking is the key structural difference from a singly linked list, where each node only points forward. The tradeoff is memory: each node carries one extra pointer, but in exchange the list supports traversal in either direction and, critically, deletion or insertion at a known node in $O(1)$ time — no need to walk from the head to find the predecessor, since <code>prev</code> already points to it.</p>
+<p><strong>Worked example.</strong> Suppose we maintain a dllist representing a browser's history: <code>Home ↔ Search ↔ ArticleA ↔ ArticleB</code>. Each node's <code>next</code> lets us model "forward" navigation, while <code>prev</code> lets us model "back" navigation, without re-scanning the list. To delete <code>ArticleA</code> (say the page was removed), we do not need to search for its predecessor:</p>
+<pre><code>node = ArticleA
+node.prev.next = node.next       # Search now points to ArticleB
+node.next.prev = node.prev       # ArticleB now points back to Search</code></pre>
+<p>Both updates run in constant time because <code>node.prev</code> and <code>node.next</code> are already stored — this is the entire practical advantage of doubling the links.</p>
+<p><strong>Problem-solving application.</strong> Consider designing an LRU (Least Recently Used) cache, a classic interview and systems-design problem. It requires: (1) $O(1)$ access to any element, and (2) $O(1)$ removal of an arbitrary element and re-insertion at the "most recently used" end. A singly linked list fails requirement (2), because removing a node requires scanning from the head to find its predecessor — an $O(n)$ operation. A dllist solves this directly: pair it with a hash map from keys to node references, and any node can be unlinked and moved to the front in $O(1)$, since both its neighbors are immediately known. This combination (hash map + dllist) is the standard implementation pattern for LRU caches in real systems, including Python's <code>collections.OrderedDict</code> internals and Java's <code>LinkedHashMap</code>.</p>
+<pre class="mermaid">graph TD
+    Null1[null] -.-> N1
+    N1["node1: prev | data | next"] <--> N2["node2: prev | data | next"]
+    N2 <--> N3["node3: prev | data | next"]
+    N3 -.-> Null2[null]</pre>
+<p><em>A doubly linked list: each node holds both <code>prev</code> and <code>next</code> references, allowing traversal in both directions — unlike a singly linked list, which only links forward.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

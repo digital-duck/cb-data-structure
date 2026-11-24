@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edge Length | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="edge-length">Edge Length</h2>
+<h3 id="definition">Definition</h3>
+<p>An indexable skiplist is built from layers of linked lists $L_0, L_1, \dots, L_r$. The bottom list $L_0$ contains every element, and each higher list contains a subset of the one below it. To search by <em>position</em> (for example, "give me the 7th element") instead of by value, each edge stores an extra number.</p>
+<p>The <strong>edge length</strong> of an edge $e$ in list $L_r$, written $\text{len}(e)$, is the number of edges in $L_0$ that lie below it, that is, the number of bottom-level steps the edge jumps over. Every edge in $L_0$ has length $1$. A higher edge's length is the sum of the lengths of the edges it skips:</p>
+$$\text{len}(e) = \sum_{e' \in L_{r-1}\text{ under } e} \text{len}(e')$$
+<h3 id="worked-example">Worked example</h3>
+<p>Suppose $L_0$ holds the keys $A,B,C,D,E,F$, and $L_1$ holds only $A, C, F$ (plus a head node $H$ before $A$).</p>
+<li>In $L_0$, every edge has length 1.</li>
+<li>In $L_1$: $H\to A$ spans one $L_0$ edge, so length $1$. $A\to C$ spans $A\to B\to C$, so length $2$. $C\to F$ spans $C\to D\to E\to F$, so length $3$.</li>
+<pre class="mermaid">graph LR
+  H1["H (L1)"] -->|1| A1["A"]
+  A1 -->|2| C1["C"]
+  C1 -->|3| F1["F"]</pre>
+<p><em>Edges in $L_1$ labeled with their lengths; each equals the number of $L_0$ steps it skips.</em></p>
+<h3 id="problem-solving-application-find-the-element-at-index-k">Problem-solving application: find the element at index $k$</h3>
+<p>Keep a running total $pos$, the position of the current node, starting at $0$ at the head. Starting at the top layer, follow an edge $e$ only if $pos + \text{len}(e) \le k$. Otherwise drop one layer. When $pos = k$, you have arrived.</p>
+<p>Find index $4$ (counting $A$ as index 1) in the example:</p>
+<li>At $H$ in $L_1$: $pos=0$. Edge to $A$ has length 1, and $0+1\le 4$, so move. $pos=1$.</li>
+<li>Edge $A\to C$: $1+2=3\le 4$, so move. $pos=3$.</li>
+<li>Edge $C\to F$: $3+3=6>4$, so drop to $L_0$.</li>
+<li>In $L_0$, edge $C\to D$: $3+1=4\le 4$, so move. $pos=4$. Done, and the answer is $D$.</li>
+<p>Because the edge lengths let us skip whole stretches without counting them, the expected cost is $O(\log n)$, the same as searching by key. A plain linked list would need $O(n)$ steps.</p>
+<h3 id="maintaining-lengths">Maintaining lengths</h3>
+<p>When inserting a new node, every edge that <em>spans</em> the insertion point at a higher layer must have its length increased by $1$. For the layers where the new node appears, the spanning edge is split into two, and their lengths must add up to the old length plus one. If you track the $pos$ values at each layer during the search, you can compute the split without extra traversal. Deletion reverses this: merge the two edges around the removed node and subtract one.</p>
+<p><strong>Check yourself:</strong> in the example, if $G$ is inserted between $F$ and the end of $L_0$ and also promoted to $L_1$, what is the length of the new edge $F\to G$ in $L_1$? (Answer: $1$.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

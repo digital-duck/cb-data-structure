@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap Remove | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="树堆删除-treap-remove">树堆删除(Treap Remove)</h2>
+<h3 id="定义">定义</h3>
+<p>树堆(treap)同时是关于键的<strong>二叉搜索树</strong>和关于随机优先级 $p(u)$ 的<strong>堆</strong>(这里取最小堆:父节点优先级小于子节点)。<code>remove(x)</code> 是 <code>add(x)</code> 的逆过程:<code>add</code> 先按搜索树规则把 $x$ 插为叶子,再通过旋转<strong>上浮</strong>到满足堆序的位置;<code>remove</code> 则先找到含 $x$ 的节点 $u$,再通过旋转让 $u$ <strong>下沉</strong>(trickle down)到叶子,最后直接摘除。</p>
+<p>算法步骤:</p>
+<li>像二叉搜索树一样查找 $u$。</li>
+<li>当 $u$ 不是叶子时:若只有一个孩子,就旋转该孩子上来;若有两个孩子,就旋转<strong>优先级更小</strong>的那个孩子上来(这样新的父节点优先级仍小于另一个孩子,堆序得以保持)。</li>
+<li>当 $u$ 成为叶子后,把它从父节点处断开。</li>
+<p>旋转不改变中序序列,所以每一步都保持二叉搜索树性质。</p>
+<h3 id="例题">例题</h3>
+<p>设树堆节点以 键(优先级) 表示:根为 $5(1)$,其左孩子 $3(4)$,右孩子 $8(2)$;$8$ 的左孩子为 $6(7)$,右孩子为 $9(5)$。删除 $x=5$。</p>
+<li>根 $5$ 有两个孩子,优先级 $2<4$,故右旋/左旋使 $8$ 上来(对 $5$ 做<strong>左旋</strong>)。此时 $8(2)$ 为根,左孩子 $5(1)$ ……注意:旋转要把 $5$ 降为 $8$ 的左孩子,而 $6(7)$ 转为 $5$ 的右孩子。现在 $5$ 的孩子是 $3(4)$ 与 $6(7)$。</li>
+<li>仍有两个孩子,$4<7$,选 $3$:对 $5$ 做<strong>右旋</strong>,$3$ 成为 $8$ 的左孩子,$5$ 成为 $3$ 的右孩子,$5$ 只剩孩子 $6(7)$。</li>
+<li>只有一个孩子,左旋使 $6$ 上来,$5$ 变为叶子。</li>
+<li>摘除 $5$。</li>
+<p>共 3 次旋转,最终树仍是合法的树堆。</p>
+<h3 id="问题求解与分析">问题求解与分析</h3>
+<p><strong>复杂度。</strong> 删除所用旋转次数恰为 $u$ 在被删除前的<strong>左子树右脊</strong>长度与<strong>右子树左脊</strong>长度之和(每次旋转让其中一条脊减少 1)。这与 <code>add(x)</code> 中上浮所用的旋转次数相同(时间反演:<code>add</code> 的逆就是 <code>remove</code>)。由随机优先级的对称性,对大小为 $n$ 的树堆,节点 $u$ 的期望深度为 $O(\log n)$,而查找路径长度与旋转次数都被这类脊长度控制,具体地,秩为 $i$ 的节点,其两条脊的期望长度之和满足</p>
+$$
+E[\text{旋转次数}] \le \left(1-\tfrac{1}{i+1}\right)+\left(1-\tfrac{1}{n-i}\right) < 2 .
+$$
+<p>因此旋转部分期望只需<strong>常数</strong>次,总时间由查找主导,为期望 $O(\log n)$。</p>
+<p><strong>应用要点。</strong></p>
+<li>若不选优先级更小的孩子上旋,堆序会被破坏,这是常见错误。</li>
+<li>删除后无需重新生成随机数;其余节点的优先级保持独立,树的形状分布与"直接插入剩余键"所得一致,因此期望性能不会随反复增删而退化。</li>
+<li>练习:在上例中把 $9(5)$ 换成 $9(3)$,重新追踪旋转序列,并验证旋转次数。</li>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

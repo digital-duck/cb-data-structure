@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non Comparison Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="非比较排序">非比较排序</h2>
+<h3 id="定义">定义</h3>
+<p>任何基于两两比较的排序算法,其决策树至少有 $n!$ 个叶子,因此最坏情况下需要 $\Omega(n\log n)$ 次比较。<strong>非比较排序</strong>绕开了这一下界:它不问"$a$ 是否小于 $b$",而是直接把元素的<strong>值</strong>当作数组下标来使用。前提是元素为范围有限的整数,例如取值于 $\{0,1,\dots,k-1\}$。</p>
+<p>最典型的是<strong>计数排序</strong>(counting sort):</p>
+<li>开一个长度为 $k$ 的计数数组 $C$,统计每个值出现的次数;</li>
+<li>对 $C$ 做前缀和,使 $C[v]$ 表示"小于等于 $v$ 的元素个数",即值 $v$ 的最后一个输出位置;</li>
+<li>从右向左扫描输入,把每个元素放到 $C[v]-1$ 处并将 $C[v]$ 减 1。</li>
+<p>从右向左扫描保证了<strong>稳定性</strong>(相等元素保持原有相对顺序),这是下一个算法的关键。总时间为 $\Theta(n+k)$。</p>
+<p><strong>基数排序</strong>(radix sort)则逐位处理:从最低位到最高位,每一位用稳定的计数排序。若数字有 $d$ 位、每位取值范围为 $b$(进制),总时间为 $\Theta(d(n+b))$。</p>
+<h3 id="例题">例题</h3>
+<p>对 $A=[4,1,3,4,3]$($k=5$)做计数排序。</p>
+<li>计数:$C=[0,1,0,2,2]$(值 0 到 4 的出现次数)。</li>
+<li>前缀和:$C=[0,1,1,3,5]$。</li>
+<li>从右向左扫描:</li>
+<p>  - 读到 $3$:$C[3]-1=2$,放入位置 2,$C[3]=2$;   - 读到 $4$:放入位置 4,$C[4]=4$;   - 读到 $3$:放入位置 1,$C[3]=1$;   - 读到 $1$:放入位置 0,$C[1]=0$;   - 读到 $4$:放入位置 3,$C[4]=3$。</p>
+<p>输出为 $[1,3,3,4,4]$,两个 $4$ 的相对顺序与输入一致,所以排序是稳定的。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:对 $n=10^6$ 个取值于 $[0,10^9)$ 的整数排序,应选哪种算法?</p>
+<li>直接计数排序:$k=10^9$,时间与空间为 $\Theta(n+k)\approx10^9$,远不可取。</li>
+<li>基数排序:取 $b=1000$,则 $d=3$,总代价 $\Theta(3\,(10^6+10^3))\approx3\times10^6$ 次基本操作。</li>
+<li>比较排序:$n\log_2 n\approx2\times10^7$ 次比较。</li>
+<p>因此基数排序在此场景下更快。</p>
+<p>一般地,若数值范围为 $n^{c}$($c$ 为常数),取 $b=n$,则 $d=c$,基数排序的时间为 $\Theta(cn)=\Theta(n)$,即线性时间。</p>
+<p><strong>这是否推翻了 $\Omega(n\log n)$ 下界?</strong> 没有。该下界只针对"仅通过比较获取信息"的模型。非比较排序额外利用了"元素是有界整数"这一结构信息,代价是:</p>
+<li>适用范围受限(需要整数或可映射为整数的键);</li>
+<li>需要 $\Theta(k)$ 或 $\Theta(b)$ 的额外空间;</li>
+<li>当 $k\gg n$ 时,优势消失。</li>
+<p><strong>选择准则</strong>:当 $k=O(n)$ 或键的位数 $d$ 很小时,优先考虑非比较排序;当键是任意可比较对象(如字符串的自定义顺序、浮点数的复杂规则)时,回到比较排序。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

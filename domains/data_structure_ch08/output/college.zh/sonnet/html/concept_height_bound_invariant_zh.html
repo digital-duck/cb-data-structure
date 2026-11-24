@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Height Bound Invariant | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="高度界不变量">高度界不变量</h2>
+<p><strong>定义。</strong> 设 $n$ 为 ScapegoatTree 当前的节点数,$q$ 为"上界计数器",它记录自上次整体重建以来树可能达到的最大规模。每次插入使 $n$ 与 $q$ 同时加 1;删除只让 $n$ 减 1,而 $q$ 保持不变;当 $q>2n$ 时,整棵树被重建,并令 $q=n$。<strong>高度界不变量</strong>要求树的高度 $h$ 始终满足</p>
+$$h \le \log_{3/2} q = \frac{\ln q}{\ln(3/2)}.$$
+<p>因为 $q$ 至多是 $n$ 的常数倍(重建规则保证 $n\le q\le 2n$),所以 $h=O(\log n)$,搜索时间也是 $O(\log n)$。</p>
+<p><strong>为什么底数是 $3/2$?</strong> ScapegoatTree 使用 $\alpha=2/3$ 的权重平衡:若节点 $u$ 的某个子树大小超过 $\tfrac23\,\text{size}(u)$,则 $u$ 失衡。一个深度为 $d$ 的节点,其所在每一层的子树大小至多是上一层的 $2/3$,因此若所有祖先都平衡,则</p>
+$$1 \le n\left(\tfrac23\right)^{d}\ \Longrightarrow\ d\le\log_{3/2} n\le \log_{3/2} q.$$
+<p><strong>例题。</strong> 设 $q=100$,计算允许的最大高度:</p>
+$$\log_{3/2}100=\frac{\ln 100}{\ln 1.5}=\frac{4.605}{0.405}\approx 11.36,$$
+<p>所以高度不得超过 $11$。现在插入一个新节点,它落在深度 $12$ 处。此时 $n$ 与 $q$ 均加 1(变为 $101$),但 $\log_{3/2}101\approx 11.38$,深度 $12>11.38$,<strong>不变量被破坏</strong>。</p>
+<p><strong>应用:寻找替罪羊。</strong> 一旦插入后检测到 $d>\log_{3/2} q$,就沿插入路径向上回溯,寻找第一个失衡的祖先 $u$,即满足</p>
+$$\text{size}(\text{子节点})>\tfrac23\,\text{size}(u)$$
+<p>的节点,它就是"替罪羊"。理由是:若路径上所有祖先都平衡,由上面的推导就有 $d\le\log_{3/2}n\le\log_{3/2}q$,与 $d>\log_{3/2}q$ 矛盾;所以替罪羊必然存在。把以 $u$ 为根的子树拍平成有序数组,再递归地以中位数为根重建为完全平衡的树,不变量即可恢复。</p>
+<p><strong>摊还分析要点。</strong> 重建代价为 $O(\text{size}(u))$,但只有在大量更新使子树严重失衡之后才会发生,把代价摊到这些更新上,每次插入或删除的摊还代价为 $O(\log n)$。</p>
+<pre class="mermaid">flowchart TD
+A[插入新节点] --> B[深度 d 是否大于 log3/2 q]
+B -->|否| C[不变量成立 结束]
+B -->|是| D[沿路径向上回溯]
+D --> E[找到第一个失衡祖先 u]
+E --> F[拍平 u 的子树]
+F --> G[重建为完全平衡树]
+G --> C</pre>
+<p><em>图:插入后检查高度界不变量,若被破坏则定位替罪羊并重建子树。</em></p>
+<p><strong>小结。</strong> 高度界不变量用一个简单的数值阈值 $\log_{3/2}q$ 取代了每次操作都维护严格平衡的开销:平时几乎不做额外工作,只在阈值被突破时才局部重建,从而同时保证了 $O(\log n)$ 的搜索时间与 $O(\log n)$ 的摊还更新代价。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Van Emde Boas Tree | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="van-emde-boas-tree">Van Emde Boas Tree</h2>
+<p><strong>Definition.</strong> A van Emde Boas (vEB) tree stores a subset $S$ of the universe $U=\{0,1,\dots,u-1\}$, where $u = 2^w$ is the number of values representable with $w$-bit keys. It supports <code>add</code>, <code>remove</code>, and <code>find</code> (successor) in $O(\log w) = O(\log\log u)$ time. This is exponentially faster than the $O(\log u) = O(w)$ cost of a balanced tree or binary trie.</p>
+<p>The structure is recursive. Split each $w$-bit key $x$ into a high half and a low half:</p>
+$$
+\text{hi}(x)=\lfloor x/2^{w/2}\rfloor,\qquad \text{lo}(x)=x \bmod 2^{w/2}.
+$$
+<p>A vEB tree on universe size $u$ stores:</p>
+<li><code>min</code> and <code>max</code>, with <code>min</code> <strong>not</strong> stored recursively;</li>
+<li>an array <code>cluster[0..√u−1]</code> of vEB trees, each on universe size $\sqrt{u}$. Each cluster holds the low halves of the keys that share a given high half;</li>
+<li>one <code>summary</code> vEB tree on universe size $\sqrt{u}$, recording which clusters are nonempty.</li>
+<p>Each level indexes its clusters with a plain <strong>array</strong>, not a hash table. Direct indexing by $\text{hi}(x)$ is $O(1)$ and deterministic.</p>
+<p><strong>Why it is fast.</strong> Every operation makes at most <strong>one</strong> nontrivial recursive call, either into a cluster or into the summary. Each call halves the key's bit-length, so the recurrence is</p>
+$$
+T(w)=T(w/2)+O(1)\;\Rightarrow\;T(w)=O(\log w).
+$$
+<p>Storing <code>min</code> outside the recursion is what makes this work. Inserting into an empty cluster then takes $O(1)$ (set <code>min</code> and <code>max</code>) and does not recurse again. Without that trick, inserting into an empty cluster would need a second call to update the summary.</p>
+<p><strong>Worked example.</strong> Take $w=4$, $u=16$, so clusters have universe size 4, and let $S=\{2,3,7,12\}$. Then:</p>
+<p>| key | hi | lo | |---|---|---| | 2 | 0 | 2 | | 3 | 0 | 3 | | 7 | 1 | 3 | | 12 | 3 | 0 |</p>
+<p>The top level has <code>min</code>=2 (held outside the clusters) and <code>max</code>=12. Cluster 0 holds $\{3\}$, cluster 1 holds $\{3\}$, and cluster 3 holds $\{0\}$. The summary holds $\{0,1,3\}$.</p>
+<p><strong>Problem-solving application: successor of 8.</strong> Here $\text{hi}(8)=2$ and $\text{lo}(8)=0$.</p>
+<li>Check cluster 2. It is empty, so it has no <code>max</code> that could exceed 0.</li>
+<li>Ask the summary for the successor of cluster index 2. The answer is 3, so the successor lies in cluster 3.</li>
+<li>Take cluster 3's <code>min</code>, which is 0. Recombine: $3\cdot 4+0=12$.</li>
+<p>Only two recursive lookups were made: an $O(1)$ check against cluster 2's <code>max</code>, then one call on the summary. Cluster 3's <code>min</code> is read in $O(1)$. So the recursion depth is $O(\log w)$.</p>
+<p><strong>Cost caveat.</strong> Arrays at every level give space $O(u)$, since $S(u)=(\sqrt{u}+1)\,S(\sqrt{u})+O(\sqrt{u})$ solves to $O(u)$. For $w=64$ this is impractical. That is why hash-table variants (such as the y-fast trie) are used to cut space to $O(n)$. They give up the deterministic worst-case guarantee in the process.</p>
+<p><strong>Check yourself.</strong> Why does inserting $x$ into an empty vEB tree take $O(1)$ time? (Answer: it sets <code>min</code> = <code>max</code> = $x$ and makes no recursive calls.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

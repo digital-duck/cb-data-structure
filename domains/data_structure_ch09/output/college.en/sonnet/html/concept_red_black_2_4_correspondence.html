@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black 2 4 Correspondence | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-2-4-correspondence">Red Black 2 4 Correspondence</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>red-black tree</strong> is a binary search tree whose nodes are colored red or black so that:</p>
+<li>The root is black.</li>
+<li>No red node has a red child.</li>
+<li>Every path from a node to its descendant null leaves contains the same number of black nodes (the <em>black-height</em>).</li>
+<p>A <strong>2-4 tree</strong> is a multiway search tree in which every internal node has 2, 3, or 4 children (holding 1, 2, or 3 keys), and all leaves are at the same depth.</p>
+<p><strong>The transformation.</strong> Take each red node and merge it into its black parent, so the red node's key joins the parent's key in one multiway node. Each black node, together with its red children, becomes one node:</p>
+<li>Black with no red children → a 2-node (1 key).</li>
+<li>Black with one red child → a 3-node (2 keys).</li>
+<li>Black with two red children → a 4-node (3 keys).</li>
+<p>Rule 2 forbids red children of red nodes, so a merged group never exceeds three keys (one black plus at most two red children). A black node's children are all black or null, so the groups link up as a valid multiway tree. Rule 3 means every path crosses the same number of black nodes, so all leaves of the 2-4 tree have equal depth. Hence <strong>every red-black tree corresponds to a 2-4 tree</strong>. A 3-node can be drawn in two ways, depending on which key is the black one (the red child may lean left or right), so the correspondence is not one-to-one in that direction.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take black root $20$ with red children $10$ and $30$. Under $10$'s side is a black node $5$, and under $30$'s side are black nodes $25$ and $40$.</p>
+<p>Merging the reds into the root gives one 4-node $[10, 20, 30]$. It has four children: $5$ (between $-\infty$ and $10$), a null child (between $10$ and $20$), $25$ (between $20$ and $30$), and $40$ (above $30$). Every path from the root reaches a black node in one step, matching rule 3.</p>
+<h3 id="problem-solving-application-the-height-bound">Problem-solving application: the height bound</h3>
+<p><strong>Claim.</strong> A red-black tree with $n$ keys has height $h \le 2\log_2(n+1)$.</p>
+<p><strong>Proof.</strong> Let $b$ be the black-height of the root, counting black nodes on a root-to-leaf path. The corresponding 2-4 tree has all leaves at depth $b-1$ (counting levels as $b$). A tree with $b$ full levels has at least as many keys as a complete binary tree, since each 2-4 node holds at least one key and has at least two children:</p>
+$$n \ge 2^{b}-1 \quad\Rightarrow\quad b \le \log_2(n+1).$$
+<p>Within the red-black tree, a root-to-leaf path alternates at worst red, black, red, black, since no two reds are adjacent. So reds number at most $b$, because each red must be followed by a black (or a null leaf), and the height satisfies</p>
+$$h \le 2b \le 2\log_2(n+1).$$
+<p><strong>Apply it.</strong> For $n = 10^6$ keys, $\log_2(10^6+1)\approx 19.93$, so $h \le 39.9$, meaning at most 39 comparisons per search. This guarantees that search, insertion, and deletion are $O(\log n)$.</p>
+<p>The correspondence also explains the balancing operations. A color flip (black node with two red children, flipped) is a 4-node split, and rotations rearrange how a 3-node is drawn. Reasoning in the 2-4 tree is often easier than reasoning about colors directly.</p>
+<pre class="mermaid">graph TD
+A["RB: black 20"] --> B["red 10"]
+A --> C["red 30"]
+D["2-4 node: 10, 20, 30"] --> E["child below 10"]
+D --> F["child between 10 and 20"]
+D --> G["child between 20 and 30"]
+D --> H["child above 30"]</pre>
+<p><em>A black node with two red children (top) merges into a single 2-4 four-node holding all three keys (bottom).</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

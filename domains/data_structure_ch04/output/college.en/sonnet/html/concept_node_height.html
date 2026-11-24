@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node Height | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="node-height">Node Height</h2>
+<p><strong>Definition.</strong> In a skiplist, each element $x$ is stored in the bottom list $L_0$ and may also appear in higher "express" lists $L_1, L_2, \dots$. The <strong>height</strong> of $x$, written $h(x)$, is the largest index $r$ such that $x \in L_r$. Because lists are nested ($L_{r} \subseteq L_{r-1}$), $x$ appears in exactly the lists $L_0, \dots, L_{h(x)}$.</p>
+<p>Height is chosen at insertion time by repeated fair coin tosses: toss a coin until the first tails, and let $h(x)$ be the number of heads. Each toss is independent, so</p>
+$$\Pr[h(x) \ge r] = \left(\tfrac{1}{2}\right)^r, \qquad \Pr[h(x) = r] = \left(\tfrac{1}{2}\right)^{r+1}.$$
+<p>Thus about half of all elements have height $0$, a quarter have height $1$, and so on. Each level thins out the one below by a factor of about $2$, which creates the "express lane" structure.</p>
+<p><strong>Worked example.</strong> Insert a new key and toss: H, H, H, T. Three heads before the first tails gives $h(x) = 3$, so $x$ is linked into $L_0, L_1, L_2, L_3$. The probability of this outcome is $(1/2)^4 = 1/16$.</p>
+<p>Now suppose we insert $n = 1024$ elements. The expected number with $h(x) \ge r$ is $n/2^r$. For $r = 10$ this is $1$, so we expect roughly one element at level $10$ and none far above it. This suggests the tallest node has height near $\log_2 n$.</p>
+<p><strong>Problem-solving application.</strong> <em>How tall is the whole skiplist?</em> Let $H = \max_x h(x)$ over $n$ elements. By the union bound,</p>
+$$\Pr[H \ge r] \le n \cdot 2^{-r}.$$
+<p>Choose $r = c\log_2 n$ for a constant $c > 1$:</p>
+$$\Pr[H \ge c\log_2 n] \le n \cdot n^{-c} = n^{1-c}.$$
+<p>So with $c = 3$, the height exceeds $3\log_2 n$ with probability at most $1/n^2$. The skiplist therefore has $O(\log n)$ height with high probability. Searches start at the top list and descend, so this bound is what makes the expected search time $O(\log n)$.</p>
+<p><em>Expected height of one node:</em> $E[h(x)] = \sum_{r \ge 1} \Pr[h(x) \ge r] = \sum_{r\ge1} 2^{-r} = 1$. So each element appears in $E[h(x)] + 1 = 2$ lists on average, and total space is $O(n)$ expected, even though the structure has $\Theta(\log n)$ levels.</p>
+<pre class="mermaid">graph TD
+  A["Toss coin"] --> B{"Heads?"}
+  B -->|"Yes"| C["Increase h(x) by 1"]
+  C --> A
+  B -->|"No"| D["Stop: x is in L0 through L_h(x)"]</pre>
+<p><em>The height-selection procedure: keep tossing, count heads, and stop at the first tails.</em></p>
+<p><strong>Practice.</strong> With $n = 2^{20}$ elements, what is the expected number of nodes with $h(x) \ge 15$? Using $n/2^r$, it is $2^{20}/2^{15} = 32$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

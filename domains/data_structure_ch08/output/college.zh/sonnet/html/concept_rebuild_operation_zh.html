@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebuild Operation | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="重建操作-rebuild-operation">重建操作(Rebuild Operation)</h2>
+<p><strong>定义。</strong> 在平衡二叉搜索树(如替罪羊树)中,当以结点 $u$ 为根的子树失衡时,<strong>重建操作</strong>会销毁该子树,并用同样的 $\text{size}(u)$ 个键重新构造一棵<strong>完美平衡</strong>的二叉搜索树。整个过程耗时 $O(\text{size}(u))$,由辅助过程 <code>build_balanced</code> 完成。</p>
+<p>重建分两步:</p>
+<li><strong>压平(flatten)</strong>:对 $u$ 的子树做中序遍历,按升序把所有键收集到数组 $A[0..m-1]$,其中 $m=\text{size}(u)$。</li>
+<li><strong>建树(build_balanced)</strong>:递归地取中点作根,左半段建左子树,右半段建右子树。</li>
+<pre><code>def build_balanced(A, lo, hi):      # 区间 [lo, hi)
+    if lo &gt;= hi: return None
+    mid = (lo + hi) // 2
+    node = Node(A[mid])
+    node.left  = build_balanced(A, lo, mid)
+    node.right = build_balanced(A, mid + 1, hi)
+    return node</code></pre>
+<p><strong>为什么是 $O(m)$?</strong> 中序遍历访问每个结点一次,耗时 $O(m)$;<code>build_balanced</code> 为每个键恰好创建一个结点,其递归式为</p>
+$$T(m)=2T(m/2)+O(1),$$
+<p>由主定理(或直接计数:共 $m$ 个结点,每个 $O(1)$)得 $T(m)=O(m)$。因每次取中点,左右子树大小至多相差 1,故树高为 $\lceil \log_2(m+1)\rceil$。</p>
+<p><strong>例题。</strong> 设某子树中序遍历得 $A=[2,5,7,9,12,15,20]$($m=7$)。</p>
+<li>区间 $[0,7)$:$\text{mid}=3$,根为 $9$。</li>
+<li>左段 $[2,5,7]$:根 $5$,孩子 $2$、$7$。</li>
+<li>右段 $[12,15,20]$:根 $15$,孩子 $12$、$20$。</li>
+<p>结果是高度为 $2$ 的满二叉树,其中 $\lceil\log_2 8\rceil=3$ 层。原先若是一条退化的链(高度 $6$),重建后查询代价从 $O(m)$ 降到 $O(\log m)$。</p>
+<pre class="mermaid">graph TD
+    A["9"] --> B["5"]
+    A --> C["15"]
+    B --> D["2"]
+    B --> E["7"]
+    C --> F["12"]
+    C --> G["20"]</pre>
+<p><em>图:对有序数组 [2,5,7,9,12,15,20] 调用 build_balanced 得到的完美平衡树。</em></p>
+<p><strong>问题求解应用。</strong> 替罪羊树规定:若某结点 $v$ 满足 $\text{size}(v.\text{child}) > \alpha\cdot \text{size}(v)$($\tfrac12<\alpha<1$),则称其失衡。插入后沿路径向上找到<strong>最高</strong>的失衡祖先 $u$,对其执行重建。</p>
+<p><em>摊还分析思路</em>:重建后 $u$ 的两棵子树大小几乎相等,要再次使 $u$ 失衡,至少需要 $\Omega\big((2\alpha-1)\,\text{size}(u)\big)$ 次插入。把重建的 $O(\text{size}(u))$ 代价均摊给这些插入,每次插入摊到 $O(1)$ 的重建费用;每个键又至多被其 $O(\log n)$ 个祖先"付费",故插入的摊还代价为 $O(\log n)$。</p>
+<p><strong>练习。</strong> 对 $A=[1,\dots,10]$ 调用 <code>build_balanced</code>(区间 $[0,10)$),写出根结点以及左、右子树的大小,并验证树高为 $\lceil\log_2 11\rceil=4$。(提示:$\text{mid}=5$,根为 $A[5]=6$,左子树 5 个键,右子树 4 个键。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

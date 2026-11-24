@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Scheme | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="credit-scheme">Credit Scheme</h2>
+<p><strong>Definition.</strong> A <em>credit scheme</em> is an amortized-analysis technique in which each update (insertion or deletion) deposits a small number of <em>credits</em> on nodes of a data structure. Those credits later pay for expensive restructuring. Here the restructuring is a call to $\text{rebuild}(u)$, which tears down the subtree rooted at $u$ and rebuilds it as a perfectly balanced tree. Rebuilding $u$ costs $\Theta(\operatorname{size}(u))$. The claim is that credits deposited earlier cover this cost, so $m$ operations cost $O(m\log m)$ in total.</p>
+<p><strong>The invariant.</strong> Rebuilding is triggered when a node $u$ becomes unbalanced. For example, a child's subtree may hold more than a fraction $\alpha$ of $\operatorname{size}(u)$, with $\tfrac12<\alpha<1$. The scheme maintains this invariant:</p>
+<p>> Every node $u$ holds credit proportional to how far it has drifted from balance since it was last rebuilt.</p>
+<p>Right after $\text{rebuild}(u)$, the subtree is perfectly balanced, so every node in it has zero credit and a drift of zero.</p>
+<p><strong>Worked example.</strong> Suppose $\text{rebuild}(u)$ has just run, with $\operatorname{size}(u)=s$. Both children have size about $s/2$. For $u$ to become unbalanced, one child must exceed $\alpha s$. Since $\alpha>\tfrac12$, that child must gain at least $(\alpha-\tfrac12)s=\Omega(s)$ net nodes. Each of those updates passes through $u$.</p>
+<p>Charge each update $c$ credits at <em>every</em> node on its root-to-leaf path. Then $u$ accumulates at least</p>
+$$c\,(\alpha-\tfrac12)\,s=\Omega(s)$$
+<p>credits before it can trigger another rebuild. Choosing $c$ large enough, the credits at $u$ pay for the $\Theta(s)$ rebuild cost.</p>
+<p><strong>Problem-solving application: bounding the total.</strong> Each update touches a path of length $O(\log m)$. This holds because rebuilding keeps the tree height logarithmic. Each node on the path receives $c=O(1)$ credits, so one update deposits</p>
+$$c\cdot O(\log m)=O(\log m)$$
+<p>credits in total.</p>
+<p>After $m$ operations, the credits deposited total $O(m\log m)$. Every rebuild is paid from credits that were deposited since that node's previous rebuild. Credits spent at $u$ were never counted for any other rebuild. Therefore</p>
+$$\sum_{\text{rebuilds}} \Theta(\operatorname{size}(u)) \;\le\; \text{total credits deposited} \;=\; O(m\log m).$$
+<p>The amortized cost per operation is then $O(\log m)$. This covers both the search path and the rebuilding.</p>
+<p><strong>Checking your work.</strong> To apply this scheme to a new problem, follow three steps.</p>
+<li>State the imbalance condition that triggers a rebuild.</li>
+<li>Show that after a rebuild, at least $\Omega(\operatorname{size}(u))$ updates must pass through $u$ before it triggers again.</li>
+<li>Multiply the per-node charge by the path length to get the per-update charge.</li>
+<p>A common mistake is to charge only the node that triggers the rebuild. That node has not necessarily received enough updates. The charge must go to every ancestor along the path, and the $O(\log m)$ path length is what produces the extra logarithmic factor in the bound.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

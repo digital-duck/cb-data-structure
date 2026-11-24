@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cycle Detection Via Dfs | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="基于深度优先搜索的环检测">基于深度优先搜索的环检测</h2>
+<h3 id="定义">定义</h3>
+<p>在有向图 $G=(V,E)$ 上运行深度优先搜索（DFS）时，给每个顶点涂上三种颜色之一：</p>
+<li><strong>白色</strong>：尚未被发现；</li>
+<li><strong>灰色</strong>：已被发现，但其所有出边尚未处理完（即仍在当前递归栈中）；</li>
+<li><strong>黑色</strong>：已处理完毕，其所有后代都已访问。</li>
+<p><strong>环检测定理：</strong> 有向图 $G$ 含有环，当且仅当 DFS 过程中出现一条<strong>回边</strong>，即从当前顶点 $u$ 指向一个<strong>灰色</strong>顶点 $v$ 的边 $(u,v)$。</p>
+<p><strong>证明思路：</strong></p>
+<li>($\Rightarrow$) 设 $G$ 有环 $C$，令 $v$ 为 $C$ 中最先被发现的顶点。此刻 $C$ 上其余顶点均为白色。由白色路径定理，它们都会成为 $v$ 的后代。设 $u$ 是环上指向 $v$ 的前驱，则 $u$ 是 $v$ 的后代。处理 $u$ 的边 $(u,v)$ 时，$v$ 尚未结束，仍为灰色，因此这是一条回边。</li>
+<li>($\Leftarrow$) 若存在边 $(u,v)$ 且 $v$ 为灰色，则 $v$ 在递归栈上，是 $u$ 的祖先。于是存在树路径 $v \leadsto u$，再加上边 $(u,v)$，就构成一个环。</li>
+<p>指向黑色顶点的边是前向边或横叉边，不会产生环。算法的时间复杂度为 $O(|V|+|E|)$。</p>
+<h3 id="worked-example-工作示例">worked example（工作示例）</h3>
+<p>考虑有向图，边集为 $A\to B,\ B\to C,\ C\to D,\ D\to B,\ A\to D$。</p>
+<p>从 $A$ 出发：</p>
+<li>访问 $A$（灰），沿 $A\to B$ 访问 $B$（灰）。</li>
+<li>访问 $C$（灰），再访问 $D$（灰）。</li>
+<li>检查 $D\to B$：$B$ 是<strong>灰色</strong>，发现回边，报告环 $B\to C\to D\to B$。</li>
+<p>若把 $D\to B$ 改为 $D\to A$，同样会得到灰色目标。而若图中只有 $A\to B,\ A\to C,\ B\to D,\ C\to D$（菱形），则处理 $C\to D$ 时 $D$ 已是<strong>黑色</strong>，不构成环，正确地判定为无环。</p>
+<pre class="mermaid">graph TD
+    A["A（灰）"] --> B["B（灰）"]
+    B --> C["C（灰）"]
+    C --> D["D（灰）"]
+    D -.->|"回边：指向灰色顶点"| B
+    A --> D</pre>
+<p><em>图示：从 D 指向仍在栈上的灰色顶点 B 的回边（虚线），说明存在环 B→C→D→B。</em></p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>课程先修关系检查：</strong> 把每门课程看作顶点，"先修 $X$ 才能修 $Y$"看作边 $X\to Y$。如果先修关系中存在环，就没有合法的修课顺序（拓扑排序不存在）。</p>
+<pre><code>def has_cycle(graph):
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph}
+
+    def dfs(u):
+        color[u] = GRAY
+        for v in graph[u]:
+            if color[v] == GRAY:      # 回边 → 有环
+                return True
+            if color[v] == WHITE and dfs(v):
+                return True
+        color[u] = BLACK
+        return False
+
+    return any(color[v] == WHITE and dfs(v) for v in graph)</code></pre>
+<p><strong>注意事项：</strong></p>
+<li>只用"是否访问过"的二值标记会把菱形误判为有环，必须区分灰与黑。</li>
+<li><strong>无向图</strong>中情形不同：每条边 $(u,v)$ 都会被反向看到一次，需要忽略指向父节点的那条边，其余指向已访问顶点的边才表示环。</li>
+<li>若要输出环本身，可记录每个顶点的父指针，发现回边 $(u,v)$ 时沿父指针从 $u$ 回溯到 $v$ 即可。</li>
+<p><strong>练习：</strong> 对边集 $1\to2,\ 2\to3,\ 3\to4,\ 2\to4,\ 4\to2$ 手动运行算法，并指出哪条边是回边。（答案：$4\to2$。）</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Tree | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="二叉树">二叉树</h2>
+<p><strong>定义。</strong> 二叉树(binary tree)是一种有根树,其中每个结点至多有两个孩子,分别称为<strong>左孩子</strong>和<strong>右孩子</strong>。左、右位置是区分的:只有左孩子的结点与只有右孩子的结点是不同的树。若把每个缺失的孩子位置用<strong>外部结点</strong>(空位)补齐,则每个原有的<strong>内部结点</strong>恰好有两个孩子。</p>
+<p>这带来一个重要的计数关系:设二叉树有 $n$ 个内部结点,则外部结点数为</p>
+$$
+e = n + 1 .
+$$
+<p><strong>证明(归纳法)。</strong> $n=0$ 时只有一个外部结点,$e=1$。设结论对少于 $n$ 个内部结点的树成立。取根,左子树有 $a$ 个内部结点,右子树有 $b$ 个,且 $a+b=n-1$。由归纳假设,外部结点数为 $(a+1)+(b+1)=n+1$。$\blacksquare$</p>
+<p><strong>常用术语。</strong> 结点的<strong>深度</strong>是它到根的边数;树的<strong>高度</strong> $h$ 是最大深度。高度为 $h$ 的二叉树,第 $d$ 层至多有 $2^d$ 个结点,因此</p>
+$$
+n \le 2^{h+1}-1,\qquad h \ge \lceil \log_2(n+1) \rceil - 1 .
+$$
+<p><strong>例题。</strong> 一棵二叉树的根为 $A$,$A$ 的左孩子为 $B$、右孩子为 $C$,$B$ 只有右孩子 $D$,其余结点均无孩子。求内部结点数、外部结点数和高度。</p>
+<li>有孩子的结点为 $A, B$,另 $C, D$ 是叶子。若把叶子也算作内部结点(它们各有两个外部孩子),则 $n=4$,于是 $e=5$。</li>
+<li>验证:$C$ 有 2 个外部孩子,$D$ 有 2 个,$B$ 的左位置有 1 个,共 $2+2+1=5$。✓</li>
+<li>高度:$A\to B\to D$,所以 $h=2$。</li>
+<p><strong>中序遍历。</strong> 遍历顺序为"左子树、根、右子树"。上例得到 $B, D, A, C$ 吗?注意 $B$ 无左孩子,先访问 $B$,再访问其右子树 $D$,然后是 $A$,最后是 $C$。结果:$B, D, A, C$。</p>
+<p><strong>问题求解应用。</strong> 许多递归算法直接沿树的结构展开。例如计算高度:</p>
+<pre><code>def height(node):
+    if node is None:          # 外部结点
+        return -1
+    return 1 + max(height(node.left), height(node.right))</code></pre>
+<p>每个结点恰好被访问一次,外部结点被访问 $n+1$ 次,所以总时间为 $\Theta(n)$。递归深度等于树高 $h$:平衡时 $h=\Theta(\log n)$,最坏情形(所有结点排成一条链)$h=n-1$。这正是平衡二叉搜索树要保证 $h=O(\log n)$ 的原因:查找、插入的代价都与 $h$ 成正比。</p>
+<pre class="mermaid">graph TD
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> L1[外部结点]
+    B --> D((D))
+    D --> L2[外部结点]
+    D --> L3[外部结点]
+    C --> L4[外部结点]
+    C --> L5[外部结点]</pre>
+<p><em>例题中的二叉树:圆形为内部结点,方形为补齐缺失孩子位置的外部结点,共 5 个,符合 $e=n+1$。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

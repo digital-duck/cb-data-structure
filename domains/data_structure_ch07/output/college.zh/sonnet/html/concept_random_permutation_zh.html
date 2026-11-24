@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Permutation | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="随机排列">随机排列</h2>
+<h3 id="定义">定义</h3>
+<p><strong>随机排列</strong>(random permutation)是指对 $n$ 个不同元素所作的一种排列,其选取方式使得全部 $n!$ 种可能的排列<strong>等可能</strong>出现,即每一种排列 $\pi$ 的概率都是</p>
+$$P(\pi)=\frac{1}{n!}.$$
+<p>注意:"随机"指的是<em>选取过程</em>的性质,而不是某个排列本身"看起来乱不乱"。排列 $(1,2,3)$ 与 $(3,1,2)$ 被选中的概率完全相同。</p>
+<h3 id="例题-为什么逐位选取能做到均匀">例题:为什么逐位选取能做到均匀</h3>
+<p>构造随机排列的自然方法是:先从 $n$ 个元素中等概率选一个放在第 1 位,再从剩下 $n-1$ 个中等概率选一个放在第 2 位,依此类推。任意一个特定排列 $\pi$ 出现的概率为</p>
+$$\frac{1}{n}\cdot\frac{1}{n-1}\cdots\frac{1}{1}=\frac{1}{n!}.$$
+<p>这恰好满足定义。</p>
+<p>以 $n=3$ 为例,排列 $(b,a,c)$ 的概率为 $\frac13\cdot\frac12\cdot 1=\frac16$,与另外 5 种排列相同。</p>
+<h3 id="fisher-yates-洗牌算法">Fisher–Yates 洗牌算法</h3>
+<p>把上述思想原地实现,就得到 Fisher–Yates 算法:</p>
+<pre><code>import random
+
+def shuffle(a):
+    for i in range(len(a) - 1, 0, -1):
+        j = random.randint(0, i)   # 0 到 i 的闭区间
+        a[i], a[j] = a[j], a[i]
+    return a</code></pre>
+<p>第 $i$ 步从前 $i+1$ 个位置中等概率选一个换到位置 $i$,共有 $n\cdot(n-1)\cdots 2=n!$ 条等可能的执行路径,且不同路径给出不同的排列,因此结果均匀。时间复杂度为 $O(n)$。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题 1(常见错误)。</strong> 若把上面的 <code>random.randint(0, i)</code> 改为 <code>random.randint(0, n-1)</code>,结果还均匀吗?</p>
+<p>解:此时共有 $n^n$ 条等可能路径。由于 $n!$ 不能整除 $n^n$(例如 $n=3$ 时 $27/6$ 不是整数),这些路径无法平均分配到 $n!$ 种排列上,所以<strong>必有排列比其他排列更常见</strong>,结果不均匀。这是一个著名的实现错误。</p>
+<p><strong>问题 2(期望值)。</strong> 随机排列中,位置 $i$ 恰好放着元素 $i$(称为不动点)的期望个数是多少?</p>
+<p>解:令 $X_i=1$ 表示位置 $i$ 是不动点,则 $P(X_i=1)=\frac{(n-1)!}{n!}=\frac1n$。由期望的线性性,</p>
+$$E\!\left[\sum_{i=1}^n X_i\right]=n\cdot\frac1n=1.$$
+<p>也就是说,无论 $n$ 多大,平均恰有 1 个不动点。例如,把 100 封信随机装入 100 个信封,平均正好有 1 封装对。</p>
+<h3 id="小结">小结</h3>
+<p>随机排列的核心是 $n!$ 种结果<strong>等概率</strong>。判断算法是否正确,只需数一数等可能路径的条数能否被 $n!$ 整除并均匀对应各排列。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B Plus Tree | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="b-plus-tree">B Plus Tree</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>B⁺ tree</strong> is a balanced search tree designed for data that lives on disk or in large blocks. It differs from an ordinary B-tree in two ways:</p>
+<li><strong>All records live in the leaves.</strong> Internal nodes hold only <em>separator keys</em> that guide the search.</li>
+<li><strong>The leaves are linked in sorted order</strong>, usually as a doubly-linked list.</li>
+<p>Each internal node of order $m$ has at most $m$ children and (except the root) at least $\lceil m/2 \rceil$. All leaves sit at the same depth. For $n$ keys, the height is</p>
+$$h = O(\log_{\lceil m/2\rceil} n).$$
+<p>Because $m$ is large (often hundreds, so one node fills one disk page), $h$ is tiny: a billion keys fit in about 4 levels. Each level costs one disk read, so a point lookup costs $O(\log_m n)$ page reads.</p>
+<p>The overlying index stores, for each leaf, its largest key (a separator). To find key $k$, follow the first child whose separator is $\ge k$.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $m = 4$ (at most 3 keys per leaf) and store keys $\{2, 5, 8, 11, 14, 17, 20\}$. One valid layout:</p>
+<li>Leaves: $[2,5,8]\leftrightarrow[11,14]\leftrightarrow[17,20]$</li>
+<li>Root separators: $8, 14$ (largest key of the first two leaves)</li>
+<p><strong>Point search for 14.</strong> At the root, $14 > 8$ and $14 \le 14$, so go to the second leaf. Scan it and find 14. Cost: 2 page reads.</p>
+<p><strong>Insert 9.</strong> Route to leaf $[2,5,8]$ (since $9 > 8$ and $9 \le 14$, it actually belongs in $[11,14]$). Insert gives $[9,11,14]$, which fits (3 keys). No split is needed. Now insert 12: the leaf would become $[9,11,12,14]$, which overflows, so it <strong>splits</strong> into $[9,11]$ and $[12,14]$. The separator 11 is copied up to the parent. Unlike a B-tree, the key 11 <em>stays</em> in the leaf because leaves must hold every key.</p>
+<h3 id="problem-solving-application-range-queries">Problem-solving application: range queries</h3>
+<p><strong>Problem.</strong> Retrieve all keys in $[6, 15]$ from the tree above (after inserting 9 and 12).</p>
+<p><strong>Solution.</strong></p>
+<li>Search for the lower bound 6 as for a point lookup. It lands in leaf $[2,5,8]$.</li>
+<li>Scan that leaf from 8 onward: output 8.</li>
+<li>Follow the next-leaf pointer to $[9,11]$, output 9, 11; then to $[12,14]$, output 12, 14.</li>
+<li>Follow the pointer to $[17,20]$. The first key, 17, exceeds 15, so stop.</li>
+<p>Output: $8, 9, 11, 12, 14$. The cost is one root-to-leaf descent plus a sequential walk:</p>
+$$T_{\text{range}} = O(\log_m n + \lceil r/m \rceil)$$
+<p>where $r$ is the number of results. A plain B-tree would instead need repeated up-and-down traversals through internal nodes, costing roughly $O(r \log_m n)$ in the worst case. This is why databases and file systems (e.g., most SQL indexes, NTFS, ext4 directory indexes) favor B⁺ trees: sorted scans, <code>BETWEEN</code> queries, and <code>ORDER BY</code> become sequential reads.</p>
+<pre class="mermaid">graph TD
+  R["Root: 8 | 11 | 14"] --> L1["Leaf: 2, 5, 8"]
+  R --> L2["Leaf: 9, 11"]
+  R --> L3["Leaf: 12, 14"]
+  R --> L4["Leaf: 17, 20"]
+  L1 <--> L2
+  L2 <--> L3
+  L3 <--> L4</pre>
+<p><em>A B⁺ tree after the insertions: the root holds separators (largest key per leaf, except the last), and the doubly-linked leaf chain lets a range query walk sequentially after one descent.</em></p>
+<p><strong>Check your understanding.</strong> Why must the separator be <em>copied</em> up rather than moved up during a leaf split? (Hint: what would happen to a range scan if key 11 left the leaf?)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

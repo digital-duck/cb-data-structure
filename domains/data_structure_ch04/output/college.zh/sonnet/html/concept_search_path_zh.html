@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Path | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="搜索路径">搜索路径</h2>
+<p><strong>定义。</strong> 在跳表(skip list)中,设最高层为 $h$,哨兵(sentinel)为最高层链表 $L_h$ 的头节点。<strong>搜索路径</strong>是从该哨兵出发、到达目标节点在 $L_0$ 中位置的一条路径,其构造规则只有两条:</p>
+<li>在当前层向右移动,直到下一个节点的键值<strong>超过</strong>目标键 $x$(即"越界")为止;</li>
+<li>在越界之前停下,<strong>向下</strong>一层,继续重复规则 1,直到到达 $L_0$。</li>
+<p>最终停在 $L_0$ 中键值 $\le x$ 的最大节点上。若该节点的键等于 $x$,则查找成功;否则 $x$ 不在表中。</p>
+<p><strong>例题。</strong> 设一个跳表有三层($h=2$):</p>
+<li>$L_2$:$-\infty \to 20 \to +\infty$</li>
+<li>$L_1$:$-\infty \to 8 \to 20 \to 35 \to +\infty$</li>
+<li>$L_0$:$-\infty \to 3 \to 8 \to 14 \to 20 \to 27 \to 35 \to 41 \to +\infty$</li>
+<p>查找 $x=27$:</p>
+<li>在 $L_2$,从哨兵出发:$20\le 27$,右移到 20;下一个是 $+\infty>27$,越界,下降。</li>
+<li>在 $L_1$,位于 20:下一个是 $35>27$,越界,下降。</li>
+<li>在 $L_0$,位于 20:下一个是 $27\le 27$,右移到 27;下一个是 35,越界,停止。</li>
+<p>搜索路径为 $-\infty \to 20\,(L_2) \downarrow 20\,(L_1) \downarrow 20 \to 27\,(L_0)$,仅访问约 4 个节点,而在 $L_0$ 上线性扫描需访问 5 个。</p>
+<pre class="mermaid">graph LR
+    A["哨兵 L2"] --> B["20 (L2)"]
+    B --> C["20 (L1)"]
+    C --> D["20 (L0)"]
+    D --> E["27 (L0) 目标"]</pre>
+<p><em>搜索路径示意:在高层大步右移,越界后下降,在底层精细定位目标 27。</em></p>
+<p><strong>问题求解:路径长度分析。</strong> 设每个节点以概率 $p=\tfrac12$ 晋升到上一层,则层数 $h=O(\log n)$。<strong>反向</strong>追踪路径(从 $L_0$ 的目标节点回溯到哨兵)更便于分析:在每个节点处,</p>
+<li>若该节点有"上层副本",则<strong>向上</strong>(概率 $p$);</li>
+<li>否则<strong>向左</strong>(概率 $1-p$)。</li>
+<p>回溯到第 $h$ 层需要恰好 $h$ 次"向上"。设 $C(k)$ 为向上爬 $k$ 层所需的期望步数,则</p>
+$$C(k)=1+p\,C(k-1)+(1-p)\,C(k),\quad C(0)=0,$$
+<p>解得 $C(k)=k/p$。取 $k=h=\log_{1/p} n$,得期望路径长度</p>
+$$E[\text{路径长度}]=\frac{\log_{1/p} n}{p}=O(\log n).$$
+<p>当 $p=\tfrac12$ 时约为 $2\log_2 n$。例如 $n=1024$,期望约 20 步,远小于线性扫描的约 512 步。</p>
+<p><strong>要点。</strong> 搜索路径"先右后下"的贪心结构保证了每一层只访问常数个期望节点,这正是跳表查找、插入与删除均为期望 $O(\log n)$ 的原因。插入和删除时记录的"每层最后一个越界前节点"也正是这条路径上的下降点。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

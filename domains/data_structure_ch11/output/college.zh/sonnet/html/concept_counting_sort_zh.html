@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting Sort | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="计数排序">计数排序</h2>
+<p><strong>定义。</strong> 计数排序(counting sort)是一种<strong>非比较</strong>的稳定排序算法,适用于 $n$ 个取值在 $\{0,1,\dots,k-1\}$ 内的整数。它不比较元素大小,而是统计每个值出现的次数,再用累计和(前缀和)直接算出每个元素在输出数组中的位置。时间复杂度为 $O(n+k)$,额外空间为 $O(n+k)$。</p>
+<p>算法分三步,设输入数组为 $A[0..n-1]$:</p>
+<li><strong>计数</strong>:$C[v]$ 记录值 $v$ 出现的次数。</li>
+<li><strong>累计</strong>:令 $C[v] \leftarrow C[v]+C[v-1]$。此后 $C[v]$ 等于"小于等于 $v$ 的元素个数",即值 $v$ 的最后一个元素在输出中的下一个位置。</li>
+<li><strong>放置</strong>:从右向左扫描 $A$,对每个元素 $A[i]$,先令 $C[A[i]] \leftarrow C[A[i]]-1$,再令 $B[C[A[i]]] \leftarrow A[i]$。</li>
+<p>从右向左扫描是保证<strong>稳定性</strong>(相等元素保持原有相对顺序)的关键。</p>
+<p><strong>例题。</strong> 对 $A=[2,5,3,0,2,3,0,3]$ 排序,$k=6$。</p>
+<li>计数:$C=[2,0,2,3,0,1]$。</li>
+<li>累计:$C=[2,2,4,7,7,8]$。</li>
+<li>放置(从右向左):</li>
+<p>  - $A[7]=3$:$C[3]=7\to 6$,$B[6]=3$。   - $A[6]=0$:$C[0]=2\to 1$,$B[1]=0$。   - $A[5]=3$:$C[3]=6\to 5$,$B[5]=3$。   - $A[4]=2$:$C[2]=4\to 3$,$B[3]=2$。   - 依此类推,最终 $B=[0,0,2,2,3,3,3,5]$。</p>
+<p>两个 $3$ 与第三个 $3$ 在输出中的先后顺序,与它们在输入中的先后顺序一致。</p>
+<p><strong>复杂度分析。</strong> 计数循环耗时 $\Theta(n)$,累计循环耗时 $\Theta(k)$,放置循环耗时 $\Theta(n)$,总计</p>
+$$T(n,k)=\Theta(n+k).$$
+<p>当 $k=O(n)$ 时,这是线性时间,突破了基于比较的排序的下界 $\Omega(n\log n)$。这并不矛盾:该下界只对"仅通过比较获取信息"的算法成立,而计数排序把键值直接当作数组下标使用。</p>
+<p><strong>问题求解应用。</strong> </p>
+<p><em>问题:</em> 有 $10^6$ 名学生的百分制成绩(整数 $0$–$100$),要求按成绩排序,且同分学生保持原有的录入顺序。</p>
+<p><em>分析:</em> 此处 $k=101\ll n=10^6$,所以计数排序约需 $10^6+101$ 次基本操作,而比较排序约需 $n\log_2 n\approx 2\times10^7$ 次比较。同时题目要求稳定性,而计数排序天然满足。</p>
+<p><em>何时不适用:</em> 若键值范围 $k$ 远大于 $n$(例如对 $100$ 个 $32$ 位整数排序,$k=2^{32}$),$O(k)$ 的时间和空间代价会使其不划算。此时可把计数排序作为子程序,用于<strong>基数排序</strong>(radix sort),逐位处理,每一轮的 $k$ 很小,并依靠稳定性保证多轮排序的正确性。</p>
+<p><strong>小结。</strong> 计数排序用"以值为下标"的方法换取线性时间;累计和给出每个值的输出区间,反向扫描保证稳定,适用条件是 $k=O(n)$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

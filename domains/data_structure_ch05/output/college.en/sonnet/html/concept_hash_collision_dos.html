@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Collision Dos | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="hash-collision-dos">Hash Collision Dos</h2>
+<h3 id="definition">Definition</h3>
+<p>A hash table stores a key $k$ in bucket $h(k) \bmod m$, where $h$ is a hash function and $m$ is the number of buckets. When keys are spread evenly, insert and lookup take expected $O(1)$ time. Two keys <em>collide</em> when they land in the same bucket, and colliding keys are kept in a chain (or probe sequence) that must be scanned linearly.</p>
+<p>A <strong>hash collision denial-of-service (DoS) attack</strong> exploits the fact that $h$ is usually public and deterministic. An adversary precomputes many distinct keys that all map to one bucket. Every operation on those keys then scans a chain of length $n$, so the table's work degrades from $O(1)$ to $O(n)$ per operation.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Suppose a web server stores $n$ request parameters in a hash table. A server framework once used a weak hash, so attackers could produce colliding strings cheaply. Take a simple model with $m = 1024$ buckets and a chained table.</p>
+<li><strong>Normal input:</strong> $n = 10{,}000$ keys spread evenly give about $n/m \approx 10$ keys per chain. Total insertion cost is about</li>
+$$\sum_{i=1}^{n} \frac{i}{m} \approx \frac{n^2}{2m} \approx 49{,}000 \text{ comparisons (plus } n \text{ for hashing)}.$$
+<li><strong>Attack input:</strong> all $n$ keys hit one bucket. The $i$-th insertion scans $i-1$ existing keys, so</li>
+$$\sum_{i=1}^{n} (i-1) = \frac{n(n-1)}{2} \approx 5\times 10^{7} \text{ comparisons}.$$
+<p>That is roughly a 1000-fold slowdown from one request of about 10,000 parameters. The cost grows as $\Theta(n^2)$, so doubling the payload quadruples the CPU time. A modest stream of such requests can saturate a server's CPU.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem:</strong> A server handles $10^6$ comparisons per millisecond. How large a colliding payload ($n$ keys) ties up one core for 1 second?</p>
+<p>Set $\frac{n^2}{2} = 10^9$ (1 second $=10^3$ ms $\times 10^6$). Then $n = \sqrt{2\times 10^9} \approx 44{,}700$ keys. A payload of only a few hundred kilobytes can therefore stall a core for a full second.</p>
+<p><strong>Defenses.</strong> Each defense removes a condition the attack needs:</p>
+<li><strong>Keyed (randomized) hashing</strong>, such as SipHash with a secret per-process key. The attacker cannot precompute collisions without the key. Many languages (Python, Rust, Ruby) now do this by default.</li>
+<li><strong>Balanced-tree buckets.</strong> Java's <code>HashMap</code> converts long chains into red-black trees, so a worst-case bucket costs $O(\log n)$, not $O(n)$.</li>
+<li><strong>Input limits.</strong> Cap the number of parameters, headers, or JSON keys per request, which bounds $n$ directly.</li>
+<pre class="mermaid">flowchart LR
+    A[Attacker computes colliding keys] --> B[Sends one large request]
+    B --> C[Server inserts keys into hash table]
+    C --> D{Defense present?}
+    D -- No --> E[One long chain, O of n squared total work]
+    E --> F[CPU saturated, service denied]
+    D -- Yes --> G[Keys spread or tree-bucketed]
+    G --> H[Normal latency]</pre>
+<p><em>A flow showing how colliding keys cause quadratic work, and how defenses divert the outcome.</em></p>
+<p><strong>Takeaway:</strong> a hash table's $O(1)$ guarantee is an <em>average-case</em> claim that assumes keys are not chosen adversarially. When inputs come from untrusted users, design for the worst case.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pseudo Random Generator | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="伪随机数生成器">伪随机数生成器</h2>
+<h3 id="定义">定义</h3>
+<p><strong>伪随机数生成器</strong>(Pseudo-Random Number Generator,PRNG)是一种用确定性算法产生“看起来随机”的数列的机制。它从一个初始值——<strong>种子</strong>(seed)——出发,按固定的递推规则不断更新内部状态 $s_t$,并由状态输出数值:</p>
+$$s_{t+1} = f(s_t), \qquad x_t = g(s_t).$$
+<p>由于 $f$ 是确定的,<strong>相同种子必然产生相同序列</strong>。这既是它与真随机的区别,也是它的优点:实验可以复现。Python 的 <code>random</code> 模块采用梅森旋转算法(Mersenne Twister),周期长达 $2^{19937}-1$。</p>
+<p>经典的简单例子是线性同余生成器(LCG):</p>
+$$s_{t+1} = (a\,s_t + c) \bmod m.$$
+<h3 id="例题-用比特模拟抛硬币">例题:用比特模拟抛硬币</h3>
+<p><code>random.getrandbits(1)</code> 每次返回 0 或 1,各约占 $1/2$,正好模拟一次公平抛硬币。在跳表(skip list)中,新节点的层高就由连续抛硬币决定:一直抛到出现“反面”为止,正面次数加 1 即为层高。</p>
+<pre><code>import random
+
+def random_height(max_level=16):
+    h = 1
+    while h &lt; max_level and random.getrandbits(1):
+        h += 1
+    return h
+
+random.seed(42)          # 固定种子,结果可复现
+print([random_height() for _ in range(8)])</code></pre>
+<p>层高为 $h$ 的概率为</p>
+$$P(H=h) = \left(\tfrac12\right)^{h},\qquad h\ge 1,$$
+<p>所以期望层高</p>
+$$E[H]=\sum_{h\ge1} h\cdot 2^{-h}=2.$$
+<p>即约一半节点只有 1 层,四分之一有 2 层……这正是跳表获得期望 $O(\log n)$ 查找时间的原因:第 $k$ 层的节点数约为 $n/2^{k}$,总层数约为 $\log_2 n$。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:一个跳表含 $n=1024$ 个节点,层高由上述方法生成。估计至少有 1 个节点达到第 11 层的概率,并说明种子的作用。</p>
+<p><strong>解</strong>:单个节点层高 $\ge 11$ 的概率为 $2^{-10}=1/1024$。于是 1024 个节点中无一达到的概率为</p>
+$$\left(1-\tfrac{1}{1024}\right)^{1024}\approx e^{-1}\approx 0.37,$$
+<p>所以至少有一个节点达到第 11 层的概率约为 $1-0.37=0.63$。这说明合理的最大层数约取 $\log_2 n$ 左右(此处为 10 到 11 层)。</p>
+<p><strong>种子的作用</strong>:调试时设定 <code>random.seed(42)</code>,每次运行得到完全相同的跳表结构,便于复现错误;上线时则不固定种子(或用系统熵初始化),避免结构被攻击者预测。</p>
+<p><strong>注意</strong>:Mersenne Twister 不具备密码学安全性,观察足够多的输出即可推断其内部状态。跳表只需要统计上均匀的比特,PRNG 完全够用;若用于密钥、令牌等安全场景,应改用 <code>secrets</code> 模块。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

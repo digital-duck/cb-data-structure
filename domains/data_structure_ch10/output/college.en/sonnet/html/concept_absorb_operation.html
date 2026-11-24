@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absorb Operation | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="absorb-operation">Absorb Operation</h2>
+<h3 id="definition">Definition</h3>
+<p>In a <code>MeldableHeap</code>, the <strong>absorb</strong> operation moves every element of a second heap into the calling heap and leaves the source heap empty. It is the "bulk insert" companion to <code>add</code>. All of the work is delegated to <code>merge</code>:</p>
+$$\text{absorb}(h_1, h_2):\quad h_1.\text{root} \leftarrow \text{merge}(h_1.\text{root},\, h_2.\text{root}),\qquad h_2.\text{root} \leftarrow \text{nil}$$
+<p>Here $n_1$ and $n_2$ are the sizes of the two heaps. The sizes are updated as $n_1 \leftarrow n_1 + n_2$ and $n_2 \leftarrow 0$. Because a randomized meldable heap's <code>merge</code> runs in $O(\log n)$ expected time, where $n = n_1 + n_2$, absorb has the same expected cost. It does not need to touch the elements one at a time.</p>
+<pre><code>void absorb(MeldableHeap&lt;T&gt; u) {
+    r = merge(u.r, r);   // meld the two heap-ordered trees
+    n += u.n;            // combine sizes
+    u.r = nil;           // empty the source
+    u.n = 0;
+}</code></pre>
+<p>The last two lines matter. If <code>u.r</code> were left pointing into the merged tree, two heaps would share nodes, and a later change to either heap would corrupt the other.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Let $h_1$ have root 3 with children 7 and 9, and let $h_2$ have root 5 with one child 8. Call <code>h1.absorb(h2)</code>.</p>
+<li><code>merge(3, 5)</code>: since $3 < 5$, node 3 stays on top.</li>
+<li>A fair coin flip picks a child of 3 to merge into. Say it picks the left child, 7. Then <code>merge(7, 5)</code> runs. Since $5 < 7$, node 5 becomes the new left child of 3. Node 5's own subtree is then merged with 7.</li>
+<li>The recursion continues until one argument is <code>nil</code>.</li>
+<p>The result is a valid heap rooted at 3 containing $\{3,5,7,8,9\}$, so $n_1 = 3 + 2 = 5$. Then $h_2$ is empty with $n_2 = 0$. Different coin flips give different tree shapes, but always a valid heap.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><strong>Problem.</strong> You must combine $k$ heaps, each of size about $m$, into one heap. Estimate the expected cost.</p>
+<p><strong>Solution.</strong> Absorb the heaps one at a time into an accumulator. The $i$-th absorb costs $O(\log(im))$ expected time, since the accumulator holds about $im$ elements. The total is</p>
+$$\sum_{i=1}^{k} O(\log(im)) \le k \cdot O(\log(km)) = O(k \log(km)).$$
+<p>Compare this with inserting all $km$ elements one by one, which costs $O(km \log(km))$. Absorb is better by a factor of about $m$.</p>
+<p><strong>Why the bound holds.</strong> The expected length of a random walk down a meldable heap of $n$ nodes is at most $\log n$ (one extra step per level, at most $2\log n$ in total). <code>merge</code> makes one such random walk through each of the two heaps, so its expected cost is $O(\log n_1 + \log n_2) = O(\log n)$. Absorb adds only $O(1)$ bookkeeping.</p>
+<p><strong>Check yourself.</strong> After <code>h1.absorb(h1)</code>, what goes wrong? Merging a tree with itself would create cycles. Real implementations must reject self-absorption or check for it first.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

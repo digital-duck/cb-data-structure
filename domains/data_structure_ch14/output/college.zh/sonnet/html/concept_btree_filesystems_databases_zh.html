@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Btree Filesystems Databases | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="b-树在文件系统与数据库中的应用">B 树在文件系统与数据库中的应用</h2>
+<h3 id="定义">定义</h3>
+<p><strong>B 树</strong>是一种自平衡的多路搜索树。阶为 $m$ 的 B 树满足:</p>
+<li>每个结点最多有 $m$ 个孩子、最多存 $m-1$ 个键;</li>
+<li>除根外,每个内部结点至少有 $\lceil m/2\rceil$ 个孩子;</li>
+<li>所有叶子位于同一深度。</li>
+<p>设有 $n$ 个键,则树高满足</p>
+$$h \le \log_{\lceil m/2\rceil}\frac{n+1}{2}+1 .$$
+<p><strong>为什么工业界偏爱它?</strong> 磁盘或 SSD 以"页"(通常 4 KB 到 16 KB)为单位读写,一次 I/O 的代价远高于内存中的比较。B 树把结点大小设计成恰好一页,于是一次查找的 I/O 次数就是树高 $O(\log_m n)$,而不是二叉树的 $O(\log_2 n)$。</p>
+<p>实际系统大多使用 <strong>B+ 树</strong>:数据只存放在叶子,内部结点只存路标键,因此扇出更大;叶子之间用链表相连,范围查询只需顺着链表扫描。</p>
+<h3 id="典型应用">典型应用</h3>
+<p>| 系统 | B 树的用途 | |---|---| | NTFS | 目录索引与主文件表(MFT)的 B+ 树索引 | | HFS+ / APFS | 目录树与扩展区溢出文件(catalog、extents)的 B 树 | | Ext4 | 大目录的 HTree(哈希加持的 B 树变体)、extent 树 | | MySQL InnoDB、PostgreSQL | 聚簇索引与二级索引 | | 云端键值存储 | 部分系统(如 LMDB、BoltDB、部分元数据服务)直接采用 B 树;LSM 树是另一条路线 |</p>
+<h3 id="例题-估算树高">例题:估算树高</h3>
+<p>设一页为 $16\,\text{KB}$,索引键加指针共 $16\,\text{B}$,则扇出约</p>
+$$m \approx \frac{16384}{16} = 1024 .$$
+<p>问:一张含 $n = 10^9$ 行的表,索引需要几层?</p>
+<p><strong>解:</strong> 取最坏情况下每个结点至少有 $m/2 = 512$ 个孩子,则</p>
+$$h \le \log_{512}\frac{10^9+1}{2}+1 \approx \frac{\ln(5\times10^{8})}{\ln 512}+1 \approx \frac{20.03}{6.24}+1 \approx 4.2 .$$
+<p>所以树高至多约 4 到 5 层。再考虑到根和第二层通常常驻内存缓存,一次点查询往往只需 <strong>2 到 3 次磁盘 I/O</strong>。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题:</strong> 某查询 <code>SELECT * FROM orders WHERE id BETWEEN 1000 AND 1999</code>,在 $10^9$ 行的表上,应该如何用 B+ 树回答?为什么比全表扫描快?</p>
+<p><strong>分析:</strong></p>
+<li>自根向下定位到包含键 $1000$ 的叶子:约 $h \approx 4$ 次页读取。</li>
+<li>沿叶子链表顺序读取,直到键超过 $1999$。若每个叶子存 $200$ 行,则约需 $\lceil 1000/200\rceil = 5$ 页。</li>
+<li>总计约 $4+5 = 9$ 次页读取。</li>
+<p>全表扫描需读取 $10^9/200 = 5\times10^6$ 页。二者相差约 $5\times 10^5$ 倍。</p>
+<p><strong>插入时的维护:</strong> 若叶子已满,将其一分为二,并把中间键上推到父结点;分裂可向上传播,至多到根。根分裂时树高才增加 1。因此所有叶子始终等深,最坏查询代价被严格控制在 $O(\log_m n)$。</p>
+<p><strong>设计取舍:</strong> 随机插入导致的页分裂会使空间利用率降到约 $70\%$;而写密集的负载(如云端日志型存储)常改用 LSM 树,用顺序写换取更高的写吞吐,但读代价略高。理解"页大小决定扇出,扇出决定树高"这一链条,是调优索引与选择存储引擎的基础。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

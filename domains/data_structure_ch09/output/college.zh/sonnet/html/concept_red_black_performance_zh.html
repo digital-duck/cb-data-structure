@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Performance | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="红黑树的性能">红黑树的性能</h2>
+<p><strong>定义。</strong> 红黑树（RedBlackTree）是满足下列性质的二叉搜索树：每个结点为红色或黑色；根为黑色；红结点的孩子必为黑色；从任一结点到其后代空叶结点的每条路径包含相同数目的黑结点（<strong>黑高</strong>相同）。本节的核心结论是：</p>
+<li><code>find</code>、<code>add</code>、<code>remove</code> 的<strong>最坏情况</strong>时间均为 $O(\log n)$；</li>
+<li>在任意 $m$ 次更新构成的序列中，每次更新所需的<strong>结构调整</strong>（重新着色与旋转）的<strong>摊还</strong>代价为 $O(1)$。</li>
+<p><strong>为什么高度是 $O(\log n)$。</strong> 设根的黑高为 $b$。由于红结点不能连续出现，任一路径上红结点数不超过黑结点数，因此树高 $h \le 2b$。另一方面，黑高为 $b$ 的子树至少含有 $2^{b}-1$ 个内部结点（去掉所有红结点后得到一棵高为 $b$ 的完全二叉树）。于是</p>
+$$
+n \ge 2^{b}-1 \;\Longrightarrow\; b \le \log_2(n+1) \;\Longrightarrow\; h \le 2\log_2(n+1).
+$$
+<p><code>find</code> 沿一条根到叶路径下行，代价为 $O(h)=O(\log n)$。<code>add</code> 与 <code>remove</code> 先做同样的查找，再自底向上修复性质，修复最多沿路径回溯 $O(h)$ 层，故同为 $O(\log n)$。</p>
+<p><strong>例题。</strong> 一棵含 $n = 10^6$ 个结点的红黑树，其高度至多为多少？</p>
+<p>解：$h \le 2\log_2(10^6+1) \approx 2 \times 19.93 \approx 39.9$，所以 $h \le 39$。在最坏情况下查找也只需比较约 40 次。相比之下，退化成链表的普通二叉搜索树可能需要 $10^6$ 次。</p>
+<p><strong>摊还 $O(1)$ 的原因。</strong> 插入修复中，若叔叔结点为红，则只做重新着色，并把问题上移两层；若叔叔为黑，则最多 2 次旋转即结束。取势函数 $\Phi$ = 树中"黑结点且两个孩子均为红"的结点数。每次"上移"型重新着色使 $\Phi$ 至少减 1，而一次终止型操作至多使 $\Phi$ 增加 $O(1)$。因此</p>
+$$
+\hat c_i = c_i + \Phi_i - \Phi_{i-1} = O(1),
+$$
+<p>即 $m$ 次插入的总调整代价为 $O(m)$（删除的分析类似，旋转次数最坏也仅为常数）。注意：这里的 $O(1)$ 只针对<strong>修复调整</strong>，查找位置仍需 $O(\log n)$，所以一次完整的更新依然是 $O(\log n)$。</p>
+<p><strong>问题求解应用。</strong> 假设需要维护一个动态有序集合，执行 $10^5$ 次混合的 <code>add</code>/<code>remove</code>/<code>find</code>。</p>
+<li>每次操作最坏 $O(\log n)$，总计 $O(m\log n)$，且<strong>没有</strong>坏输入能使其退化。</li>
+<li>若只关心旋转开销，总旋转次数为 $O(m)$，因此红黑树适合写入密集的场景（相比 AVL 树，其删除时旋转更少）。</li>
+<li>当需要可预测的延迟上界（如实时系统）时，应选用最坏情况有保证的红黑树，而非仅有期望保证的哈希表或随机化结构。</li>
+<p><strong>小结。</strong> 黑高约束迫使树高不超过 $2\log_2(n+1)$，由此得到最坏 $O(\log n)$ 的操作；势函数论证则说明结构调整的摊还代价为常数。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

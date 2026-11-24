@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Tree Performance | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="scapegoat-tree-performance">Scapegoat Tree Performance</h2>
+<p><strong>Definition.</strong> A scapegoat tree is a binary search tree that stores $n$ keys and maintains the invariant $h(T) \le \lfloor \log_{3/2} q \rfloor$, where $q \ge n$ is an upper-bound counter (it equals $n$ except after removals). When an insertion creates a node deeper than $\log_{3/2} q$, the structure finds a <em>scapegoat</em>, which is an ancestor $w$ with $\text{size}(\text{child}) > \tfrac{2}{3}\,\text{size}(w)$. It then calls $\text{rebuild}(w)$. This call flattens the subtree into a sorted array and rebuilds it as a perfectly balanced tree in $O(\text{size}(w))$ time. Removals simply delete the node. When $q > 2n$, the whole tree is rebuilt.</p>
+<p><strong>Summary result.</strong> For a scapegoat tree with $n$ nodes:</p>
+<li>$\text{find}(x)$ runs in $O(\log n)$ worst-case time.</li>
+<li>$\text{add}(x)$ and $\text{remove}(x)$ run in $O(\log n)$ <em>amortized</em> time.</li>
+<li>Over $m$ operations, the total cost of all $\text{rebuild}(u)$ calls is $O(m \log m)$.</li>
+<p><strong>Why find is cheap.</strong> The height never exceeds $\log_{3/2} q$. Since $q \le 2n$, we get $h \le \log_{3/2} 2n = O(\log n)$, so every search takes at most $O(\log n)$ steps.</p>
+<p><strong>Worked example (rebuild accounting).</strong> Suppose $\text{rebuild}(u)$ is called on a subtree of size $s = \text{size}(u)$. Immediately afterward the subtree is perfectly balanced, so $\text{size}(u.\text{left})$ and $\text{size}(u.\text{right})$ differ by at most 1. For the subtree to need rebuilding again, one child must grow to exceed $\tfrac{2}{3}$ of the subtree. From a near-even split of $\tfrac{s}{2}$ per side, the heavy side must gain at least</p>
+$$\tfrac{2}{3}s - \tfrac{1}{2}s = \tfrac{1}{6}s$$
+<p>more nodes than it started with. (The exact bound is slightly larger, because the total grows too.) So at least $\Omega(s)$ updates must touch $u$'s subtree before the next rebuild there. Charge the $O(s)$ rebuild cost to those $\Omega(s)$ updates, which is $O(1)$ per update per affected ancestor.</p>
+<p><strong>Problem-solving application.</strong> An insertion or deletion affects at most $O(\log q)$ ancestors, since the tree has height $O(\log q)$. Each ancestor receives an $O(1)$ charge. Hence the amortized rebuild cost per operation is $O(\log q)$. Over $m$ operations the tree never has more than $m$ nodes, so $q \le m$ and</p>
+$$\sum \text{(rebuild costs)} = O(m \log m).$$
+<p>Adding the $O(\log n)$ search cost per operation gives $O(\log n)$ amortized time for $\text{add}$ and $\text{remove}$.</p>
+<p>For the full-tree rebuild triggered when $q > 2n$, at least $q - n > n$ removals have occurred since the counters were last reset. These removals pay for an $O(n)$ rebuild, which adds $O(1)$ amortized cost per operation.</p>
+<p><strong>Check yourself.</strong> Suppose $m = 1024$ operations are performed. The rebuild total is bounded by $c \cdot 1024 \cdot \log_2 1024 = 10{,}240\,c$ steps for some constant $c$. This averages about $10c$ steps per operation, which is logarithmic and not linear.</p>
+<p><strong>Takeaway.</strong> A scapegoat tree needs no per-node balance data, such as colors or heights. It still guarantees $O(\log n)$ search in the worst case and $O(\log n)$ amortized updates, because rare, expensive rebuilds are paid for by many cheap operations.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

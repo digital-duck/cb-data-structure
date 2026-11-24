@@ -1,0 +1,74 @@
+domain: data_structure_ods_python
+sources:
+  coin_toss_randomization:
+    label: Coin-Toss Randomization
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+  pseudo_random_generator:
+    label: Pseudo-Random Number Generator
+    sections:
+    - id: ch04_skiplistsset_an_efficient_sset
+      title: 'SkiplistSSet: An Efficient SSet'
+  sentinel_node:
+    label: Sentinel Node
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+  singly_linked_list_hierarchy:
+    label: Hierarchy of Singly-Linked Lists
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+  node_height:
+    label: Height of a Node
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+  skiplist:
+    label: Skiplist
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+  search_path:
+    label: Search Path
+    sections:
+    - id: ch04_the_basic_structure
+      title: The Basic Structure
+    - id: ch04_skiplistsset_an_efficient_sset
+      title: 'SkiplistSSet: An Efficient SSet'
+  edge_length:
+    label: Length of an Edge
+    sections:
+    - id: ch04_skiplistlist_an_efficient_random_access_
+      title: 'SkiplistList: An Efficient Random-Access List'
+  pick_height_procedure:
+    label: pick_height() Procedure
+    sections:
+    - id: ch04_skiplistsset_an_efficient_sset
+      title: 'SkiplistSSet: An Efficient SSet'
+  skiplist_sset:
+    label: SkiplistSSet
+    sections:
+    - id: ch04_skiplistsset_an_efficient_sset
+      title: 'SkiplistSSet: An Efficient SSet'
+  skiplist_list:
+    label: SkiplistList
+    sections:
+    - id: ch04_skiplistlist_an_efficient_random_access_
+      title: 'SkiplistList: An Efficient Random-Access List'
+  expected_height_analysis:
+    label: Expected Height of a Skiplist
+    sections:
+    - id: ch04_analysis_of_skiplists
+      title: Analysis of Skiplists
+  expected_size_analysis:
+    label: Expected Size of a Skiplist
+    sections:
+    - id: ch04_analysis_of_skiplists
+      title: Analysis of Skiplists
+  expected_search_path_length:
+    label: Expected Length of a Search Path
+    sections:
+    - id: ch04_analysis_of_skiplists
+      title: Analysis of Skiplists

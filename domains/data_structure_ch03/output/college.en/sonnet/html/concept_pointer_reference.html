@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointer Reference | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="pointer-reference">Pointer Reference</h2>
+<p>A pointer reference is a value stored inside a node that identifies the memory location of another node, rather than holding data itself. In a linked data structure, each node is a small package containing (1) a payload — the actual data — and (2) a reference field that stores the address of the next node in the sequence. This address is not the data; it is a <em>link</em> that lets the program jump from one node to another without the nodes needing to sit next to each other in memory.</p>
+<p>This distinction matters because it separates <em>logical order</em> from <em>physical order</em>. An array stores elements contiguously, so element $i+1$ is always at address $\text{base} + (i+1)\times \text{size}$ — position determines order. A linked list has no such guarantee: node $A$ might live at memory address 1000 and node $B$ at address 5000, yet $A$ still "comes before" $B$ if $A$'s pointer field stores the value 5000. The sequence exists only because of these stored addresses, not because of physical placement.</p>
+<p>Worked example: consider a singly linked list holding exam scores 88, 91, 76. Each node is a pair (score, next). The list is built as:</p>
+$$
+\text{node}_3 = (76, \text{null}), \quad
+\text{node}_2 = (91, \&\text{node}_3), \quad
+\text{node}_1 = (88, \&\text{node}_2)
+$$
+<p>Here $\&\text{node}_3$ denotes "the address of node 3." To traverse the list and print every score, a program starts at $\text{node}_1$, prints its data, then follows its pointer to $\text{node}_2$, and repeats until it reaches a node whose pointer is null — the universal signal for "end of sequence."</p>
+<p>Problem-solving application: pointer references let you insert or delete an element in constant time $O(1)$ once you have located the position, because you only rewrite a few address values — no shifting of other elements is required, unlike in an array where inserting at the front costs $O(n)$. For example, to insert a new score 95 between node 1 and node 2, you create $\text{node}_x = (95, \&\text{node}_2)$ and then update node 1's pointer to $\&\text{node}_x$. The rest of the list is untouched. This trade-off — fast insertion/deletion versus slower indexed access, since reaching the $k$-th node requires following $k$ pointers one at a time — is the central design tension you must weigh whenever choosing between array-based and pointer-based structures.</p>
+<pre class="mermaid">graph LR
+    A["Node 1: 88"] -->|next| B["Node 2: 91"]
+    B -->|next| C["Node 3: 76"]
+    C -->|next| N["null"]</pre>
+<p><em>Each node's pointer field stores the address of the following node, chaining them into a sequence that ends at a null reference.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

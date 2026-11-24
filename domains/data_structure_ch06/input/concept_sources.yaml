@@ -1,0 +1,84 @@
+domain: data_structure_ods_python
+sources:
+  binary_tree:
+    label: Binary Tree
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  node_representation:
+    label: Node Representation
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  node_depth:
+    label: Node Depth
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  tree_size:
+    label: Tree Size
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  tree_height:
+    label: Tree Height
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  recursive_tree_traversal:
+    label: Recursive Tree Traversal
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  nonrecursive_tree_traversal:
+    label: Non-recursive Tree Traversal
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  breadth_first_traversal:
+    label: Breadth-First Traversal
+    sections:
+    - id: ch06_binarytree_a_basic_binary_tree
+      title: 'BinaryTree: A Basic Binary Tree'
+  total_order:
+    label: Total Order
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+  binary_search_tree:
+    label: Binary Search Tree
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+  bst_search:
+    label: Binary Search Tree Searching
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+  bst_addition:
+    label: Binary Search Tree Addition
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+  bst_removal:
+    label: Binary Search Tree Removal
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+  unbalanced_bst_performance:
+    label: Unbalanced BST Performance
+    sections:
+    - id: ch06_binarysearchtree_an_unbalanced_binary_se
+      title: 'BinarySearchTree: An Unbalanced Binary Search Tree'
+    - id: ch06_discussion_and_exercises
+      title: Discussion and Exercises
+  tree_balancing_strategies:
+    label: Tree Balancing Strategies
+    sections:
+    - id: ch06_discussion_and_exercises
+      title: Discussion and Exercises
+  pre_in_post_order_traversal:
+    label: Pre-order, In-order, and Post-order Traversal
+    sections:
+    - id: ch06_discussion_and_exercises
+      title: Discussion and Exercises

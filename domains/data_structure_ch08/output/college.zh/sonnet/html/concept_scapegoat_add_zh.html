@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Add | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="替罪羊树的插入操作-scapegoat-add">替罪羊树的插入操作(Scapegoat Add)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>替罪羊树</strong>(scapegoat tree)是一种自平衡二叉搜索树,它不在节点中存储颜色或高度等平衡信息,而是靠"偶尔整体重建一棵子树"来维持平衡。设 $n$ 为当前节点数,$q$ 为"上界计数器"(自上次整体重建以来,$q \ge n$,删除不会使 $q$ 减小)。参数 $\alpha = 2/3$ 对应深度界:</p>
+$$
+d_{\max}(q) = \lfloor \log_{3/2} q \rfloor .
+$$
+<p><strong>插入操作</strong> <code>scapegoat_add(x)</code> 分三步:</p>
+<li>按普通二叉搜索树规则插入 $x$,并令 $n \leftarrow n+1,\ q \leftarrow q+1$;</li>
+<li>记录新节点的深度 $d$。若 $d \le \log_{3/2} q$,结束;</li>
+<li>若 $d > \log_{3/2} q$,则从新节点沿父指针向上走,找到第一个满足</li>
+$$
+\frac{\text{size}(\text{child})}{\text{size}(\text{node})} > \frac{2}{3}
+$$
+<p>的祖先 $s$(即<strong>替罪羊</strong>),把以 $s$ 为根的子树<strong>重建</strong>为完全平衡的树。</p>
+<p>可以证明这样的祖先一定存在:若路径上所有节点都满足 $\text{size(child)} \le \tfrac23\,\text{size(parent)}$,则新节点深度不会超过 $\log_{3/2} n \le \log_{3/2} q$,与"过深"矛盾。</p>
+<h3 id="例题">例题</h3>
+<p>向一棵空树依次插入 $1,2,3,4$(升序,最坏情形)。</p>
+<li>插入 1、2、3 后树是一条链,$q=3$,$\log_{3/2}3 \approx 2.71$,节点 3 的深度为 2,不超界。</li>
+<li>插入 4:$q=4$,$\log_{3/2}4 \approx 3.42$,节点 4 深度为 3,仍然 $3 \le 3.42$,不触发。</li>
+<li>再插入 5:$q=5$,$\log_{3/2}5 \approx 3.97$,而深度为 4 $>3.97$,触发重建。</li>
+<p>向上寻找替罪羊:节点 5 的父节点 4,$\text{size}(5)/\text{size}(4)=1/2$,不满足;节点 4 的父节点 3,$\text{size}(4)/\text{size}(3)=2/3$,不严格大于 $2/3$;节点 3 的父节点 2:$\text{size}(3)/\text{size}(2)=3/4>2/3$,于是 2 是替罪羊。把以 2 为根的子树 $\{2,3,4,5\}$ 中序展开为有序数组,取中点递归建树,得到高度 $2$ 的平衡子树。整棵树的深度降到 $3$ 以内。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>重建代价</strong>:重建大小为 $m$ 的子树需 $O(m)$ 时间(中序展开 + 递归建树)。单次插入可能很贵,但代价可摊还:一次重建之前,替罪羊子树必然已积累了 $\Omega(m)$ 次不平衡的插入。因此:</p>
+$$
+\text{插入的摊还代价为 } O(\log n),\qquad \text{查找最坏代价为 } O(\log n).
+$$
+<p><strong>练习</strong>:</p>
+<li>当 $q=100$ 时,允许的最大深度是多少?(提示:$\log_{3/2}100 = \ln 100/\ln 1.5 \approx 11.4$,所以深度 $\ge 12$ 才触发。)</li>
+<li>为什么用 $q$ 而不是 $n$ 做判断?(思考:删除只减小 $n$,若用 $n$ 判断,会引起什么后果?)</li>
+<p><strong>要点</strong>:<code>scapegoat_add</code> = BST 插入 + 深度检测 + 向上找替罪羊 + 局部重建。它以极小的额外空间,换取了对数级的摊还性能。</p>
+<pre class="mermaid">flowchart TD
+A[按BST规则插入新节点] --> B{深度 > log_3/2 q ?}
+B -- 否 --> C[结束]
+B -- 是 --> D[沿父指针向上]
+D --> E{子树占比 > 2/3 ?}
+E -- 否 --> D
+E -- 是 --> F[以该祖先为替罪羊]
+F --> G[中序展开并重建为平衡树]
+G --> C</pre>
+<p><em>图:替罪羊树插入流程——深度超界时向上寻找替罪羊并局部重建。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

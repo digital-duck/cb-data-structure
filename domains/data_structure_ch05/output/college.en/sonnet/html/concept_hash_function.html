@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Function | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="hash-function">Hash Function</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>hash table</strong> stores keys in an array $t$ of length $m = \text{length}(t)$. A <strong>hash function</strong> is a map</p>
+$$h : U \to \{0, 1, \dots, m-1\}$$
+<p>from the universe of possible keys $U$ to array indices. The key $x$ is stored in slot $t[h(x)]$, so both insertion and lookup start by computing $h(x)$. This takes $O(1)$ time, assuming $h$ itself is cheap to compute.</p>
+<p>A good hash function has three properties:</p>
+<li><strong>Deterministic:</strong> the same $x$ always gives the same $h(x)$.</li>
+<li><strong>Fast:</strong> computing $h(x)$ takes time independent of the table size.</li>
+<li><strong>Uniform:</strong> keys spread evenly, so that $\Pr[h(x) = i] \approx 1/m$ for each slot $i$.</li>
+<p>Since $|U| > m$ in nearly every application, the pigeonhole principle guarantees that distinct keys sometimes share a slot. This is a <strong>collision</strong>. A hash function cannot prevent collisions. Its job is to make them rare and evenly distributed.</p>
+<h3 id="worked-example-the-division-method">Worked example: the division method</h3>
+<p>For an integer key $k$, the division method is</p>
+$$h(k) = k \bmod m.$$
+<p>Let $m = 7$ and insert the keys $50, 700, 76, 85, 92$:</p>
+<p>| $k$ | $k \bmod 7$ | slot | |-----|-------------|------| | 50 | $50 - 49 = 1$ | 1 | | 700 | $700 - 700 = 0$ | 0 | | 76 | $76 - 70 = 6$ | 6 | | 85 | $85 - 84 = 1$ | 1 (collides with 50) | | 92 | $92 - 91 = 1$ | 1 (collides again) |</p>
+<p>Three of the five keys land in slot 1. The cause is partly bad luck and partly structure in the data. Choosing $m$ well helps. A prime $m$ not close to a power of 2 is the standard advice. If $m = 2^p$, then $k \bmod m$ keeps only the low $p$ bits of $k$ and ignores all the others.</p>
+<p>For string keys, first convert the string to an integer. A common polynomial scheme is</p>
+$$h(s) = \left(\sum_{i=0}^{n-1} s_i \, b^{\,n-1-i}\right) \bmod m,$$
+<p>where $s_i$ is the character code of the $i$-th character and $b$ is a base such as 31.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A table with $m = 11$ slots holds $n = 22$ keys. Estimate the expected cost of an unsuccessful search when collisions are resolved by chaining (one linked list per slot).</p>
+<p><strong>Solution.</strong> Assume <em>simple uniform hashing</em>: each key is equally likely to land in any slot, independently of the others. The <strong>load factor</strong> is</p>
+$$\alpha = \frac{n}{m} = \frac{22}{11} = 2.$$
+<p>Each list then has expected length $\alpha = 2$. An unsuccessful search computes $h(x)$ and scans the whole list, so its expected cost is</p>
+$$\Theta(1 + \alpha) = \Theta(3) \text{ steps}.$$
+<p>If $n = O(m)$, then $\alpha = O(1)$ and every operation takes expected $O(1)$ time.</p>
+<p><strong>Why uniformity matters.</strong> Suppose we hash 22 keys that are all multiples of 11 using $h(k) = k \bmod 11$. Every key maps to slot 0. One list then holds all 22 keys, and search degrades to $\Theta(n)$. The fix is to choose a $m$ and $h$ that do not share structure with the data. For example, use $m = 13$, which is prime and does not divide the key pattern.</p>
+<pre class="mermaid">flowchart LR
+    K["Key x"] --> H["hash function h(x)"]
+    H --> I["Index i in 0..m-1"]
+    I --> S["Slot t[i]"]
+    S --> C{"Occupied?"}
+    C -- "No" --> P["Store x"]
+    C -- "Yes" --> R["Resolve collision"]</pre>
+<p><em>A key is passed through $h$ to get a slot index. If the slot is already occupied, a collision-resolution strategy takes over.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

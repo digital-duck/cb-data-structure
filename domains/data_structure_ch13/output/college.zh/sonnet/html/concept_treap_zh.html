@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap-树堆">Treap(树堆)</h2>
+<p><strong>定义。</strong> 树堆是一种同时满足两条性质的二叉树。每个节点存有一个键 $k$ 和一个随机分配的优先级 $p$:</p>
+<li><strong>二叉搜索树性质:</strong> 左子树所有键 $<$ 当前节点的键 $<$ 右子树所有键;</li>
+<li><strong>堆性质(最大堆):</strong> 每个节点的优先级 $\ge$ 其子节点的优先级。</li>
+<p><strong>关键事实:</strong> 若所有键互不相同,且优先级互不相同,则满足这两条性质的树<strong>唯一</strong>。构造方法是:优先级最大的节点作根,其余键按大小分到左右两侧,再递归构造。这等价于"按优先级从大到小的顺序依次向普通二叉搜索树中插入键",而随机优先级相当于随机的插入顺序。因此树堆的形状与随机二叉搜索树同分布,与键的插入顺序无关。</p>
+<p><strong>插入与删除。</strong></p>
+<li>插入:先按二叉搜索树规则放到叶子位置,再对新节点反复做旋转,直到其优先级不大于父节点。</li>
+<li>删除:把目标节点不断向优先级较大的孩子方向旋转,直到成为叶子,再删去。</li>
+<p><strong>例题。</strong> 键 $1,2,3,4,5$ 依次插入,其优先级依次为 $(1,5),(2,2),(3,9),(4,4),(5,7)$,即(键,优先级)。</p>
+<p>根是优先级最大的 $(3,9)$。左侧键 $\{1,2\}$ 中,$(1,5)$ 优先级更大,作为左子树的根,$(2,2)$ 是其右孩子。右侧键 $\{4,5\}$ 中,$(5,7)$ 作为根,$(4,4)$ 是其左孩子。树高为 $3$。</p>
+<p>注意:如果没有随机优先级,按顺序 $1,\dots,5$ 插入普通二叉搜索树会退化成高度为 $5$ 的链。</p>
+<pre class="mermaid">graph TD
+A["键3 / 优先级9"] --> B["键1 / 优先级5"]
+A --> C["键5 / 优先级7"]
+B --> D["键2 / 优先级2"]
+C --> E["键4 / 优先级4"]</pre>
+<p><em>例题中的树堆:键满足搜索树性质,优先级自上而下递减。</em></p>
+<p><strong>问题求解:期望深度分析。</strong> 要证明树堆的期望高度为 $O(\log n)$,先看节点 $x_j$ 的期望深度。节点 $x_i$ 是 $x_j$ 的祖先,当且仅当在键区间 $[\min(i,j),\max(i,j)]$ 内,$x_i$ 的优先级最大。该区间共有 $|i-j|+1$ 个节点,优先级随机,故</p>
+$$P(x_i \text{ 是 } x_j \text{ 的祖先}) = \frac{1}{|i-j|+1}\quad (i\ne j).$$
+<p>由期望的线性性,</p>
+$$E[\text{depth}(x_j)] = \sum_{i\ne j}\frac{1}{|i-j|+1} \le 2\sum_{m=2}^{n}\frac1m = 2(H_n-1) = O(\log n).$$
+<p>其中 $H_n$ 是调和数。所以查找、插入、删除的期望时间都是 $O(\log n)$,该结论对任何输入顺序都成立。再结合对数级的高概率上界,可得期望高度也是 $O(\log n)$。</p>
+<p><strong>练习:</strong> 在上例中,计算 $E[\text{depth}(x_3)]$(设 $n=5$,根深度为 $0$)。</p>
+<p><em>提示:</em> 代入 $j=3$,求 $\sum_{i\ne3}\frac{1}{|i-3|+1}=2\left(\frac12+\frac13\right)=\frac53$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

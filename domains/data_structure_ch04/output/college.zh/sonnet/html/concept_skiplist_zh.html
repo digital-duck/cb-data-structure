@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skiplist | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="跳表-skiplist">跳表（Skiplist）</h2>
+<h3 id="定义">定义</h3>
+<p><strong>跳表</strong>是一种随机化数据结构，由多层有序链表构成。第 $0$ 层包含全部元素；每个元素以概率 $p$（通常 $p=\tfrac12$）"晋升"到上一层，因此第 $i$ 层平均含有 $n p^i$ 个元素。每层都是下层的"快速通道"。</p>
+<li><strong>搜索</strong>：从最高层的头结点出发，在当前层向右移动，直到下一个结点的键大于或等于目标；然后下降一层，重复此过程，直到第 $0$ 层。</li>
+<li><strong>插入</strong>：先搜索定位，再反复抛硬币决定新结点的层数 $h$（连续正面的次数加 $1$），并把它接入第 $0$ 至 $h-1$ 层。</li>
+<li><strong>删除</strong>：搜索定位后，在各层断开该结点的链接。</li>
+<h3 id="例题">例题</h3>
+<p>在第 $0$ 层中有键 $3,6,7,9,12,19,21,25,26$。设第 $1$ 层为 $6,9,19,25$，第 $2$ 层为 $6,19$。搜索 $25$：</p>
+<li>第 $2$ 层：从头出发，$6<25$，$19<25$，后继为空，下降（停在 $19$）。</li>
+<li>第 $1$ 层：从 $19$ 出发，下一个是 $25$，不小于 $25$ 才停止，但此处 $25$ 即目标，下降前停在 $19$。</li>
+<li>第 $0$ 层：从 $19$ 出发，经过 $21$，下一个为 $25$，找到。</li>
+<p>只访问了 $6,19,21,25$ 等少数结点，而不是扫描全部 $9$ 个元素。</p>
+<pre class="mermaid">graph LR
+    H2[头结点 第2层] --> A6[6] --> A19[19]
+    H1[头结点 第1层] --> B6[6] --> B9[9] --> B19[19] --> B25[25]
+    H0[头结点 第0层] --> C19[19] --> C21[21] --> C25[25] --> C26[26]
+    A19 -.下降.-> B19
+    B19 -.下降.-> C19</pre>
+<p><em>图：搜索 25 的路径：在高层大步前进，再逐层下降并精细定位。</em></p>
+<h3 id="复杂度分析">复杂度分析</h3>
+<p><strong>期望层数。</strong> 元素到达第 $i$ 层的概率为 $p^i$，所以最高层数约为 $\log_{1/p} n$，即 $O(\log n)$。</p>
+<p><strong>期望搜索代价。</strong> 把搜索路径<strong>反向</strong>追溯：从目标出发，每一步要么"向上"（该结点有更高层，概率 $p$），要么"向左"（概率 $1-p$）。设 $C(k)$ 为向上爬 $k$ 层所需的期望步数，则</p>
+$$C(k)=1+p\,C(k-1)+(1-p)\,C(k)\;\Longrightarrow\; C(k)=\frac{k}{p}.$$
+<p>取 $k=\log_{1/p}n$，得期望搜索代价为 $\dfrac{\log_{1/p} n}{p}=O(\log n)$。插入与删除的主要开销也是一次搜索，故同为期望 $O(\log n)$；期望空间为 $\sum_i np^i=\dfrac{n}{1-p}=O(n)$。</p>
+<p>注意：这是<strong>期望</strong>界，由随机抛硬币保证，与输入顺序无关，因此不会像普通二叉搜索树那样因有序输入而退化。</p>
+<h3 id="问题应用">问题应用</h3>
+<p><strong>问题</strong>：设 $n=10^6$，$p=\tfrac12$，估计搜索比较次数，并与线性扫描对比。</p>
+<p><strong>解</strong>：$\log_2 10^6\approx 20$，期望代价约 $20/\tfrac12=40$ 步，而链表平均需约 $5\times10^5$ 步，快约 $10^4$ 倍。</p>
+<p><strong>调参</strong>：取 $p=\tfrac14$ 时，每个结点平均指针数由 $2$ 降到 $\tfrac43$，节省内存，而搜索代价 $\log_4 n/\tfrac14\approx 40$ 步，几乎不变。这说明 $p$ 是时间与空间的权衡参数。</p>
+<p><strong>实践意义</strong>：跳表实现比平衡树（如红黑树）简单，且易于并发，Redis 的有序集合（sorted set）即采用跳表。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

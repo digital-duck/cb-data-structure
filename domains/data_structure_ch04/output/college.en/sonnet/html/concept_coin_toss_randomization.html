@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Toss Randomization | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="coin-toss-randomization">Coin Toss Randomization</h2>
+<p><strong>Definition.</strong> A <em>coin toss</em> is a random binary choice: each independent toss yields heads with probability $p$ and tails with probability $1-p$ (usually $p = \tfrac12$). Randomized data structures use these tosses to make structural decisions, such as whether to promote an element to a higher level. The structure's cost is then a random variable, and we analyze its <strong>expected value</strong> $E[X]$ over all possible toss outcomes. No fixed input can reliably force bad behavior, because the randomness comes from the tosses and not from the data.</p>
+<p><strong>Key fact: the geometric distribution.</strong> Suppose we toss a fair coin repeatedly until the first tails, and let $X$ be the number of heads. Then</p>
+$$P(X = k) = \left(\tfrac12\right)^{k+1}, \qquad P(X \ge k) = \left(\tfrac12\right)^k.$$
+<p>The expected number of heads is $E[X] = \sum_{k\ge1} P(X \ge k) = \sum_{k\ge1} 2^{-k} = 1$.</p>
+<p><strong>Worked example (skip list levels).</strong> In a skip list, each new element starts at level 0. We toss a coin, and each head promotes it one level higher. We stop at the first tail. The element's height $H$ is $1 + X$ levels.</p>
+<li>Expected height of one element: $E[H] = 1 + E[X] = 2$.</li>
+<li>Expected total pointers for $n$ elements: $E[\text{pointers}] = \sum_{i=1}^{n} E[H_i] = 2n$, by linearity of expectation. The structure uses only linear space on average.</li>
+<li>Expected number of elements reaching level $k$: $n \cdot 2^{-k}$. About half the elements sit at level 1, a quarter at level 2, and so on.</li>
+<p><strong>Problem-solving application.</strong> How many levels should we expect with $n = 1024$ elements?</p>
+<p>The expected count at level $k$ is $1024 \cdot 2^{-k}$. This falls to about $1$ when $2^k = 1024$, so $k = \log_2 n = 10$. We can make this precise with a union bound. The probability that <em>any</em> element reaches level $k$ is at most</p>
+$$n \cdot 2^{-k}.$$
+<p>Choosing $k = 2\log_2 n$ gives $n \cdot n^{-2} = 1/n$. So with probability at least $1 - 1/n$, the structure has $O(\log n)$ levels.</p>
+<p>Searching walks down from the top level. At each level we move right until the next node overshoots, then drop down. Look at the search path <em>backward</em>. At each node, a head means "this node was promoted, so we came from below." A tail means "we came from the left." The expected number of tosses needed to climb one level is $2$, so climbing $\log_2 n$ levels costs about $2\log_2 n$ steps. Hence</p>
+$$E[\text{search cost}] = O(\log n).$$
+<p><strong>Check yourself.</strong> If the coin is biased with $p = \tfrac14$ for promotion, what is the expected height of an element? Using $E[X] = \frac{p}{1-p} = \tfrac13$, we get $E[H] = \tfrac43$. This gives fewer pointers and less space, but each level skips fewer elements, so searches take more steps. The choice of $p$ trades space against search time, and expectation lets us quantify exactly that trade.</p>
+<pre class="mermaid">flowchart TD
+    A[Insert element at level 0] --> B{Toss coin}
+    B -->|Heads| C[Promote one level up]
+    C --> B
+    B -->|Tails| D[Stop: height fixed]</pre>
+<p><em>Each insertion tosses a coin repeatedly. Every head promotes the element one level, and the first tail ends the process, giving a geometric height distribution.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

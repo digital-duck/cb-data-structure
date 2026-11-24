@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heapsort | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="heapsort">Heapsort</h2>
+<p><strong>Heapsort</strong> is a comparison-based sorting algorithm that uses a binary heap to repeatedly extract the largest remaining element. It sorts in place and runs in $O(n \log n)$ time in the worst case, which is asymptotically optimal for comparison sorts. Its guaranteed bound makes it one of the fastest general-purpose sorts known.</p>
+<h3 id="definition">Definition</h3>
+<p>A <strong>max-heap</strong> is an array $A[1..n]$ representing a nearly complete binary tree in which every node is at least as large as its children:</p>
+$$A[\lfloor i/2 \rfloor] \ge A[i] \quad \text{for all } 2 \le i \le n.$$
+<p>The children of index $i$ are $2i$ and $2i+1$. The root $A[1]$ is therefore the maximum.</p>
+<p>Heapsort has two phases:</p>
+<li><strong>Build</strong> a max-heap from the unsorted array.</li>
+<li><strong>Extract</strong>: swap the root with the last heap element, shrink the heap by one, and restore the heap property by sifting the new root down. Repeat until the heap is empty.</li>
+<p>The key helper is <code>sift_down</code> (often called <em>max-heapify</em>). It swaps a node with its larger child until the node is no smaller than both children.</p>
+<pre><code>def sift_down(A, i, n):          # 0-indexed; heap is A[0:n]
+    while True:
+        l, r, big = 2*i + 1, 2*i + 2, i
+        if l &lt; n and A[l] &gt; A[big]: big = l
+        if r &lt; n and A[r] &gt; A[big]: big = r
+        if big == i: return
+        A[i], A[big] = A[big], A[i]
+        i = big
+
+def heapsort(A):
+    n = len(A)
+    for i in range(n//2 - 1, -1, -1):   # build heap
+        sift_down(A, i, n)
+    for end in range(n - 1, 0, -1):     # extract
+        A[0], A[end] = A[end], A[0]
+        sift_down(A, 0, end)</code></pre>
+<h3 id="worked-example">Worked example</h3>
+<p>Sort $A = [4, 10, 3, 5, 1]$.</p>
+<p><strong>Build.</strong> Start at index $n/2-1 = 1$. Node $10$ is larger than its children ($5$, $1$), so nothing moves. At index $0$, node $4$ has children $10$ and $3$. Swap $4$ with $10$, giving $[10, 4, 3, 5, 1]$. Now $4$ has child $5$, so swap again: $[10, 5, 3, 4, 1]$. This is a max-heap.</p>
+<p><strong>Extract.</strong></p>
+<li>Swap $10$ with the last element: $[1, 5, 3, 4 \mid 10]$. Sift down: $[5, 4, 3, 1 \mid 10]$.</li>
+<li>Swap $5$ to the end: $[1, 4, 3 \mid 5, 10]$. Sift down: $[4, 1, 3 \mid 5, 10]$.</li>
+<li>Swap $4$ to the end: $[3, 1 \mid 4, 5, 10]$. No sift is needed.</li>
+<li>Swap $3$ to the end: $[1, 3, 4, 5, 10]$. The array is sorted.</li>
+<h3 id="problem-solving-application-complexity">Problem-solving application: complexity</h3>
+<p><strong>Claim.</strong> Heapsort runs in $O(n \log n)$ time.</p>
+<p><em>Extract phase.</em> A heap of $k$ nodes has height $\lfloor \log_2 k \rfloor$, so each <code>sift_down</code> costs $O(\log n)$. There are $n-1$ extractions, so the phase costs $O(n \log n)$.</p>
+<p><em>Build phase.</em> A cruder bound gives $O(n \log n)$, but the true cost is $O(n)$. A node at height $h$ sifts down at most $h$ levels, and at most $\lceil n/2^{h+1} \rceil$ nodes have height $h$. The total work is therefore</p>
+$$\sum_{h=0}^{\lfloor \log_2 n \rfloor} \left\lceil \frac{n}{2^{h+1}} \right\rceil h \;\le\; n \sum_{h=0}^{\infty} \frac{h}{2^{h}} = 2n = O(n),$$
+<p>using $\sum_{h\ge 0} h x^h = x/(1-x)^2$ at $x = 1/2$.</p>
+<p>The total is $O(n) + O(n \log n) = O(n \log n)$. This holds in the best, average, and worst cases. Space use is $O(1)$ extra, but heapsort is <strong>not stable</strong>: equal keys may change relative order.</p>
+<p><strong>Practice.</strong> For $n = 1{,}000$, estimate the extract-phase comparisons. Each sift-down makes at most $2\log_2 n \approx 20$ comparisons, so the phase makes at most about $20{,}000$. Compare this with the roughly $500{,}000$ comparisons of a quadratic sort.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

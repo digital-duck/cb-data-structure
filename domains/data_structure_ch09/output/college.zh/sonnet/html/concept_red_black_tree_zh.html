@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="红黑树">红黑树</h2>
+<h3 id="定义">定义</h3>
+<p><strong>红黑树</strong>(red-black tree)是一棵二叉搜索树,每个结点带有红色或黑色的标记,并满足以下性质:</p>
+<li>根结点为黑色;空叶子(NIL)视为黑色。</li>
+<li><strong>无连续红边性质</strong>:红结点的孩子必为黑色(不存在两个相邻的红结点)。</li>
+<li><strong>黑高性质</strong>:从任一结点出发到其后代 NIL 叶子的每条路径,所含黑结点数相同。该数称为该结点的<strong>黑高</strong> $bh(x)$。</li>
+<p>它与 2-4 树一一对应:一个黑结点连同其红色孩子合并为一个结点,恰好是 2-4 树中含 1、2 或 3 个键的结点。</p>
+<li>黑结点,无红孩子 $\leftrightarrow$ 2-结点</li>
+<li>黑结点,一个红孩子 $\leftrightarrow$ 3-结点</li>
+<li>黑结点,两个红孩子 $\leftrightarrow$ 4-结点</li>
+<h3 id="高度定理">高度定理</h3>
+<p><strong>定理</strong> 含 $n$ 个内部结点的红黑树,高度 $h \le 2\log_2(n+1)$。</p>
+<p><strong>证明</strong> 设根的黑高为 $b$。由无连续红边性质,任何路径上至少一半的结点为黑色,故 $h \le 2b$。以黑高为 $b$ 的结点为根的子树至少含 $2^{b}-1$ 个内部结点(每层都是满的黑结点时最少),所以 $n \ge 2^{b}-1$,即 $b \le \log_2(n+1)$。因此 $h \le 2b \le 2\log_2(n+1)$。$\blacksquare$</p>
+<p>于是查找、插入、删除的时间复杂度均为 $O(\log n)$。</p>
+<h3 id="例题">例题</h3>
+<p>依次插入键 $10, 20, 30$。</p>
+<li>插入 10:成为根,染黑。</li>
+<li>插入 20:新结点默认染<strong>红</strong>(不改变黑高),作为 10 的右孩子。合法。</li>
+<li>插入 30:红色的 30 成为红色 20 的孩子,违反无连续红边性质。其"叔叔"(10 的左孩子)为 NIL,视为黑色,于是做一次<strong>左旋</strong>,并交换颜色:20 成为黑色根,10 与 30 为红色孩子。</li>
+<p>结果是一个黑结点带两个红孩子,对应 2-4 树中的一个 4-结点 $[10,20,30]$。</p>
+<h3 id="问题求解-插入后的修复规则">问题求解:插入后的修复规则</h3>
+<p>设新插入的红结点 $z$ 的父亲为红色(否则无需修复),看<strong>叔叔</strong>结点 $u$ 的颜色:</p>
+<p>| 情形 | 叔叔 $u$ | 操作 | 对应 2-4 树 | |---|---|---|---| | 1 | 红 | 父、叔染黑,祖父染红,令 $z$ 上移到祖父继续检查 | 4-结点分裂,中间键上升 | | 2 | 黑,$z$ 为"内侧"孩子 | 先对父旋转,化为情形 3 | 调整 3-结点内部的方向 | | 3 | 黑,$z$ 为"外侧"孩子 | 对祖父反向旋转,父染黑、祖父染红 | 键并入 3-结点,形成 4-结点 |</p>
+<p><strong>练习</strong> 在上面得到的树(根 20 黑,10、30 红)中插入 5。判断应使用哪种情形,并画出结果。</p>
+<p><strong>解答</strong> 5 成为红结点 10 的左孩子,父亲 10 为红,叔叔 30 也为红,属情形 1:将 10、30 染黑,20 染红;再因 20 是根,将其染回黑色。结果根为黑、高度由 1 增至 2,黑高整体加 1,对应 2-4 树中 4-结点分裂、树增高一层。</p>
+<p>情形 1 至多沿路径上移 $O(\log n)$ 次,情形 2、3 合计至多旋转 2 次,因此插入的旋转次数是 $O(1)$,这也是红黑树在频繁更新场景中(如标准库的有序映射)被广泛采用的原因。</p>
+<pre class="mermaid">graph TD
+    A["黑 20"] --> B["黑 10"]
+    A --> C["黑 30"]
+    B --> D["红 5"]
+    B --> E["NIL 黑"]
+    C --> F["NIL 黑"]
+    C --> G["NIL 黑"]</pre>
+<p><em>插入 5 并修复后的红黑树:根为黑,所有从根到 NIL 的路径均含 2 个黑结点,且无相邻红结点。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

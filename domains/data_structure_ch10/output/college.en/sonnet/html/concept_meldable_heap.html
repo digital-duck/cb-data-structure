@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meldable Heap | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="meldable-heap">Meldable Heap</h2>
+<p>A <strong>meldable heap</strong> is a priority queue stored as a heap-ordered binary tree of <em>unrestricted shape</em>. Each node holds a value, and every node's value is no larger than the values of its children (min-heap order). Unlike a binary heap, the tree need not be complete or balanced. Its shape can be lopsided, and its height can be as large as $n$.</p>
+<p>All the work is done by one operation, $\text{merge}(h_1, h_2)$, which combines two heaps into one:</p>
+<li>If $h_1$ is empty, return $h_2$. If $h_2$ is empty, return $h_1$.</li>
+<li>Otherwise, swap $h_1$ and $h_2$ if needed so that $h_1.\text{key} \le h_2.\text{key}$. The root of $h_1$ stays the root.</li>
+<li>Flip a fair coin. If heads, set $h_1.\text{left} \leftarrow \text{merge}(h_1.\text{left}, h_2)$. If tails, set $h_1.\text{right} \leftarrow \text{merge}(h_1.\text{right}, h_2)$.</li>
+<li>Return $h_1$.</li>
+<p>The other operations follow directly:</p>
+<li>$\text{add}(x)$: create a single-node heap $u$ holding $x$, then set $r \leftarrow \text{merge}(u, r)$.</li>
+<li>$\text{remove}()$ (delete the minimum): save $r.\text{key}$, then set $r \leftarrow \text{merge}(r.\text{left}, r.\text{right})$.</li>
+<h3 id="worked-example">Worked example</h3>
+<p>Merge $h_1$ with root 3 and right child 8 (no left child) and $h_2$ with root 5 and no children.</p>
+<li>$3 \le 5$, so 3 remains the root.</li>
+<li>Suppose the coin gives heads. We compute $\text{merge}(h_1.\text{left}, h_2) = \text{merge}(\varnothing, h_2) = h_2$, so 5 becomes 3's left child.</li>
+<li>Suppose instead it gives tails. We compute $\text{merge}(8, 5)$. Since $5 < 8$, 5 becomes the root of that subtree and the coin is flipped again. Eventually 8 is attached below 5.</li>
+<p>Either outcome is a valid heap. Heap order is preserved because the smaller root always stays on top.</p>
+<h3 id="problem-solving-application-running-time">Problem-solving application: running time</h3>
+<p>Merging walks down a single random path in each heap, and it never branches. The walk ends when one of the subtrees it reaches is empty.</p>
+<p><strong>Lemma.</strong> The expected length of a random walk in a binary tree with $n$ nodes, where each step goes left or right with probability $\tfrac12$, is at most $\log(n+1)$.</p>
+<p><em>Proof sketch (induction on $n$).</em> For $n=0$ the walk has length $0 = \log 1$. For $n>0$, let the left subtree have size $n_1$ and the right subtree $n_2$, so $n_1+n_2=n-1$. The walk takes one step and then continues into a random child, so</p>
+$$E[W] \le 1 + \tfrac12\log(n_1+1) + \tfrac12\log(n_2+1).$$
+<p>By concavity of $\log$,</p>
+$$E[W] \le 1 + \log\!\left(\tfrac{n_1+n_2+2}{2}\right) = 1 + \log\!\left(\tfrac{n+1}{2}\right) = \log(n+1). \qquad\blacksquare$$
+<p>Merging $h_1$ and $h_2$ with $n_1$ and $n_2$ nodes follows one walk in each heap. So the expected number of steps is at most</p>
+$$\log(n_1+1) + \log(n_2+1) = O(\log n),$$
+<p>where $n = n_1 + n_2$.</p>
+<p><strong>Consequence.</strong> Since $\text{add}$ and $\text{remove}$ each perform one merge, both run in $O(\log n)$ <em>expected</em> time. $\text{findMin}$ simply returns the root's key in $O(1)$.</p>
+<p><strong>Practice.</strong> Insert 4, 2, 7 in that order into an empty heap. Insertion merges the new single node with the current heap, and 2 ends up as the root. Now call $\text{remove}()$. The result is $\text{merge}(r.\text{left}, r.\text{right})$, and 4 is returned next. Because coin flips decide the shape, different runs can produce different trees. The expected cost stays logarithmic regardless.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

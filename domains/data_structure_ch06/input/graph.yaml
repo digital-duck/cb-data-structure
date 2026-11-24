@@ -1,0 +1,102 @@
+domain: data_structure_ods_python
+primitives:
+  binary_tree:
+    defines: A rooted tree in which each node has at most two children, referred to as the left child
+      and right child, with external nodes filling any missing child positions.
+    tier: 0
+  node_representation:
+    defines: A binary tree node is represented by storing references to its left child, right child, and
+      parent, using nil for any neighbour that is not present.
+    tier: 0
+  total_order:
+    defines: An ordering relation over data values (such as numbers) that allows any two values to be
+      compared, used as the basis for storing comparable data in a binary search tree.
+    tier: 0
+concepts:
+  node_depth:
+    defines: The depth of a node u is the number of steps on the path from u to the root, computed by
+      following parent pointers until reaching the root.
+    composed_of:
+    - binary_tree
+    - node_representation
+    tier: 1
+  tree_size:
+    defines: The number of nodes in a binary tree rooted at u, computed recursively as one plus the sizes
+      of its left and right subtrees.
+    composed_of:
+    - binary_tree
+    tier: 1
+  tree_height:
+    defines: The height of a node u is one plus the maximum of the heights of its left and right subtrees,
+      representing the length of the longest root-to-leaf path.
+    composed_of:
+    - binary_tree
+    tier: 1
+  recursive_tree_traversal:
+    defines: A traversal that visits all nodes of a binary tree by recursively traversing the left subtree,
+      then the right subtree, using simple but stack-space-limited recursive calls.
+    composed_of:
+    - binary_tree
+    tier: 1
+  nonrecursive_tree_traversal:
+    defines: A traversal that visits all nodes of a binary tree without recursion by using parent pointers
+      and tracking the previously visited node to determine the next node to visit.
+    composed_of:
+    - binary_tree
+    - node_representation
+    tier: 1
+  breadth_first_traversal:
+    defines: A traversal that visits the nodes of a binary tree level-by-level from top to bottom and
+      left to right within each level, implemented using a queue.
+    composed_of:
+    - binary_tree
+    tier: 1
+  binary_search_tree:
+    defines: A binary tree in which each node stores a data value from a total order, satisfying the property
+      that every value in a node's left subtree is smaller and every value in its right subtree is larger
+      than the node's value.
+    composed_of:
+    - binary_tree
+    - total_order
+    tier: 1
+  pre_in_post_order_traversal:
+    defines: Traversal orders that visit a node before its children (pre-order), between its left and
+      right subtrees (in-order), or after all its subtree nodes (post-order), used to number the nodes
+      of a tree.
+    composed_of:
+    - recursive_tree_traversal
+    tier: 2
+  bst_search:
+    defines: The operation of locating a value x in a binary search tree by comparing x to the current
+      node and moving left or right accordingly, starting at the root.
+    composed_of:
+    - binary_search_tree
+    tier: 2
+  bst_addition:
+    defines: The operation of inserting a new value into a binary search tree by searching for it and
+      attaching it as a leaf child of the last node encountered during the search.
+    composed_of:
+    - bst_search
+    tier: 3
+  bst_removal:
+    defines: The operation of deleting a value from a binary search tree, splicing out nodes with at most
+      one child directly, or replacing a two-child node's value with the smallest value in its right subtree
+      before splicing that node out.
+    composed_of:
+    - bst_search
+    tier: 3
+applications:
+  unbalanced_bst_performance:
+    defines: The result that find(x), add(x), and remove(x) in an unbalanced BinarySearchTree each take
+      O(n) time in the worst case because the tree can degenerate into a long chain.
+    needs:
+    - bst_search
+    - bst_addition
+    - bst_removal
+    tier: 4
+  tree_balancing_strategies:
+    defines: Approaches such as randomization, partial rebuilding, or non-binary simulated trees that
+      keep binary search tree operations to O(log n) time by preventing the tree from becoming unbalanced.
+    needs:
+    - unbalanced_bst_performance
+    tier: 5

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Btree Filesystems Databases | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="btree-filesystems-databases">Btree Filesystems Databases</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>B-tree of order $m$</strong> is a balanced search tree in which every node holds up to $m-1$ sorted keys and up to $m$ children. Every non-root node is at least half full, and all leaves sit at the same depth. B-trees were designed for storage that is read in <strong>blocks</strong> (4 KB pages, say) and is slow to access. The goal is to minimize the number of block reads, not the number of comparisons.</p>
+<p>If a node fits in one block, a lookup costs one disk read per level. With $N$ keys and minimum fan-out $t=\lceil m/2\rceil$, the height satisfies</p>
+$$h \le \log_t\!\left(\frac{N+1}{2}\right) = O(\log_t N).$$
+<p>Because $t$ is in the hundreds, $h$ stays tiny even for billions of keys.</p>
+<p>Most real systems use the <strong>B+ tree</strong> variant. Interior nodes store only routing keys, which maximizes fan-out. All records live in the leaves, and the leaves are linked in a list, so range scans are sequential.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take a 4 KB page, an 8-byte key, and an 8-byte child pointer. Each key–pointer pair takes 16 bytes, so fan-out is about $4096/16 = 256$. If pages are about 70% full, the effective fan-out is $t \approx 180$. How many levels does an index over $N = 10^9$ rows need?</p>
+$$h \approx \log_{180}(10^9) = \frac{9}{\log_{10} 180} = \frac{9}{2.255} \approx 4.0$$
+<p>So about 4 page reads find any row among a billion. The top two levels (about 32,000 pages, roughly 130 MB) usually stay cached in RAM. In practice, one lookup then costs only 1–2 actual disk reads.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Where B-trees appear.</strong></p>
+<li><strong>File systems:</strong> NTFS stores directory entries and file-allocation metadata in B+ trees. HFS+ and APFS keep their catalog (file and folder records) in a B-tree. Ext4 uses an HTree, a shallow B-tree-like index, for large directories, and extent trees to map file offsets to disk blocks.</li>
+<li><strong>Databases:</strong> PostgreSQL, MySQL/InnoDB, and SQLite use B+ trees for primary and secondary indexes. <code>WHERE id BETWEEN 100 AND 200</code> becomes one descent followed by a leaf-list scan.</li>
+<li><strong>Cloud key-value stores:</strong> Some use B-trees directly, such as LMDB and Amazon DynamoDB's storage nodes. Others, like Cassandra and RocksDB, use LSM-trees. The comparison is a classic design trade-off: B-trees give predictable reads, while LSM-trees favor write-heavy loads.</li>
+<p><strong>Problem.</strong> A table has $10^8$ rows with a B+ tree index of fan-out 100. A query selects 5,000 consecutive keys, and each leaf holds 100 records. Estimate the page reads.</p>
+<p><em>Solution.</em> Height: $\log_{100}(10^8) = 4$ reads to reach the first leaf. The range spans $5000/100 = 50$ leaves. The first is already read, so 49 more sequential reads follow through the leaf links. Total: about $4 + 49 = 53$ reads. A hash index cannot answer a range query at all, and scanning the table would need about $10^6$ pages.</p>
+<p><strong>Insertion keeps the tree balanced.</strong> If a leaf overflows, it <strong>splits</strong> in two and pushes its median key to the parent. A split cascades upward only when the parent is also full. Deletes merge or borrow from underfull siblings. Because the tree grows or shrinks only at the root, all leaves stay at equal depth, which gives guaranteed $O(\log_t N)$ cost for search, insert, and delete.</p>
+<pre class="mermaid">graph TD
+R["Root: 40 | 80"] --> A["Keys 10, 20, 30"]
+R --> B["Keys 50, 60, 70"]
+R --> C["Keys 90, 100, 110"]
+A -.next leaf.-> B
+B -.next leaf.-> C</pre>
+<p><em>A small B+ tree: the root routes searches to leaves, and the dashed links let range scans move across leaves without returning to the root.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

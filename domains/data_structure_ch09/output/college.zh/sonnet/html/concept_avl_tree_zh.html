@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avl Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="avl-树">AVL 树</h2>
+<p><strong>定义。</strong> AVL 树是一种高度平衡的二叉搜索树:对每个结点 $v$,定义平衡因子</p>
+$$b(v)=h(v.\text{left})-h(v.\text{right}),$$
+<p>其中空树的高度记为 $-1$。AVL 树要求对所有结点都有 $b(v)\in\{-1,0,1\}$。它首先是二叉搜索树(左子树键值小于结点,右子树键值大于结点),其次才满足上述平衡条件。普通二叉搜索树在按顺序插入时会退化成链表,查找代价为 $O(n)$。AVL 树通过平衡条件保证高度为 $O(\log n)$。</p>
+<p><strong>为什么高度至多约 $1.44\log_2 n$。</strong> 设 $N(h)$ 为高度为 $h$ 的 AVL 树所含的最少结点数。最稀疏的树,其根的一棵子树高度为 $h-1$,另一棵为 $h-2$,所以</p>
+$$N(h)=N(h-1)+N(h-2)+1,\quad N(0)=1,\ N(1)=2.$$
+<p>令 $F(h)=N(h)+1$,则 $F(h)=F(h-1)+F(h-2)$,这正是斐波那契递推,于是 $N(h)=\Theta(\varphi^{h})$,其中 $\varphi=\tfrac{1+\sqrt5}{2}$。因此 $n\ge N(h)$ 给出</p>
+$$h<\frac{1}{\log_2\varphi}\log_2 n\approx 1.44\log_2 n.$$
+<p><strong>旋转:恢复平衡。</strong> 插入或删除可能使某结点的 $|b|=2$,这时用旋转修复,每次旋转只需 $O(1)$ 时间,并保持二叉搜索树的顺序。共有四种情形:</p>
+<li><strong>LL</strong>(左子树的左侧过高):对该结点做一次右旋。</li>
+<li><strong>RR</strong>(右子树的右侧过高):做一次左旋。</li>
+<li><strong>LR</strong>:先对左孩子左旋,再对该结点右旋。</li>
+<li><strong>RL</strong>:先对右孩子右旋,再对该结点左旋。</li>
+<pre class="mermaid">graph TD
+A["30: b=2 失衡"] --> B["20"]
+B --> C["10"]
+A --> D["空"]
+E["右旋之后: 20"] --> F["10"]
+E --> G["30"]</pre>
+<p><em>左图为插入 10 后,结点 30 的 LL 失衡;右图为一次右旋后,以 20 为根的平衡树。</em></p>
+<p><strong>例题。</strong> 依次插入 $10,20,30,40,50,25$。</p>
+<li>插入 10、20 后无问题。插入 30 后,10 处出现 RR 失衡($b=-2$),左旋后根为 20,子结点为 10 和 30。</li>
+<li>插入 40,无失衡。插入 50 后,30 失衡($b=-2$,RR),左旋后子树以 40 为根,子结点为 30 和 50。</li>
+<li>此时 20 的右子树高度为 1,左子树高度为 0,$b=-1$,仍然平衡。</li>
+<li>插入 25:它位于 30 的左侧,30 的 $b=1$。20 的左子树高度为 0,右子树高度为 2,$b=-2$,且 20 的右孩子 40 满足 $b(40)=+1$(左重),属 RL 情形。先对 40 右旋,再对 20 左旋,最终得到平衡树,根为 30。</li>
+<p><strong>应用与分析。</strong> 查找、插入、删除的最坏时间都是 $O(h)=O(\log n)$。插入至多需要一次(单或双)旋转,删除则可能沿路径向上需要 $O(\log n)$ 次旋转。当系统需要严格的最坏情况保证,而且读操作远多于写操作时(例如数据库内存索引、实时调度),AVL 树比红黑树更合适。AVL 树的高度上界更紧,查找更快;红黑树的旋转更少,更新更便宜。</p>
+<p><strong>练习。</strong> 求高度为 4 的 AVL 树的最少结点数 $N(4)$。由递推,$N(2)=4$,$N(3)=7$,$N(4)=12$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

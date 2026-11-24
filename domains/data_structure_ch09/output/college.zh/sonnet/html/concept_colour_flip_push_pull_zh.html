@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colour Flip Push Pull | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="颜色翻转-推入与拉出">颜色翻转、推入与拉出</h2>
+<p><strong>定义。</strong> 红黑树要求：根为黑；红结点的孩子必为黑；从任一结点到其后代空叶的每条路径含有相同数目的黑结点（黑高 $bh$ 相同）。四个子程序在不破坏黑高的前提下局部调整颜色与结构：</p>
+<li><strong>push_black($x$)</strong>：当 $x$ 为黑、两个孩子均为红时，把 $x$ 变红，两个孩子变黑。经过 $x$ 的每条路径黑结点数不变，因此黑高保持不变。</li>
+<li><strong>pull_black($x$)</strong>：push_black 的逆操作：$x$ 为红、两孩子均为黑时，$x$ 变黑，两孩子变红。</li>
+<li><strong>flip_left($u$)</strong> / <strong>flip_right($u$)</strong>：先交换 $u$ 与其右（左）孩子 $w$ 的颜色，再对 $u$ 做左（右）旋转。旋转只改变结构，不改变中序，故路径上的黑结点数由颜色交换来补偿。</li>
+<p><strong>例题。</strong> 在左倾红黑树（LLRB）中插入后，设 $u$ 为黑，左孩子 $a$ 为红，右孩子 $w$ 为红，且 $w$ 的颜色需要调整。</p>
+<li>此时 $u$ 的两个孩子都是红色，调用 push_black($u$)：$u\to$ 红，$a,w\to$ 黑。</li>
+<li>若 $u$ 的父亲也是红，则出现“红-红”冲突，需向上继续处理。</li>
+<li>另一种情形：$u$ 黑、右孩子 $w$ 红、左孩子 $a$ 黑（违反左倾性）。调用 flip_left($u$)：先交换颜色，使 $w$ 变黑、$u$ 变红；再左旋，$w$ 升为子树根，$u$ 成为其左孩子，且为红色。</li>
+<p>验证黑高：旋转前经过 $u$ 的路径含 $u$（黑）；旋转后经过 $w$（黑）而 $u$ 为红，每条路径仍恰有一个黑结点，故</p>
+$$bh_{\text{前}}(u)=bh_{\text{后}}(w).$$
+<pre class="mermaid">graph TD
+A["u 黑，左 a 黑，右 w 红"] --> B["交换 u 与 w 颜色"]
+B --> C["u 红，w 黑"]
+C --> D["对 u 左旋"]
+D --> E["w 黑为根，u 红为左孩子"]</pre>
+<p><em>图：flip_left 的执行流程，先换色再旋转，黑高保持不变。</em></p>
+<p><strong>问题求解应用。</strong> 删除操作需要“借”黑色。设从某子树删去一个黑结点，该子树黑高少 1，称其带有“双重黑”。解决思路：</p>
+<li>若兄弟 $s$ 为红，先对父结点做 flip_left（或 flip_right），使兄弟变黑，问题化为兄弟为黑的情形。</li>
+<li>若兄弟为黑且其两个孩子均为黑，则对父结点 $p$ 调用 pull_black：$p$ 的黑色“下拉”给两个孩子（$p$ 变红或增黑，孩子相应变色）。左子树补回缺失的黑色，兄弟一侧则以变红的方式抵消，整体黑高平衡。若 $p$ 原为红，则变黑后终止；否则缺陷上移一层。</li>
+<li>每次循环要么终止，要么上移一层，至多 $O(\log n)$ 次；每个子程序耗时 $O(1)$，旋转至多常数次，故删除总代价为 $O(\log n)$。</li>
+<p><strong>检验要点。</strong> 对任一子程序，只需验证：(1) 每条经过受影响结点的路径黑结点数不变；(2) 红结点不产生新的红-红父子对，或将冲突明确上移。掌握这两条检验标准，就能自行推导各种情形的处理方式，而无需死记。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

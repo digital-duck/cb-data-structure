@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotation | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="旋转">旋转</h2>
+<p><strong>定义。</strong> 在二叉搜索树(BST)中,<strong>旋转</strong>(rotation)是一种仅涉及两个相邻节点的局部修改:它交换这两个节点的父子关系,同时保持二叉搜索树性质——对任意节点 $x$,左子树所有键值 $\le x.\text{key}$,右子树所有键值 $\ge x.\text{key}$。旋转只改变常数个指针,时间复杂度为 $O(1)$,并且不改变中序遍历的顺序。</p>
+<p>设节点 $y$ 的左孩子为 $x$。<strong>右旋</strong>(以 $y$ 为轴)使 $x$ 成为 $y$ 的父节点;<strong>左旋</strong>是其镜像操作。</p>
+<p><strong>右旋的步骤</strong>(子树 $A,B,C$ 满足 $A < x < B < y < C$):</p>
+<li>$x$ 的右子树 $B$ 改为 $y$ 的左子树;</li>
+<li>$y$ 成为 $x$ 的右孩子;</li>
+<li>$x$ 取代 $y$ 原来在其父节点下的位置。</li>
+<pre class="mermaid">graph TD
+    subgraph 旋转前
+    Y1["y"] --> X1["x"]
+    Y1 --> C1["子树 C"]
+    X1 --> A1["子树 A"]
+    X1 --> B1["子树 B"]
+    end
+    subgraph 右旋后
+    X2["x"] --> A2["子树 A"]
+    X2 --> Y2["y"]
+    Y2 --> B2["子树 B"]
+    Y2 --> C2["子树 C"]
+    end</pre>
+<p><em>右旋前后的结构对比:$x$ 上升、$y$ 下降,子树 $B$ 从 $x$ 的右侧转移到 $y$ 的左侧,中序顺序 $A, x, B, y, C$ 保持不变。</em></p>
+<p><strong>例题。</strong> 在键值为 $10, 20, 30$ 依次插入的 BST 中,得到一条向右倾斜的链:$10 \to 20 \to 30$(每个节点是前一个的右孩子)。对根节点 $10$ 做左旋:</p>
+<li>令 $y=10$,其右孩子 $x=20$;</li>
+<li>$20$ 的左子树(空)变为 $10$ 的右子树;</li>
+<li>$10$ 成为 $20$ 的左孩子,$20$ 成为新根。</li>
+<p>结果是以 $20$ 为根、左孩子 $10$、右孩子 $30$ 的平衡树,高度从 $3$ 降为 $2$。中序遍历仍为 $10, 20, 30$,BST 性质得以保持。</p>
+<p><strong>为什么性质不变?</strong> 旋转前 $x$ 在 $y$ 的左侧,故 $x<y$。子树 $B$ 中的键满足 $x<b<y$。旋转后 $B$ 位于 $y$ 的左子树,仍小于 $y$;$y$ 位于 $x$ 的右子树,仍大于 $x$。$A$ 仍在 $x$ 左侧,$C$ 仍在 $y$ 右侧。所有大小关系均未被破坏。</p>
+<p><strong>问题求解应用。</strong> 普通 BST 在有序输入下退化为链,查找代价为 $O(n)$。AVL 树和红黑树利用旋转修复失衡:</p>
+<li><strong>左左情形</strong>(节点 $z$ 的左子树过高,且新节点在其左孩子的左侧):对 $z$ 做一次右旋。</li>
+<li><strong>左右情形</strong>:先对 $z$ 的左孩子做左旋,将其转为左左情形,再对 $z$ 右旋(双旋转)。</li>
+<p>由于每次旋转代价为 $O(1)$,且一次插入最多需要常数次旋转(AVL 树中至多两次),树高可维持在 $O(\log n)$,因此查找、插入、删除的复杂度都是 $O(\log n)$。</p>
+<p><strong>练习。</strong> 对链 $5 \to 3 \to 1$(每个节点是上一个节点的左孩子)应该做哪种旋转?请画出结果并验证中序遍历。(答案:对根 $5$ 右旋,得到根为 $3$、左孩子 $1$、右孩子 $5$ 的树。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

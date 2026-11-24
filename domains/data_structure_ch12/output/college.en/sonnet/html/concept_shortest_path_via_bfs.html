@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortest Path Via Bfs | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="shortest-path-via-bfs">Shortest Path Via Bfs</h2>
+<h3 id="definition">Definition</h3>
+<p>Let $G=(V,E)$ be an unweighted graph and let $r \in V$ be a root (source). The <strong>distance</strong> $d(r,j)$ is the minimum number of edges on any path from $r$ to $j$. Breadth-first search (BFS) explores vertices in non-decreasing order of distance from $r$: first $r$, then all vertices at distance 1, then distance 2, and so on.</p>
+<p>To recover actual paths, not just distances, BFS records a <strong>predecessor array</strong> $p$. When vertex $u$ is dequeued and an unvisited neighbor $v$ is discovered, we set $p[v] = u$ and $d[v] = d[u]+1$. We set $p[r]=\text{nil}$. Because each vertex is discovered exactly once, $p$ defines a tree rooted at $r$, the <em>BFS tree</em>.</p>
+<pre><code>BFS(G, r):
+    for each v: d[v] = ∞, p[v] = nil
+    d[r] = 0;  Q = [r]
+    while Q not empty:
+        u = dequeue(Q)
+        for each neighbor v of u:
+            if d[v] == ∞:
+                d[v] = d[u] + 1;  p[v] = u;  enqueue(Q, v)</code></pre>
+<p><strong>Reconstruction.</strong> To get the path to a reachable $j$, follow $p$ backward: $j, p[j], p[p[j]], \dots, r$, then reverse. If $d[j]=\infty$, no path exists.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Take $V=\{1,\dots,6\}$ with edges $1\!-\!2,\ 1\!-\!3,\ 2\!-\!4,\ 3\!-\!4,\ 4\!-\!5$, and $r=1$. (Vertex 6 is isolated.)</p>
+<p>| Dequeued | Discovered | Queue after | |---|---|---| | 1 | 2, 3 (p=1, d=1) | 2, 3 | | 2 | 4 (p=2, d=2) | 3, 4 | | 3 | none (4 already seen) | 4 | | 4 | 5 (p=4, d=3) | 5 | | 5 | none | empty |</p>
+<p>Final: $p[2]=1,\ p[3]=1,\ p[4]=2,\ p[5]=4$. For $j=5$: $5 \to 4 \to 2 \to 1$, reversed gives $1,2,4,5$, a path of $d[5]=3$ edges. Vertex 6 keeps $d=\infty$, so it is unreachable.</p>
+<p>Note the path through 3 (also length 3) is equally short; $p[4]=2$ only reflects which vertex was dequeued first. Shortest paths need not be unique, but every path produced is shortest.</p>
+<h3 id="why-it-is-correct">Why It Is Correct</h3>
+<p><strong>Claim:</strong> $d[j]=d(r,j)$ for every reachable $j$, and the path from $p$ has exactly $d(r,j)$ edges.</p>
+<p><em>Sketch.</em> The queue holds vertices in non-decreasing $d$ order, and it never contains values differing by more than 1. By induction on distance $k$: if all vertices at distance $<k$ have correct $d$, then a vertex $v$ with $d(r,v)=k$ has a neighbor $u$ at distance $k-1$. That $u$ is dequeued before any vertex at distance $\ge k$, so $v$ is discovered with $d[v]=k$. Each $p$-step reduces $d$ by exactly 1, so following $p$ from $j$ takes $d[j]$ steps to reach $r$.</p>
+<p>Running time is $O(|V|+|E|)$ with adjacency lists, and reconstruction costs $O(d[j])$.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><em>A maze is a grid; each open cell is a vertex adjacent to its open up/down/left/right neighbors. Find the fewest moves from $S$ to $T$ and list them.</em></p>
+<li>Run BFS from $S$, storing $p$ for each cell.</li>
+<li>If $d[T]=\infty$, report "no route."</li>
+<li>Otherwise, walk from $T$ through $p$ to $S$, reverse the list, and read off each move.</li>
+<p>The same recipe solves word-ladder puzzles (words as vertices, one-letter changes as edges) and "degrees of separation" queries in social networks. <strong>Caution:</strong> BFS gives shortest paths only when every edge costs the same. With weighted edges, use Dijkstra's algorithm instead.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

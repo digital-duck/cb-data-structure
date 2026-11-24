@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priority Queue | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="优先队列">优先队列</h2>
+<p><strong>定义。</strong> 优先队列(priority queue)是一种抽象数据类型,支持两种基本操作:</p>
+<li>$\text{add}(x)$:将元素 $x$ 加入队列;</li>
+<li>$\text{remove}()$:删除并返回当前存储的<strong>最小值</strong>。</li>
+<p>它与普通队列的区别在于:取出元素的顺序不取决于插入的先后,而取决于元素的大小(优先级)。"抽象数据类型"意味着我们只规定行为,不规定实现方式。</p>
+<p><strong>常见实现:二叉堆。</strong> 最小堆是一棵完全二叉树,满足:每个节点的值不大于其子节点的值。若用数组存储(下标从 1 开始),节点 $i$ 的父节点为 $\lfloor i/2 \rfloor$,子节点为 $2i$ 和 $2i+1$。</p>
+<li><code>add</code>:把新元素放在数组末尾,再不断与父节点比较并上移("上浮");</li>
+<li><code>remove</code>:取出根节点(最小值),把末尾元素移到根,再不断与较小的子节点交换("下沉")。</li>
+<p>由于完全二叉树的高度为 $\lfloor \log_2 n \rfloor$,两种操作的时间复杂度均为 $O(\log n)$,而查看最小值只需 $O(1)$。</p>
+<p><strong>worked example。</strong> 依次执行 add(5)、add(3)、add(8)、add(1),再执行两次 remove()。</p>
+<li>add(5):堆为 $[5]$。</li>
+<li>add(3):放在末尾得 $[5,3]$,3 小于父节点 5,上浮,得 $[3,5]$。</li>
+<li>add(8):得 $[3,5,8]$,无需调整。</li>
+<li>add(1):得 $[3,5,8,1]$,1 的父节点是下标 2 的 5,交换得 $[3,1,8,5]$;再与根 3 比较,交换得 $[1,3,8,5]$。</li>
+<li>remove():返回 1。把末尾的 5 移到根:$[5,3,8]$,与较小子节点 3 交换,得 $[3,5,8]$。</li>
+<li>remove():返回 3。</li>
+<p>两次返回值依次为 1、3,即始终是当前最小值。</p>
+<p><strong>问题求解应用:合并 $k$ 个有序列表。</strong> 设有 $k$ 个各自已排好序的列表,总共 $n$ 个元素,要合并成一个有序列表。</p>
+<p>思路:先把每个列表的首元素加入优先队列。每次 remove() 得到当前全局最小值并输出,再把该元素所在列表的下一个元素 add 进去。</p>
+<pre><code>import heapq
+
+def merge(lists):
+    heap = [(l[0], i, 0) for i, l in enumerate(lists) if l]
+    heapq.heapify(heap)
+    out = []
+    while heap:
+        v, i, j = heapq.heappop(heap)      # remove()
+        out.append(v)
+        if j + 1 &lt; len(lists[i]):
+            heapq.heappush(heap, (lists[i][j+1], i, j+1))  # add()
+    return out</code></pre>
+<p>队列中始终最多只有 $k$ 个元素,每个元素各经历一次 add 和一次 remove,所以总时间为 $O(n \log k)$。相比之下,把所有元素拼起来再排序需要 $O(n \log n)$;当 $k \ll n$ 时,优先队列方法明显更快。</p>
+<p>同样的模式也出现在 Dijkstra 最短路径算法、事件调度、Huffman 编码以及"求前 $K$ 大元素"等问题中:只要需要反复取出"当前最小(或最优)者",就应想到优先队列。</p>
+<pre class="mermaid">graph TD
+A["根:1"] --> B["3"]
+A --> C["8"]
+B --> D["5"]</pre>
+<p><em>图:执行 add(5)、add(3)、add(8)、add(1) 后得到的最小堆,每个父节点都不大于其子节点。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

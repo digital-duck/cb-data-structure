@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="单向链表-sllist">单向链表(Sllist)</h2>
+<p><strong>定义。</strong> 单向链表(singly linked list,简称 sllist)是一种线性数据结构:序列中的每个<strong>节点</strong>保存两部分内容——一个数据值 <code>data</code> 和一个指向下一个节点的引用 <code>next</code>。链表另外维护两个引用:<code>head</code> 指向第一个节点,<code>tail</code> 指向最后一个节点。最后一个节点的 <code>next</code> 为 <code>null</code>,表示序列结束。与数组不同,链表的节点在内存中不必连续,元素之间靠引用串联。</p>
+<pre class="mermaid">graph TD
+    H[头指针 head] --> N1[节点1: 数据 | next]
+    N1 --> N2[节点2: 数据 | next]
+    N2 --> N3[节点3: 数据 | next]
+    N3 --> NULL[空 null]
+    NEW[新节点: 数据 | next] -.->|新节点的 next 指向原头节点| N1
+    H2[第二步: head 更新为新节点] -.-> NEW</pre>
+<p><em>图示:在表头插入新节点的两个步骤——先让新节点的 next 指向当前头节点,再把 head 指针改为指向新节点。</em></p>
+<p><strong>复杂度分析。</strong> 设链表有 $n$ 个节点。</p>
+<li>表头插入:只改两个引用,时间 $O(1)$。</li>
+<li>借助 <code>tail</code> 在表尾插入:同样 $O(1)$。</li>
+<li>删除表头:$O(1)$。</li>
+<li>删除表尾:必须从 <code>head</code> 出发找到倒数第二个节点,时间 $O(n)$,因为单向链表无法"倒退"。</li>
+<li>按位置 $k$ 访问:需要沿 <code>next</code> 走 $k$ 步,时间 $O(k)$,最坏 $O(n)$;数组则是 $O(1)$。</li>
+<p><strong>例题。</strong> 空链表上依次执行 <code>add(3)</code>、<code>add(7)</code>、<code>add(5)</code>(每次都在表头插入),求最终链表。</p>
+<li><code>add(3)</code>:链表为空,新节点既是头也是尾。此时 $head = tail = [3]$。</li>
+<li><code>add(7)</code>:新节点 $[7]$ 的 <code>next</code> 指向 $[3]$,然后 <code>head</code> 指向 $[7]$。链表:$7 \to 3$。</li>
+<li><code>add(5)</code>:同理得到 $5 \to 7 \to 3 \to \text{null}$,<code>head</code> 为 $[5]$,<code>tail</code> 仍为 $[3]$。</li>
+<p><strong>注意顺序。</strong> 若先执行 <code>head = new_node</code>,再设置 <code>new_node.next = head</code>,则 <code>new_node.next</code> 指向它自己,原链表随之丢失。正确顺序必须是先连接、后移动头指针。</p>
+<p><strong>问题求解应用:反转链表。</strong> 要把 $5 \to 7 \to 3$ 反转为 $3 \to 7 \to 5$,用三个指针 <code>prev</code>、<code>cur</code>、<code>nxt</code> 遍历:</p>
+<pre><code>def reverse(head):
+    prev, cur = None, head
+    while cur:
+        nxt = cur.next    # 先保存后继
+        cur.next = prev   # 反转当前引用
+        prev = cur        # 前进
+        cur = nxt
+    return prev           # 新的头节点</code></pre>
+<p>每个节点只被访问一次,时间为 $O(n)$,只用了常数个额外变量,空间为 $O(1)$。</p>
+<p><strong>如何选择。</strong> 若程序需要频繁在两端插入、删除表头(如栈、队列),单向链表很合适;若需要大量随机访问或"按下标取值",则应选用数组。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

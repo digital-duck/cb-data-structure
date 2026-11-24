@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>External Memory Model | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="外部存储模型">外部存储模型</h2>
+<p><strong>定义。</strong> 当数据量远超内存时,真正的瓶颈是磁盘或 SSD 的访问,而不是 CPU 运算。<strong>外部存储模型</strong>(External Memory Model,又称 I/O 模型)正是为此而设:它只统计在内存与外部存储之间传输的<strong>块</strong>的次数,内存内部的指令开销一律忽略。</p>
+<p>模型有三个参数:</p>
+<li>$N$:问题规模(数据项总数);</li>
+<li>$M$:内存容量(可容纳的数据项数);</li>
+<li>$B$:块大小(一次 I/O 传输的数据项数),满足 $B \le M/2$。</li>
+<p>一次 I/O 读取或写入一个包含 $B$ 个连续数据项的块,代价为 $1$。算法的复杂度即 I/O 次数。</p>
+<p><strong>基本界限。</strong> 顺序扫描 $N$ 个元素需要</p>
+$$\operatorname{scan}(N)=\Theta\!\left(\frac{N}{B}\right)$$
+<p>次 I/O。外部排序的最优界限为</p>
+$$\operatorname{sort}(N)=\Theta\!\left(\frac{N}{B}\log_{M/B}\frac{N}{B}\right).$$
+<p>其中 $\log$ 的底数是 $M/B$,即内存最多能同时容纳的块数。</p>
+<p><strong>例题。</strong> 设 $N=2^{30}$,$M=2^{20}$,$B=2^{10}$。比较顺序扫描与逐个随机访问的 I/O 代价。</p>
+<li>顺序扫描:$N/B = 2^{20}\approx 10^6$ 次 I/O。</li>
+<li>每个元素随机访问一次,且各自落在不同的块中:$N=2^{30}\approx 10^9$ 次 I/O。</li>
+<p>两者相差 $B=1024$ 倍。可见,算法的<strong>局部性</strong>(一次读入的块要被充分利用)直接决定性能。</p>
+<p><strong>应用:外部归并排序。</strong> 问题:在上述参数下,估算对 $N$ 个元素排序所需的 I/O 次数。</p>
+<li>把数据分成大小为 $M$ 的段,每段读入内存排序后写回,得到 $N/M=2^{10}$ 个有序段。这一步读写各一遍,共 $2N/B$ 次 I/O。</li>
+<li>内存可容纳 $M/B=2^{10}$ 个块,因此可以同时做 $k=M/B-1\approx 2^{10}$ 路归并。一趟归并就能把 $2^{10}$ 个段合并成一个。</li>
+<li>归并趟数为 $\lceil\log_{k}(N/M)\rceil=1$,代价为 $2N/B$ 次 I/O。</li>
+<p>总计约 $4N/B = 2^{22}\approx 4\times10^6$ 次 I/O。若用二路归并,则需要约 $\log_2 2^{10}=10$ 趟,代价是它的数倍。这说明利用大扇出 $M/B$ 正是外部算法设计的核心。</p>
+<pre class="mermaid">flowchart LR
+    A[外部存储: N 个数据项] -->|"每次传输 B 个数据项,代价 1"| B[内存: 容量 M]
+    B -->|"写回块,代价 1"| A
+    B --> C[CPU 计算: 不计代价]</pre>
+<p><em>外部存储模型示意图:只有内存与外部存储之间的块传输被计入代价,内存内部的计算免费。</em></p>
+<p><strong>小结。</strong> 在外部存储模型下设计算法,要抓住两点:一是尽量顺序访问,使每次 I/O 都用满 $B$ 个数据项;二是尽量利用内存的 $M/B$ 个块缓冲,提高归并或分治的扇出,以减少遍历数据的趟数。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

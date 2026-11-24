@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick Height Procedure | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="选取高度过程-pick-height-procedure">选取高度过程(Pick Height Procedure)</h2>
+<h3 id="定义">定义</h3>
+<p>在跳表(skip list)中,每个新插入的节点需要一个随机的"高度"(层数)。<strong>选取高度过程</strong>通过模拟抛硬币来决定这个高度:生成一个随机整数,数其二进制表示中<strong>末尾连续 1 的个数</strong>,再加 1 作为高度。</p>
+<p>每个比特相当于一次公平抛硬币(1 表示"正面"),连续出现正面就继续向上升层,首次出现反面(0)时停止。因此,高度 $H$ 服从几何分布:</p>
+$$P(H = h) = \left(\tfrac{1}{2}\right)^{h}, \quad h = 1, 2, 3, \dots$$
+<p>由此得到期望高度</p>
+$$E[H] = \sum_{h=1}^{\infty} h \cdot 2^{-h} = 2.$$
+<p>这保证了第 $k$ 层的节点数大约是第 $k-1$ 层的一半,使跳表在期望意义下具有 $O(\log n)$ 的搜索时间。</p>
+<h3 id="例题">例题</h3>
+<p>设最大层数为 <code>MAX_LEVEL</code>。伪代码如下:</p>
+<pre><code>import random
+
+def pick_height(max_level=16):
+    r = random.getrandbits(max_level)
+    h = 1
+    while r &amp; 1 and h &lt; max_level:
+        h += 1
+        r &gt;&gt;= 1
+    return h</code></pre>
+<p>假设随机数为 $r = 0b10110111$:</p>
+<li>最低位为 1 → $h=2$,右移后为 <code>1011011</code></li>
+<li>最低位为 1 → $h=3$,右移后为 <code>101101</code></li>
+<li>最低位为 1 → $h=4$,右移后为 <code>10110</code></li>
+<li>最低位为 0 → 停止</li>
+<p>结果 $h = 4$(末尾有 3 个连续的 1,加 1)。该事件的概率为 $2^{-4} = \tfrac{1}{16}$。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题:</strong> 向一个跳表插入 $n = 1024$ 个节点,期望有多少个节点的高度至少为 5?最高层大约在第几层?</p>
+<p><strong>解:</strong> 高度至少为 $h$ 的概率是</p>
+$$P(H \ge h) = \left(\tfrac{1}{2}\right)^{h-1}.$$
+<p>取 $h=5$ 得 $P = \tfrac{1}{16}$,所以期望节点数为 $1024 \times \tfrac{1}{16} = 64$。</p>
+<p>最高层:当期望节点数降到约 1 时,即 $n \cdot 2^{-(h-1)} \approx 1$,得 $h \approx \log_2 n + 1 = 11$。所以最高层大约在第 11 层,与 $\log_2 n$ 同阶。</p>
+<p><strong>为什么要设上限?</strong> 若不设 <code>MAX_LEVEL</code>,极小概率下高度会过大,浪费空间。通常取 $\text{MAX\_LEVEL} \approx \log_2 N_{\max}$,其中 $N_{\max}$ 是预期的最大元素数。</p>
+<pre class="mermaid">flowchart TD
+    A[生成随机整数] --> B[高度 h = 1]
+    B --> C{最低位是 1 吗?}
+    C -- 是 --> D{h 已达上限吗?}
+    D -- 否 --> E[h 加 1,右移一位]
+    E --> C
+    D -- 是 --> F[返回 h]
+    C -- 否 --> F</pre>
+<p><em>选取高度过程的流程:不断检查最低位,遇到 1 就升一层,遇到 0 或达到上限就停止。</em></p>
+<p><strong>小结:</strong> 该过程用一次随机整数和若干位运算,代替了多次独立抛硬币,得到几何分布的高度,这是跳表期望对数性能的概率基础。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

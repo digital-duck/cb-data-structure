@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Singly Linked List Hierarchy | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="singly-linked-list-hierarchy">Singly Linked List Hierarchy</h2>
+<p><strong>Definition.</strong> A <em>singly linked list</em> is a chain of nodes, each storing a key and one pointer to its successor. A skiplist is built from a <strong>hierarchy</strong> of such lists $L_0, L_1, \dots, L_h$ with two properties:</p>
+<li>$L_0$ contains every key, in sorted order.</li>
+<li>Each $L_{i+1}$ is a subset of $L_i$, so $L_h \subseteq \cdots \subseteq L_1 \subseteq L_0$.</li>
+<p>In the standard randomized skiplist, each key in $L_i$ is promoted to $L_{i+1}$ independently with probability $p$ (usually $p = \tfrac12$). Equivalently, a key's <em>height</em> is the number of consecutive coin flips that come up heads, plus one. Each node appears in lists $L_0$ through $L_{\text{height}-1}$, and the copies are linked vertically.</p>
+<p><strong>Worked example.</strong> Take the keys $\{3, 7, 12, 19, 25, 31\}$ with these heights: 3→1, 7→3, 12→1, 19→2, 25→1, 31→2.</p>
+<li>$L_0$: 3 → 7 → 12 → 19 → 25 → 31</li>
+<li>$L_1$: 7 → 19 → 31</li>
+<li>$L_2$: 7</li>
+<p>Each list is a sorted singly linked list, and each is a subset of the one below it.</p>
+<pre class="mermaid">flowchart LR
+  subgraph L2
+    A7[7]
+  end
+  subgraph L1
+    B7[7] --> B19[19] --> B31[31]
+  end
+  subgraph L0
+    C3[3] --> C7[7] --> C12[12] --> C19[19] --> C25[25] --> C31[31]
+  end
+  A7 -.-> B7
+  B7 -.-> C7
+  B19 -.-> C19
+  B31 -.-> C31</pre>
+<p><em>Three nested singly linked lists. Solid arrows are <code>next</code> pointers, and dotted arrows connect copies of the same key between levels.</em></p>
+<p><strong>Problem-solving application: searching for 25.</strong> Start at the top list $L_2$ and work down:</p>
+<li>In $L_2$, the node 7 has no successor, so move down to $L_1$ at 7.</li>
+<li>In $L_1$, the next key is 19 and $19 \le 25$, so advance. The next key is 31 and $31 > 25$, so drop down to $L_0$ at 19.</li>
+<li>In $L_0$, advance 19 → 25. Found.</li>
+<p>The search took 3 horizontal steps, where a plain list would need 5. The upper lists work as "express lanes" that skip over many nodes at once.</p>
+<p><strong>Why the hierarchy is efficient.</strong> The expected number of keys in $L_i$ is $np^i$, so the expected height is $h = O(\log_{1/p} n)$. Walking a search path backward, each step goes up with probability $p$ and left otherwise. The expected number of left steps per level is therefore $1/p$. The expected search cost is</p>
+$$
+E[\text{steps}] \approx \frac{1}{p}\log_{1/p} n = O(\log n).
+$$
+<p>For $p = \tfrac12$ and $n = 1024$, that is about $2 \cdot 10 = 20$ steps, compared with up to 1024 in a single list.</p>
+<p><strong>Key insight.</strong> No single list is balanced or special. The logarithmic performance comes from stacking randomly thinned singly linked lists, each of which is simple to insert into and delete from.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

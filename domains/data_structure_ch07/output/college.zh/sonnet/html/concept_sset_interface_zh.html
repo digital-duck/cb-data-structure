@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sset Interface | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sset-interface-集合接口">Sset Interface(集合接口)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>SSet(有序集合,Sorted Set)接口</strong>是一种抽象数据类型,用于存储一组<strong>可比较</strong>的元素(即任意两个元素 $x,y$ 都能判断 $x<y$、$x=y$ 或 $x>y$)。它要求实现以下三种操作:</p>
+<li><code>add(x)</code>:将 $x$ 加入集合;若 $x$ 已存在则不加入,返回是否成功。</li>
+<li><code>remove(x)</code>:从集合中删除 $x$,返回是否成功。</li>
+<li><code>find(x)</code>:返回集合中<strong>不小于 $x$ 的最小元素</strong> $y$(即后继),若不存在则返回空值。</li>
+<p>注意:<code>find(x)</code> 不只是判断"是否存在",它还能在 $x$ 不在集合中时给出后继。这个设计使得 SSet 既能做成员查询,也能做范围查询。</p>
+<p>数学上,若集合为 $S$,则</p>
+$$
+\texttt{find}(x)=\min\{\,y\in S \mid y\ge x\,\}.
+$$
+<p>SSet 只规定"做什么",不规定"怎么做";跳表、二叉搜索树、红黑树等都是它的具体实现。</p>
+<h3 id="例题">例题</h3>
+<p>设 $S=\{3,7,12,20\}$,依次执行:</p>
+<li><code>find(8)</code>:大于等于 8 的元素有 12、20,最小者为 $12$,返回 $12$。</li>
+<li><code>find(7)</code>:7 本身在集合中,返回 $7$。</li>
+<li><code>find(25)</code>:没有不小于 25 的元素,返回空值。</li>
+<li><code>add(10)</code>:$S=\{3,7,10,12,20\}$。</li>
+<li><code>remove(7)</code>:$S=\{3,10,12,20\}$,之后 <code>find(7)</code> 返回 $10$。</li>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:给定一组已排序的预约时间点(分钟),判断能否在时刻 $t$ 之后至少空出 $d$ 分钟安排会议,即下一个已有预约是否不早于 $t+d$。</p>
+<p><strong>思路</strong>:用 SSet 存储所有预约开始时间,只需一次 <code>find</code>:</p>
+<pre><code>def can_schedule(sset, t, d):
+    nxt = sset.find(t)          # 不早于 t 的最近预约
+    return nxt is None or nxt &gt;= t + d</code></pre>
+<p>若 $S=\{540,600,720\}$,查询 $t=545,\ d=30$:<code>find(545)=600</code>,而 $600\ge 575$,故可以安排。若 $d=60$,则 $600<605$,不可以。</p>
+<p>这里若用无序列表,<code>find</code> 需要扫描全部 $n$ 个元素,时间为 $O(n)$;而用平衡二叉搜索树或跳表实现 SSet,<code>add</code>、<code>remove</code>、<code>find</code> 均可在期望或最坏 $O(\log n)$ 时间内完成。因此:</p>
+$$
+T_{\text{列表}}(n)=O(n)\quad\text{对比}\quad T_{\text{SSet}}(n)=O(\log n).
+$$
+<p>当 $n=10^6$ 时,前者约需百万次比较,后者约 20 次($\log_2 10^6\approx 20$)。</p>
+<h3 id="小结">小结</h3>
+<p>SSet 接口的核心在于:元素<strong>可比较</strong>,且 <code>find(x)</code> 返回<strong>后继</strong>而非仅返回"是否存在"。理解接口与实现的分离,是选择合适数据结构解决实际问题的第一步。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

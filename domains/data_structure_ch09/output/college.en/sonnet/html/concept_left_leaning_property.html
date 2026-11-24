@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Left Leaning Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="left-leaning-property">Left Leaning Property</h2>
+<p>A <strong>left-leaning red-black tree (LLRB)</strong> is a red-black tree with one extra rule. Recall the standard red-black rules: the root is black, red nodes have no red children, and every root-to-leaf path has the same number of black nodes. The <strong>left-leaning property</strong> adds:</p>
+<p>> If a node's left child is black, then its right child must also be black. Equivalently, a red right child is allowed only when the left child is also red.</p>
+<p>In an LLRB, a red link is therefore always a <em>left</em> link, and a red right child can never appear alone. This restriction matters because a standard red-black tree can represent the same 2-4 tree in several ways. For example, a 3-node $\{a, b\}$ with $a<b$ could be drawn with $b$ as the black parent and $a$ as its red left child, or with $a$ as the black parent and $b$ as its red right child. The left-leaning property rules out the second drawing. Each 2-4 tree then corresponds to <strong>exactly one</strong> LLRB.</p>
+<p><strong>Translation table (2-4 node → LLRB):</strong></p>
+<p>| 2-4 node | LLRB shape | |---|---| | 2-node $\{b\}$ | a single black node $b$ | | 3-node $\{a,b\}$ | black $b$ with a red left child $a$ | | 4-node $\{a,b,c\}$ | black $b$ with red children $a$ (left) and $c$ (right) |</p>
+<p>The 4-node is the one case where a red right child appears. The left red child is present, so the property holds.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Convert this 2-4 tree to an LLRB. The root is the 2-node $\{20\}$. Its left child is the 3-node $\{5, 10\}$. Its right child is the 4-node $\{30, 35, 40\}$.</p>
+<li>Root: black 20.</li>
+<li>Left child: black 10 with red left child 5.</li>
+<li>Right child: black 35 with red left child 30 and red right child 40.</li>
+<p>Check the property. Node 20 has a black left child (10) and a black right child (35), so it passes. Node 10 has a red left child, so the property doesn't constrain its right child, and it passes. Node 35 has two red children, so it passes. Every root-to-null path has 2 black nodes, so the black-height rule holds.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> Is the tree with black 8, black left child 3, and a red right child 12 under 8 a valid LLRB?</p>
+<p><strong>Solution.</strong> Look at node 8. Its left child, 3, is black, so the left-leaning property requires its right child to be black. Its right child, 12, is red, so the tree is invalid. This is the forbidden right-leaning 3-node.</p>
+<p><strong>Repair.</strong> Do a left rotation at 8. Then 12 becomes the subtree root, with 8 as its left child. Swap colors so that 12 takes 8's old color (black) and 8 becomes red. The result is black 12 with red left child 8, which is a valid 3-node $\{8,12\}$. Black 3 is still the left child of 8, and the black-height is unchanged.</p>
+<p><strong>Why it works in general.</strong> Insertion creates a red node. If a red link ends up on the right, a left rotation moves it to the left. If two red links then appear in a row on the left, a right rotation followed by a color flip splits the temporary 4-node. Each fix restores the left-leaning property locally, so only $O(\log n)$ fixes are needed along the insertion path.</p>
+<p><strong>Key takeaway.</strong> The left-leaning property removes the ambiguity in how a 3-node is drawn. That gives a one-to-one match with 2-4 trees and means there are fewer cases to handle.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

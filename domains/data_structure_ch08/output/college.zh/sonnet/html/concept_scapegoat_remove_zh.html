@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Remove | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="替罪羊树的删除操作">替罪羊树的删除操作</h2>
+<p><strong>定义。</strong> 替罪羊树(scapegoat tree)是一种自平衡二叉搜索树,它不在每个节点上存储平衡信息,而是维护两个全局计数器:$n$ 表示当前树中的节点数,$q$ 表示"上界计数器"(自上次整树重建以来,插入操作使 $n$ 可能达到的最大值)。参数 $\alpha\in(1/2,1)$ 控制平衡程度。<strong>删除操作</strong>(<code>remove</code>)的规则是:</p>
+<li>按照标准二叉搜索树(BST)删除算法移除目标节点;</li>
+<li>令 $n \leftarrow n-1$;</li>
+<li>若 $q > 2n$,则重建整棵树为完全平衡的树,并令 $q \leftarrow n$。</li>
+<p>注意:删除时<strong>不会</strong>减小 $q$,除非触发全局重建。这一点是理解其摊还性质的关键。</p>
+<p><strong>为什么是 $2n$?</strong> 插入时的深度检查保证树高 $h \le \log_{1/\alpha} q$。删除会让 $n$ 变小而 $q$ 不变,这个界就会变得宽松。当 $q>2n$ 时,$\log_{1/\alpha} q \le \log_{1/\alpha} n + \log_{1/\alpha}2$,因此重建条件保证了高度始终为 $O(\log n)$。</p>
+<p><strong>例题。</strong> 设 $\alpha=0.7$,先插入 $20$ 个键(重建后 $n=q=20$)。依次删除 $10$ 个键。</p>
+<li>前 $9$ 次删除:$n$ 从 $20$ 降到 $11$,$q=20$。检查 $q>2n$:$20>22$?否。不重建。</li>
+<li>第 $10$ 次删除:$n=10$,$q=20$。$20>20$?否。仍不重建。</li>
+<li>第 $11$ 次删除:$n=9$,$q=20>18$,<strong>触发重建</strong>。重建后 $q=n=9$。</li>
+<p><strong>问题求解:摊还代价分析。</strong> 重建一次花费 $O(n)$。问:为什么删除的摊还代价仍为 $O(\log n)$?</p>
+<p>设某次重建后 $q=n_0$。要再次触发重建,需要 $q>2n$,即 $n<n_0/2$,所以至少经历了 $n_0 - n_0/2 = n_0/2$ 次删除(若期间有插入,$q$ 与 $n$ 同步增加,只会让所需删除数更多)。把这次 $O(n_0)$ 的重建代价平摊到至少 $n_0/2$ 次删除上,每次分摊</p>
+$$\frac{O(n_0)}{n_0/2}=O(1).$$
+<p>再加上每次删除本身的 BST 删除代价 $O(h)=O(\log n)$,总摊还代价为 $O(\log n)$。</p>
+<p><strong>小结。</strong> 删除操作的核心设计是"懒惰":平时只做普通 BST 删除,仅当 $q>2n$ 时才一次性重建。这既保持了树高 $O(\log n)$ 的不变量,又把昂贵的重建代价均摊到大量廉价的删除上。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Height Bound Invariant | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="height-bound-invariant">Height Bound Invariant</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>ScapegoatTree</strong> is a binary search tree that stores two counters: $n$, the number of nodes currently in the tree, and $q$, an upper estimate of $n$ that satisfies $n \le q \le 2n$. The <strong>height bound invariant</strong> states that the height $h$ of the tree (the number of edges on its longest root-to-leaf path) always obeys</p>
+$$h \le \log_{3/2} q.$$
+<p>Because $q \le 2n$, this gives $h \le \log_{3/2} (2n) = O(\log n)$. Every search, which follows a single root-to-leaf path, therefore takes $O(\log n)$ time in the worst case. Unlike AVL or red-black trees, a ScapegoatTree stores no balance information in each node. It enforces the invariant globally, and it repairs the tree only when an insertion breaks it.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Suppose a tree has $n = 10$ nodes and $q = 10$. The largest permitted height is</p>
+$$\log_{3/2} 10 = \frac{\ln 10}{\ln 1.5} \approx \frac{2.303}{0.405} \approx 5.68,$$
+<p>so the height must be at most $5$, because heights are integers. Now insert an 11th key. The new node lands at depth $6$. Then $n = 11$ and $q = 11$, so the bound is $\log_{3/2} 11 \approx 5.91$. Depth $6 > 5.91$, and the invariant is violated.</p>
+<p>The tree responds by walking up from the new node to find a <strong>scapegoat</strong>. This is an ancestor $u$ that is <em>weight-unbalanced</em>, meaning that one child's subtree holds more than $\tfrac{2}{3}$ of the nodes in $u$'s subtree. The algorithm rebuilds the subtree rooted at $u$ into a perfectly balanced tree. Rebuilding takes time proportional to the size of that subtree. After the rebuild, the depth of the new node drops, and the invariant holds again.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A ScapegoatTree has $q = 100$. What is the maximum height it may have, and what is the smallest $q$ that allows a height of $10$?</p>
+<p><strong>Part 1.</strong> Compute</p>
+$$\log_{3/2} 100 = \frac{\ln 100}{\ln 1.5} \approx \frac{4.605}{0.405} \approx 11.36,$$
+<p>so the maximum height is $11$.</p>
+<p><strong>Part 2.</strong> The invariant requires $10 \le \log_{3/2} q$. Solving for $q$ gives</p>
+$$q \ge (3/2)^{10} \approx 57.7,$$
+<p>so $q \ge 58$. Since $n \ge q/2$, the tree must hold at least $29$ nodes.</p>
+<p><strong>Why the invariant is enough.</strong> Suppose an insertion creates a node at depth $d > \log_{3/2} q$. Walking up from that node, there must be an ancestor whose child subtree is more than $\tfrac{2}{3}$ of its own size. If no such ancestor existed, each step down the path would shrink the subtree size by at least a factor of $\tfrac{2}{3}$. The subtree sizes along the path would then be at most $q\,(2/3)^i$ at depth $i$. A node at depth $d$ would need size at least $1$, so $q(2/3)^d \ge 1$, which gives $d \le \log_{3/2} q$. This contradicts the choice of $d$. Hence a scapegoat always exists, and rebuilding it restores the invariant. The rebuild cost is amortized over the insertions that unbalanced the subtree. This gives $O(\log n)$ amortized insertion and $O(\log n)$ worst-case search.</p>
+<p><strong>Check your understanding.</strong> If $q = 200$ and a node is inserted at depth $14$, is the invariant violated? Since $\log_{3/2} 200 \approx 13.07$, depth $14$ exceeds the bound, so a scapegoat must be found and rebuilt.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

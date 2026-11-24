@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skiplist Sset | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="skiplist-sset">Skiplist Sset</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>skiplist</strong> implements the SSet interface (<code>find(x)</code>, <code>add(x)</code>, <code>remove(x)</code>) on a sorted collection. It is a stack of linked lists:</p>
+<li><strong>Level 0 ($L_0$)</strong> contains <em>all</em> elements in sorted order.</li>
+<li>Each higher list $L_r$ contains a random subset of $L_{r-1}$. Each element of $L_{r-1}$ is promoted to $L_r$ by an independent fair coin flip, so it appears in $L_r$ with probability $1/2$.</li>
+<p>Every node $u$ has a <strong>height</strong> $h(u)$, the number of lists that contain it. It also has a <code>next</code> pointer for each level. A sentinel node at the head has maximum height. Heights are geometric: $\Pr[h(u) \ge k] = 2^{-(k-1)}$, so the expected height is $2$. The expected number of pointers is therefore $O(n)$.</p>
+<p>The key idea is a <strong>search path</strong>. Start at the top level of the sentinel. Move right while the next key is $< x$. When it would overshoot, drop down one level. At $L_0$, the next node is the smallest element $\ge x$, which is the answer to <code>find(x)</code>.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take $L_0 = [3, 5, 8, 12, 15, 20]$, $L_1 = [5, 12, 20]$, $L_2 = [12]$. Search for $x = 15$.</p>
+<li>Start at the sentinel on $L_2$. The next key is $12 < 15$, so move to $12$. The next key is none, so drop.</li>
+<li>At $12$ on $L_1$, the next key is $20 \ge 15$, so drop.</li>
+<li>At $12$ on $L_0$, the next key is $15$. It is not $< 15$, so stop.</li>
+<p>The answer is <code>next</code> of the current node, which is $15$. The search made 2 drops and 1 move right, and it skipped $3, 5, 8$ entirely.</p>
+<pre><code>def find(self, x):
+    u, r = self.sentinel, self.height
+    while r &gt;= 0:
+        while u.next[r] is not None and u.next[r].key &lt; x:
+            u = u.next[r]          # move right
+        r -= 1                     # drop down
+    return u.next[0].key if u.next[0] else None</code></pre>
+<p><code>add(x)</code> records the predecessor $u_r$ at each level during this same search. It then picks a random height for the new node and splices it in after each recorded predecessor. <code>remove(x)</code> finds the same predecessors and unlinks the node at each level where it appears.</p>
+<h3 id="problem-solving-application-why-o-log-n">Problem-solving application: why $O(\log n)$?</h3>
+<p><strong>Claim.</strong> The expected search length is $O(\log n)$.</p>
+<p><em>Analysis.</em> Trace the search path <strong>backward</strong> from the target at $L_0$. At each step, the path came either from the left (a move right) or from above (a drop). Each node on the path was promoted to the current level with probability $1/2$. If it was promoted, the path went <em>up</em>. Otherwise it went <em>left</em>. So the backward walk is a sequence of fair coin flips. It stops when it reaches the top level $\approx \log_2 n$.</p>
+<p>The expected number of flips needed to get $\log_2 n$ "ups" is $2\log_2 n$. Expected left moves $\approx \log_2 n$, and expected drops $\approx \log_2 n$. So</p>
+$$E[\text{path length}] \le 2\log_2 n + O(1) = O(\log n).$$
+<p>The same bound holds for <code>add</code> and <code>remove</code>, since each does one search plus $O(h(u))$ pointer updates, and $E[h(u)] = 2$.</p>
+<p><strong>Practice.</strong> For $n = 1{,}000{,}000$, estimate the search cost. $\log_2 n \approx 20$, so about $40$ steps instead of up to $10^6$ in a plain linked list.</p>
+<p>The bound is <em>expected</em>, not worst-case. An unlucky coin sequence can give a poor skiplist, but the probability of this shrinks rapidly with $n$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

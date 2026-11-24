@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stable Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="stable-sorting">Stable Sorting</h2>
+<h3 id="definition">Definition</h3>
+<p>A sorting algorithm is <strong>stable</strong> if, whenever two elements compare as equal under the sort key, they appear in the output in the same relative order as in the input. Formally, if records $a_i$ and $a_j$ satisfy $\text{key}(a_i) = \text{key}(a_j)$ and $i < j$ in the input, then $a_i$ appears before $a_j$ in the output.</p>
+<p>Stability only matters when the sort key does not uniquely identify each record. Sorting bare integers gives the same output whether or not the sort is stable. Sorting <em>records</em> by one field (say, students by grade) is where it matters.</p>
+<p>Merge sort, insertion sort, bubble sort, and counting sort are stable (when implemented carefully). Selection sort, heapsort, and quicksort (in its standard in-place form) are not.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Sort these (name, grade) pairs by grade, ascending:</p>
+$$(\text{Ana},3),\ (\text{Ben},1),\ (\text{Cy},3),\ (\text{Di},1)$$
+<p>A <strong>stable</strong> sort outputs:</p>
+$$(\text{Ben},1),\ (\text{Di},1),\ (\text{Ana},3),\ (\text{Cy},3)$$
+<p>Ben still precedes Di, and Ana still precedes Cy.</p>
+<p>Now consider selection sort on the same input. Pass 1 finds the minimum grade (Ben, index 1) and swaps it with index 0:</p>
+$$(\text{Ben},1),\ (\text{Ana},3),\ (\text{Cy},3),\ (\text{Di},1)$$
+<p>Pass 2 finds the next minimum (Di) and swaps it with index 1:</p>
+$$(\text{Ben},1),\ (\text{Di},1),\ (\text{Cy},3),\ (\text{Ana},3)$$
+<p>Ana and Cy have swapped relative order, because the long-distance swap in pass 1 moved Ana past Cy. The algorithm is therefore <strong>unstable</strong>.</p>
+<h3 id="problem-solving-application-multi-key-sorting">Problem-Solving Application: Multi-Key Sorting</h3>
+<p>Suppose you must sort a class roster by grade, with names alphabetical <em>within</em> each grade. Stability gives a simple method: <strong>sort by the secondary key first, then by the primary key using a stable sort.</strong></p>
+<li>Sort by name: Ana, Ben, Cy, Di.</li>
+<li>Stable-sort by grade: the grade-1 group $\{\text{Ben}, \text{Di}\}$ and grade-3 group $\{\text{Ana}, \text{Cy}\}$ each keep their alphabetical order.</li>
+<p>Result: $(\text{Ben},1),(\text{Di},1),(\text{Ana},3),(\text{Cy},3)$.</p>
+<p>If step 2 used an unstable sort, the alphabetical order inside each group could be scrambled. This same principle underlies <strong>radix sort</strong>, which stably sorts by each digit from least to most significant. Its correctness <em>depends</em> on stability.</p>
+<p>In Python, <code>sorted()</code> and <code>list.sort()</code> are guaranteed stable, so:</p>
+<pre><code>records.sort(key=lambda r: r.name)   # secondary key first
+records.sort(key=lambda r: r.grade)  # primary key, stable</code></pre>
+<h3 id="making-any-sort-stable">Making Any Sort Stable</h3>
+<p>An unstable algorithm can be made stable by attaching each record's original index $i$ and comparing the pair $(\text{key}, i)$ lexicographically. Ties on the key are then broken by original position. The cost is $O(n)$ extra memory.</p>
+<h3 id="check-your-understanding">Check Your Understanding</h3>
+<p>Merge sort is stable if, when merging, the algorithm takes from the <strong>left</strong> subarray whenever the two front elements are equal. Why does taking from the right instead break stability?</p>
+<p><em>Answer:</em> Every element in the left subarray originally came before every element in the right one. Taking the right element first on a tie would place a later-positioned equal element ahead of an earlier one.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

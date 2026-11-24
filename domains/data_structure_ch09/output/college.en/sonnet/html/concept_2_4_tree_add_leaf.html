@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 4 Tree Add Leaf | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="2-4-tree-add-leaf">2 4 Tree Add Leaf</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>2-4 tree</strong> is a search tree in which every internal node has 2, 3, or 4 children (so it stores 1, 2, or 3 keys), and all leaves lie at the same depth. Inserting a key is called <em>adding a leaf</em>. The procedure is:</p>
+<li>Search for the key. The search ends at a node $v$ on the second-last level, whose children are leaves.</li>
+<li>Add a new leaf under $v$, inserting the key in sorted position. Now $v$ has one more child.</li>
+<li>If $v$ has at most 4 children, stop. Otherwise $v$ is <strong>overfull</strong> (5 children, 4 keys). Split it, and repeat the check on its parent.</li>
+<p><strong>Split rule.</strong> An overfull node $v$ has children $c_1,\dots,c_5$ and keys $k_1<k_2<k_3<k_4$. Replace $v$ with two nodes:</p>
+<li>$v'$ with children $c_1,c_2,c_3$ and keys $k_1,k_2$</li>
+<li>$v''$ with children $c_4,c_5$ and key $k_4$</li>
+<p>The middle key $k_3$ moves up into the parent, between the pointers to $v'$ and $v''$. The parent therefore gains one child. If the root splits, create a new root with the single key $k_3$ and two children $v'$ and $v''$. This is the only way the tree grows taller, and it adds one level to every leaf at once, so all leaves stay at equal depth.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Start with a root holding keys $[10, 20, 30]$ and four leaf children. Add the key $40$.</p>
+<p>The new leaf goes under the root, which now has 5 children and keys $[10,20,30,40]$. It is overfull, so split it:</p>
+<li>$v'$ gets keys $[10,20]$ and 3 children.</li>
+<li>$v''$ gets key $[40]$ and 2 children.</li>
+<li>Key $30$ moves up into a new root with children $v'$ and $v''$.</li>
+<p>The height has increased by 1, and every node has 2 to 4 children.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p>Suppose the tree has root $R=[50]$ with children $A=[10,20,30]$ and $B=[60]$. Insert $40$ and $25$ in turn.</p>
+<p><strong>Insert 40.</strong> Search goes $R \to A$ (since $40<50$). Add the leaf, so $A=[10,20,30,40]$ with 5 children. This is overfull, so split it. Key $30$ moves up. Now $A'=[10,20]$, $A''=[40]$, and $R=[30,50]$ with 3 children. Since $3\le 4$, we stop.</p>
+<p><strong>Insert 25.</strong> Search goes $R \to A'$ (since $25<30$). Now $A'=[10,20,25]$, which has 4 children. This is legal, so no split happens.</p>
+<p><strong>Cost analysis.</strong> Let $n$ be the number of keys. The height is $h=\Theta(\log n)$, because each internal node has at least 2 children, so $n \ge 2^{h}-1$ gives $h \le \log_2(n+1)$. The search costs $O(\log n)$. Each split takes $O(1)$ time, and a chain of splits can climb at most $h$ levels. Total cost is therefore $O(\log n)$.</p>
+<p><strong>Why the degree property holds.</strong> A split of a node with 5 children yields nodes with 3 and 2 children, both inside $[2,4]$. The parent gains exactly one child, so it either stays legal or becomes overfull itself, and the same fix applies. The root is the only node that may end up with a new parent, and a new root with 2 children is also legal. After the loop ends, no node has more than 4 children, and no node has fewer than 2. The structure is therefore a valid 2-4 tree.</p>
+<p><strong>Check yourself.</strong> Starting from the tree above after both insertions, which key moves up if you insert $22$ and then $27$ into the left subtree? (Hint: $A'$ becomes $[10,20,22,25]$ after the first insert, so the second insert makes it overfull.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

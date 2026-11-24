@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison Based Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="comparison-based-sorting">Comparison Based Sorting</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>comparison-based sorting algorithm</strong> orders a sequence using only one primitive operation: a call to $\text{compare}(a, b)$, which reports whether $a \le b$ (or $a < b$). The algorithm never looks at the elements' internal form, such as digits, bits, or characters. It learns about the input only through the answers to these comparisons. Merge sort, quicksort, heapsort, insertion sort, and bubble sort all belong to this class. Counting sort and radix sort do not, because they inspect the keys directly.</p>
+<p>This restriction is useful because the algorithm works for any data type that has a consistent ordering. The restriction also limits how fast the algorithm can be.</p>
+<h3 id="worked-example-the-decision-tree">Worked example: the decision tree</h3>
+<p>Sort three distinct values $a, b, c$. Each comparison has two outcomes, so any algorithm can be drawn as a binary <strong>decision tree</strong>. Each internal node is a comparison, and each leaf is one final ordering.</p>
+<pre class="mermaid">flowchart TD
+    A["a < b?"] -->|yes| B["b < c?"]
+    A -->|no| C["a < c?"]
+    B -->|yes| D["a, b, c"]
+    B -->|no| E["a < c?"]
+    E -->|yes| F["a, c, b"]
+    E -->|no| G["c, a, b"]
+    C -->|yes| H["b, a, c"]
+    C -->|no| I["b < c?"]
+    I -->|yes| J["b, c, a"]
+    I -->|no| K["c, b, a"]</pre>
+<p><em>A decision tree for sorting three elements. Every path from the root to a leaf is one run of the algorithm. The six leaves are the $3! = 6$ possible orderings.</em></p>
+<p>The longest path has 3 comparisons. Could a cleverer algorithm always finish in 2? The next section shows why it could not.</p>
+<h3 id="lower-bound-omega-n-log-n">Lower bound: $\Omega(n \log n)$</h3>
+<p><strong>Theorem.</strong> Every comparison-based sort needs $\Omega(n \log n)$ comparisons in the worst case.</p>
+<p><em>Proof.</em> For $n$ distinct elements there are $n!$ possible input orderings. The algorithm must be able to output each one, so its decision tree needs at least $n!$ leaves. A binary tree of height $h$ has at most $2^h$ leaves, so</p>
+$$2^h \ge n! \implies h \ge \log_2(n!).$$
+<p>Since $n! \ge (n/2)^{n/2}$, because at least $n/2$ of the factors are at least $n/2$,</p>
+$$h \ge \frac{n}{2}\log_2\frac{n}{2} = \Omega(n\log n). \qquad\blacksquare$$
+<p>The worst-case number of comparisons equals the tree height $h$.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> What is the fewest comparisons that could guarantee sorting 5 elements?</p>
+<p><strong>Solution.</strong> We need $2^h \ge 5! = 120$. Since $2^6 = 64 < 120 \le 128 = 2^7$, the bound gives $h \ge 7$. So no algorithm can guarantee sorting 5 elements in fewer than 7 comparisons. (Sorting 3 elements gives $\lceil\log_2 6\rceil = 3$, which matches the tree above. Careful algorithms such as merge-insertion sort do reach 7 for $n=5$.)</p>
+<p><strong>Using the result.</strong> The theorem tells you when to stop optimizing. Merge sort and heapsort run in $O(n\log n)$ time, so they are asymptotically optimal among comparison sorts. To beat $n \log n$, you must leave the model and use extra knowledge about the keys. For example, if keys are integers in $\{0,\dots,k\}$, counting sort runs in $O(n+k)$ time.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

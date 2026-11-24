@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adjacency List | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="邻接表">邻接表</h2>
+<p><strong>定义。</strong> 邻接表(adjacency list)是图的一种以顶点为中心的存储方式:用一个长度为 $n$ 的数组 $\text{adj}$,其中 $\text{adj}[i]$ 是一个链表(或动态数组),保存所有满足 $(i,j)\in E$ 的顶点 $j$。对无向图,每条边 $\{i,j\}$ 会在 $\text{adj}[i]$ 与 $\text{adj}[j]$ 中各出现一次;对有向图,边 $(i,j)$ 只出现在 $\text{adj}[i]$ 中。</p>
+<p><strong>复杂度。</strong> 设图有 $n$ 个顶点、$m$ 条边:</p>
+<li>空间:数组占 $O(n)$,所有列表的总长度为 $m$(有向)或 $2m$(无向),故总空间为 $O(n+m)$。</li>
+<li><code>add_edge(i, j)</code>:把 $j$ 追加到 $\text{adj}[i]$ 的末尾(或链表头部),为 $O(1)$。</li>
+<li><code>has_edge(i, j)</code> 与 <code>remove_edge(i, j)</code>:需要扫描 $\text{adj}[i]$,最坏为 $O(\deg(i))$。</li>
+<li>遍历 $i$ 的所有邻居:$O(\deg(i))$,这正是 BFS、DFS 所需要的操作。</li>
+<p><strong>例题。</strong> 考虑无向图,顶点为 $0,1,2,3$,边为 $\{0,1\},\{0,2\},\{1,2\},\{2,3\}$。其邻接表为:</p>
+$$
+\text{adj}[0]=[1,2],\quad \text{adj}[1]=[0,2],\quad \text{adj}[2]=[0,1,3],\quad \text{adj}[3]=[2].
+$$
+<p>各列表长度之和为 $2+2+3+1=8=2m$,这正是握手引理 $\sum_i \deg(i)=2m$ 的体现。</p>
+<pre><code>class Graph:
+    def __init__(self, n):
+        self.adj = [[] for _ in range(n)]
+
+    def add_edge(self, i, j):          # O(1)
+        self.adj[i].append(j)
+        self.adj[j].append(i)          # 有向图则省略此行
+
+    def has_edge(self, i, j):          # O(deg(i))
+        return j in self.adj[i]</code></pre>
+<pre class="mermaid">graph LR
+    A0["顶点 0"] --> A1["1"]
+    A1 --> A2["2"]
+    B0["顶点 1"] --> B1["0"]
+    B1 --> B2["2"]
+    C0["顶点 2"] --> C1["0"]
+    C1 --> C2["1"]
+    C2 --> C3["3"]
+    D0["顶点 3"] --> D1["2"]</pre>
+<p><em>图:例题中各顶点对应的邻接列表,每一行表示一个顶点及其邻居序列。</em></p>
+<p><strong>问题求解应用。</strong> 问:某社交网络有 $n=10^6$ 个用户、$m=5\times10^6$ 条好友关系(无向),平均每人约 10 个好友。应选邻接矩阵还是邻接表?</p>
+<li>邻接矩阵需要 $n^2=10^{12}$ 个单元,即使每格 1 位也约 125 GB,不可行。</li>
+<li>邻接表需要约 $n+2m=1.1\times10^7$ 个条目,只有几十 MB。</li>
+<li>若要对所有用户执行一次 BFS,邻接表的总代价是 $O(n+m)$;邻接矩阵则要对每个顶点扫描一整行,代价为 $O(n^2)$。</li>
+<p>结论:对<strong>稀疏图</strong>($m\ll n^2$),邻接表在空间与遍历上都占优。其代价是 <code>has_edge</code> 不再是 $O(1)$;若需频繁判断边是否存在,可将每个 $\text{adj}[i]$ 改用哈希集合,期望时间降为 $O(1)$,空间仍为 $O(n+m)$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Traversal | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="图遍历">图遍历</h2>
+<h3 id="定义">定义</h3>
+<p>给定图 $G=(V,E)$ 和起点 $i\in V$,<strong>图遍历</strong>(graph traversal)是系统地访问从 $i$ 出发所有<strong>可达</strong>顶点的过程。若存在一条从 $i$ 到 $v$ 的路径,则称 $v$ 可达。遍历的核心是避免重复访问,因此需要一个"已访问"标记 $\text{visited}[v]$。</p>
+<p>遍历的效率取决于图的存储方式。<strong>邻接表</strong>为每个顶点 $u$ 保存其邻居列表 $\text{Adj}[u]$,于是枚举 $u$ 的所有邻居只需 $O(\deg(u))$ 时间。若用邻接矩阵,枚举邻居需要 $O(|V|)$,整体会退化为 $O(|V|^2)$。</p>
+<p>两种基本策略:</p>
+<li><strong>深度优先搜索(DFS)</strong>:沿一条路径尽量深入,无路可走再回溯(用递归或栈)。</li>
+<li><strong>广度优先搜索(BFS)</strong>:按与起点的距离逐层扩展(用队列)。</li>
+<pre><code>from collections import deque
+
+def bfs(adj, i):
+    visited = {i}
+    order = []
+    q = deque([i])
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v in adj[u]:
+            if v not in visited:
+                visited.add(v)      # 入队时标记,防止重复入队
+                q.append(v)
+    return order</code></pre>
+<h3 id="例题">例题</h3>
+<p>设有向图的邻接表为:</p>
+$$\text{Adj}[1]=\{2,3\},\ \text{Adj}[2]=\{4\},\ \text{Adj}[3]=\{4\},\ \text{Adj}[4]=\{\},\ \text{Adj}[5]=\{1\}.$$
+<p>从 $i=1$ 出发做 BFS:</p>
+<li>队列 $[1]$,取出 1,将 2、3 入队。</li>
+<li>取出 2,邻居 4 未访问,入队;队列 $[3,4]$。</li>
+<li>取出 3,邻居 4 已访问,跳过。</li>
+<li>取出 4,无邻居。</li>
+<p>访问顺序为 $1,2,3,4$。顶点 5 虽在图中,但没有从 1 到 5 的路径,故<strong>不可达</strong>。DFS 的顺序则为 $1,2,4,3$。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>复杂度分析。</strong> 每个顶点至多入队(或入栈)一次,出队时扫描其邻接表一次,因此总工作量为</p>
+$$\sum_{u\in V_{\text{reach}}}\bigl(1+\deg(u)\bigr)\le O(|V|+|E|).$$
+<p>这是线性时间,也是邻接表的优势所在。</p>
+<p><strong>正确性要点。</strong> 若 $v$ 可达,设最短路径为 $i=u_0,u_1,\dots,u_k=v$。对 $k$ 归纳:$u_0$ 被访问;若 $u_{j}$ 被访问,则扫描其邻接表时必会发现 $u_{j+1}$,要么将其标记,要么它此前已被标记。故 $v$ 最终被访问。</p>
+<p><strong>典型应用:</strong></p>
+<li><strong>连通性判断</strong>:从 $i$ 遍历后检查目标是否在 visited 中。</li>
+<li><strong>最短路径(无权图)</strong>:BFS 中记录 $\text{dist}[v]=\text{dist}[u]+1$,首次发现 $v$ 时的距离即为最短跳数。</li>
+<li><strong>连通分量计数</strong>:对每个未访问的顶点启动一次遍历,启动次数即为分量个数。</li>
+<li><strong>环检测与拓扑排序</strong>:基于 DFS 的访问状态(未访问/进行中/已完成)。</li>
+<p><strong>练习:</strong> 在上面的图中,若添加边 $4\to5$,从 1 出发的可达集合如何变化?此时图中是否存在环?(答案:可达集合变为 $\{1,2,3,4,5\}$;存在环 $1\to2\to4\to5\to1$。)</p>
+<pre class="mermaid">graph TD
+    A[顶点 1 起点] --> B[顶点 2]
+    A --> C[顶点 3]
+    B --> D[顶点 4]
+    C --> D
+    E[顶点 5 不可达] --> A</pre>
+<p><em>示例图:从顶点 1 出发可到达 2、3、4;顶点 5 只有指向 1 的边,因此不可达。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

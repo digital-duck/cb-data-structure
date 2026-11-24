@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pseudo Random Generator | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="pseudo-random-generator">Pseudo Random Generator</h2>
+<p>A <strong>pseudo-random number generator (PRNG)</strong> is a deterministic algorithm that produces a sequence of numbers that <em>behaves</em> like random data. It keeps an internal <strong>state</strong> $s_t$ and updates it with a fixed rule, $s_{t+1} = f(s_t)$, then outputs a value derived from that state. The same starting state, called the <strong>seed</strong>, always yields the same sequence. Python's <code>random</code> module uses the Mersenne Twister, whose period is $2^{19937}-1$. That is far longer than any program will use up.</p>
+<p>A good PRNG passes statistical tests: bits look uniform, and successive bits look independent. This is what lets a program use it to simulate a fair coin. (PRNGs are not cryptographically secure. Use <code>secrets</code> for that.)</p>
+<h3 id="worked-example-coin-tosses-for-node-heights">Worked example: coin tosses for node heights</h3>
+<p>In a skip list, each new node's height is set by tossing a fair coin until it lands tails. Height $h$ occurs with probability</p>
+$$P(H = h) = \left(\tfrac12\right)^{h}, \qquad h = 1, 2, 3, \dots$$
+<p>The expected height is $E[H] = \sum_{h\ge1} h\,2^{-h} = 2$.</p>
+<p><code>random.getrandbits(1)</code> returns 0 or 1 with equal probability, so it works as one toss:</p>
+<pre><code>import random
+
+def random_height(max_level=16):
+    h = 1
+    while h &lt; max_level and random.getrandbits(1):  # 1 = heads
+        h += 1
+    return h
+
+random.seed(42)          # reproducible
+print([random_height() for _ in range(10)])</code></pre>
+<p>Because the seed is fixed, this prints the same list on every run. That makes bugs reproducible and tests deterministic.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A skip list holds $n = 1024$ nodes, with heights drawn as above. About how many nodes reach level 4 or higher, and what level should we cap at?</p>
+<p><strong>Solution.</strong> A node reaches height $\ge k$ only if its first $k-1$ tosses are all heads, so</p>
+$$P(H \ge k) = 2^{-(k-1)}.$$
+<p>For $k=4$ this is $1/8$. The expected count is $1024/8 = 128$ nodes.</p>
+<p>For the cap, we want the expected number of nodes above level $L$ to be about 1. That means $n \cdot 2^{-L} \approx 1$, so $L \approx \log_2 n = 10$. Many implementations use a cap of 16 or 32 for safety.</p>
+<p><strong>Why the PRNG quality matters.</strong> The $O(\log n)$ expected search time depends on heights being independent and geometrically distributed. A poor generator could correlate neighbouring heights and cluster tall nodes. Searches would then degrade toward $O(n)$. A fixed seed gives repeatable heights, but it also makes the structure predictable. If an adversary knows the seed, they could craft inserts that produce a bad shape. In production, seed from system entropy. In tests, seed with a constant.</p>
+<p><strong>Check yourself.</strong> Run <code>random_height()</code> 100,000 times. About half the results should be 1, a quarter should be 2, and the mean should be near 2. A large deviation points to a bug in the loop, not in the generator.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array Resizing Amortization | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="数组扩容的摊还分析">数组扩容的摊还分析</h2>
+<h3 id="定义">定义</h3>
+<p><strong>动态数组</strong>在底层维护一个固定容量 $c$ 的数组,当前存放 $n$ 个元素($n \le c$)。追加元素时,若 $n = c$,就必须<strong>扩容</strong>:分配一个更大的新数组,把旧元素逐个复制过去,再释放旧数组。一次扩容的代价是 $\Theta(n)$,看似很昂贵,但它很少发生。</p>
+<p><strong>摊还分析</strong>考察的是<em>一整个操作序列</em>的总代价,而不是单次最坏代价。若 $m$ 次操作的总代价为 $T(m)$,则每次操作的摊还代价为 $T(m)/m$。数组扩容的核心结论是:只要容量按<strong>固定倍数</strong>增长(例如翻倍),$m$ 次追加的总代价为 $O(m)$,即每次追加摊还 $O(1)$。</p>
+<h3 id="例题-翻倍策略">例题:翻倍策略</h3>
+<p>设初始容量为 1,每次装满就把容量翻倍。进行 $m$ 次追加(为简便设 $m = 2^k$)。</p>
+<li>每次追加本身写入 1 个元素,共 $m$ 次,代价 $m$。</li>
+<li>扩容发生在元素数为 $1, 2, 4, \dots, 2^{k-1}$ 时,每次复制的元素个数等于当时的元素数。</li>
+<p>复制的总代价为等比级数:</p>
+$$
+\sum_{i=0}^{k-1} 2^i = 2^k - 1 = m - 1 .
+$$
+<p>因此</p>
+$$
+T(m) \le m + (m-1) < 2m, \qquad \frac{T(m)}{m} < 2 = O(1).
+$$
+<p><strong>直观解释(记账法)</strong>:每次追加向"账户"存入 3 个单位:1 个用于写入自己,1 个用于将来复制自己,1 个用于将来帮一个旧元素复制。扩容时,账户里恰好有足够的钱支付全部复制。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题 1</strong>:若每次只扩容 $+10$(固定增量)而非翻倍,摊还代价是多少?</p>
+<p>扩容发生在 $n = 10, 20, \dots$,复制总代价为</p>
+$$
+\sum_{j=1}^{m/10} 10j \approx \frac{10}{2}\left(\frac{m}{10}\right)^2 = \Theta(m^2),
+$$
+<p>摊还代价为 $\Theta(m)$,不是常数。<strong>结论:必须按比例增长,而非固定增量。</strong></p>
+<p><strong>问题 2</strong>:增长因子取 $\alpha > 1$(如 1.5)时,总复制代价为</p>
+$$
+\sum_{i} \frac{m}{\alpha^{i}} \le \frac{m}{1 - 1/\alpha} = \frac{\alpha}{\alpha - 1}\, m = O(m).
+$$
+<p>$\alpha$ 越小,复制越多但浪费的空间越少,这是时间与空间的权衡。</p>
+<p><strong>缩容</strong>:若在 $n < c/2$ 时立刻减半,则在临界点反复"追加、删除"会使每次操作都触发 $\Theta(n)$ 的复制(抖动)。正确做法是<strong>当 $n = c/4$ 时才将容量减半</strong>:缩容后数组仍有一半空闲,至少再经过 $c/4$ 次操作才会触发下一次调整,复制代价同样可被摊还,所有操作的摊还代价仍为 $O(1)$。</p>
+<p><strong>要点</strong>:摊还分析给出的是<em>序列总代价</em>的保证($m$ 次操作共 $O(m)$),不依赖输入的概率分布,这与平均情形分析有本质区别。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

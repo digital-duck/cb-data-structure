@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skiplist Sset | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="跳表实现的有序集合-skiplist-sset">跳表实现的有序集合(Skiplist SSet)</h2>
+<p><strong>定义。</strong> SSet(有序集合)接口支持 <code>add(x)</code>、<code>remove(x)</code> 和 <code>find(x)</code>,其中 <code>find(x)</code> 返回集合中<strong>不小于</strong> $x$ 的最小元素(后继查询)。跳表(skiplist)用多层链表实现该接口:</p>
+<li>第 $L_0$ 层包含全部 $n$ 个元素,按升序排列;</li>
+<li>第 $L_r$ 层的每个元素,以概率 $\tfrac12$ 出现在第 $L_{r+1}$ 层(相当于抛硬币);</li>
+<li>每个节点的高度 $h$ 满足 $\Pr[h \ge k] = 2^{-k}$,因此期望高度为 $2$。</li>
+<p>于是第 $L_r$ 层约有 $n/2^r$ 个节点,最高层约为 $\log_2 n$。</p>
+<p><strong>查找过程。</strong> 从最高层的哨兵节点出发,在当前层向右前进,直到下一个元素 $\ge x$,然后下降一层;到达 $L_0$ 时,下一个节点就是答案。</p>
+<p><strong>示例。</strong> 设 $L_0 = [2,\,5,\,7,\,9,\,12,\,15]$,$L_1 = [5,\,9,\,15]$,$L_2 = [9]$。执行 <code>find(10)</code>:</p>
+<li>在 $L_2$:右移到 $9$(因 $9<10$),后继为空,下降;</li>
+<li>在 $L_1$:从 $9$ 出发,下一个是 $15\ge 10$,下降;</li>
+<li>在 $L_0$:从 $9$ 出发,下一个是 $12\ge10$,停止。</li>
+<p>返回 $12$。只访问了约 $4$ 个节点,而不是从头扫描 $L_0$ 的 $4$ 个节点以上——当 $n$ 很大时差距非常显著。</p>
+<p><strong>期望时间分析。</strong> 倒着看搜索路径:从 $L_0$ 的终点回溯,每一步以概率 $\tfrac12$ 向上、以概率 $\tfrac12$ 向左(对应"该节点高度是否更高")。设 $E(k)$ 为回溯到高度 $k$ 以上所需的期望步数,则向上需要的期望步数满足</p>
+$$
+E[\text{步数}] \le 2\cdot(\text{层数}) = 2\log_2 n + O(1),
+$$
+<p>因为每上升一层平均需要 $2$ 步(一次期望的"左移"加一次"上移")。因此 <code>find</code> 的期望时间为 $O(\log n)$。<code>add</code> 先用同样的路径定位,再抛硬币确定新节点高度 $h$,并在 $L_0,\dots,L_h$ 各层插入,期望额外代价为 $O(1)$;<code>remove</code> 同理。三种操作的期望时间均为 $O(\log n)$,空间期望为 $O(n)$(每个元素平均 $2$ 个指针层)。</p>
+<p><strong>问题求解应用。</strong> 要求返回区间 $[a,b]$ 内的所有元素:先调用 <code>find(a)</code> 定位($O(\log n)$),再沿 $L_0$ 向右遍历直到超过 $b$,总时间 $O(\log n + m)$,其中 $m$ 为输出个数。这正是 $L_0$ 保持有序的价值所在。</p>
+<pre class="mermaid">graph LR
+    A["L2 哨兵"] --> B["L2: 9"]
+    C["L1 哨兵"] --> D["L1: 5"] --> E["L1: 9"] --> F["L1: 15"]
+    G["L0 哨兵"] --> H["2"] --> I["5"] --> J["7"] --> K["9"] --> L["12"]
+    B -.下降.-> E
+    E -.下降.-> K</pre>
+<p><em>图:<code>find(10)</code> 的搜索路径:自高层向右、遇到过大元素则下降,最终在 $L_0$ 层停在 $12$ 之前。</em></p>
+<p><strong>小结。</strong> 跳表以随机化代替显式平衡:不需要旋转,却在期望意义下获得 $O(\log n)$ 的查找、插入与删除。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

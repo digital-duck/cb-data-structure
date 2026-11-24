@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Addition | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="bst-addition">Bst Addition</h2>
+<p><strong>Definition.</strong> A binary search tree (BST) satisfies the ordering property: for every node with key $k$, all keys in its left subtree are less than $k$, and all keys in its right subtree are greater than $k$. <em>BST addition</em> inserts a new key $x$ by searching for $x$ exactly as in a lookup. When the search falls off the tree (it would move to an empty child), $x$ is attached there as a new leaf. The new node always becomes a leaf, so no existing node is moved or restructured, and the ordering property is preserved.</p>
+<p>The procedure, starting at the root $r$:</p>
+<li>If the tree is empty, make $x$ the root.</li>
+<li>If $x < \text{key}(r)$, move to the left child. If $x > \text{key}(r)$, move to the right child.</li>
+<li>Repeat until the chosen child is empty. Attach a new node holding $x$ there.</li>
+<li>If $x = \text{key}(r)$ at any step, the key is a duplicate. Standard sets ignore it (or follow a stated duplicate policy).</li>
+<pre><code>def insert(node, x):
+    if node is None:
+        return Node(x)
+    if x &lt; node.key:
+        node.left = insert(node.left, x)
+    elif x &gt; node.key:
+        node.right = insert(node.right, x)
+    return node</code></pre>
+<p><strong>Worked example.</strong> Insert $45$ into the tree with root $50$, where $50$ has children $30$ and $70$, and $30$ has children $20$ and $40$.</p>
+<li>Compare with $50$: $45 < 50$, go left to $30$.</li>
+<li>Compare with $30$: $45 > 30$, go right to $40$.</li>
+<li>Compare with $40$: $45 > 40$, go right. The right child of $40$ is empty.</li>
+<li>Attach $45$ as the right child of $40$.</li>
+<p>The last node examined was $40$, and $45$ became its leaf child. An in-order traversal now gives $20, 30, 40, 45, 50, 70$, which is still sorted.</p>
+<pre class="mermaid">graph TD
+    A["50"] --> B["30"]
+    A --> C["70"]
+    B --> D["20"]
+    B --> E["40"]
+    E --> F["45 (new)"]</pre>
+<p><em>Inserting 45 follows the path 50, 30, 40 and attaches the new key as the right child of 40.</em></p>
+<p><strong>Problem-solving application.</strong> The cost of an insertion is proportional to the length of the search path, so it is $O(h)$, where $h$ is the tree height. The shape of the tree depends on the insertion order, and this matters in practice.</p>
+<p><em>Problem:</em> Compare the height after inserting $1,2,3,4,5$ in that order with the height after inserting $3,2,4,1,5$.</p>
+<p><em>Solution:</em> In the first order, each key is larger than everything already present, so each goes to the right of the previous one. The result is a chain of height $4$, and the last insertion makes $5$ comparisons against existing nodes, which is $\Theta(n)$ behavior. In the second order, $3$ is the root, $2$ and $4$ are its children, and $1$ and $5$ are leaves below them. The height is $2$.</p>
+<p>In general, $n$ keys inserted in sorted order give $h = n-1$, so $n$ insertions cost</p>
+$$\sum_{i=0}^{n-1} i = \frac{n(n-1)}{2} = \Theta(n^2).$$
+<p>A balanced tree has $h = \lfloor \log_2 n \rfloor$ and gives $\Theta(n \log n)$ total. For random insertion orders, the expected height is $O(\log n)$. This gap is the reason self-balancing trees such as AVL and red-black trees exist. They add rotations after the same leaf insertion to keep $h$ logarithmic.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

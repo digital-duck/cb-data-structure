@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Add | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="红黑树的插入-red-black-add">红黑树的插入(Red Black Add)</h2>
+<h3 id="定义">定义</h3>
+<p>在左倾红黑树(LLRB)中,每个结点的链接要么是红色,要么是黑色。红链接把一个结点与其父结点"粘合"在一起,对应 2-4 树中的一个多键结点。LLRB 需要满足三条性质:</p>
+<li><strong>左倾</strong>:红链接只能是左链接;</li>
+<li><strong>无连续红边</strong>:不存在两条相连的红链接;</li>
+<li><strong>完美黑平衡</strong>:从根到任意空链接的路径上,黑链接数目相同。</li>
+<p><strong>插入(add)</strong> 分两步:先按普通二叉搜索树(BST)的规则找到空位,把新键作为<strong>红色叶结点</strong>挂上去;再沿插入路径回溯,用 <code>add_fixup</code> 恢复上述性质。新结点取红色,是因为它相当于把一个键并入 2-4 树中已有的结点,不会改变黑高度。</p>
+<h3 id="add_fixup-的三条规则"><code>add_fixup</code> 的三条规则</h3>
+<p>回溯时,对每个结点 $h$ 依次检查:</p>
+<pre><code>def add_fixup(h):
+    if is_red(h.right) and not is_red(h.left):   # 右倾红边
+        h = rotate_left(h)
+    if is_red(h.left) and is_red(h.left.left):   # 连续两条红边
+        h = rotate_right(h)
+    if is_red(h.left) and is_red(h.right):       # 4-结点
+        flip_colors(h)                           # 分裂
+    return h</code></pre>
+<li><strong>左旋</strong>:修正右倾红链接,使 3-结点符合左倾约定;</li>
+<li><strong>右旋</strong>:把"左-左"连续红链接变成一个中间结点带两条红链接的临时 4-结点;</li>
+<li><strong>颜色翻转</strong>:把两个子结点变黑、$h$ 变红,相当于 2-4 树中把 4-结点分裂,并将中间键上推给父结点。</li>
+<h3 id="例题">例题</h3>
+<p>依次向空树插入 $10, 20, 30$。</p>
+<li>插入 $10$:根结点。根必须是黑色。</li>
+<li>插入 $20$:作为 $10$ 的右红子结点,出现右倾红边,<strong>左旋</strong>后 $20$ 为根,$10$ 为其红色左子。</li>
+<li>插入 $30$:作为 $20$ 的右红子。此时 $20$ 的左、右子结点均为红,形成 4-结点 $[10,20,30]$,执行<strong>颜色翻转</strong>:$10$、$30$ 变黑,$20$ 变红;再把根重新染黑。</li>
+<p>结果是一棵高度为 2 的平衡树,黑高度为 2。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:依次插入 $10,20,30,40$,说明最后一步会触发什么操作。</p>
+<p><strong>解</strong>:前三步得到根 $20$(黑),左右子 $10$、$30$ 均为黑。插入 $40$ 作为 $30$ 的红色右子,右倾红边,<code>add_fixup</code> 在 $30$ 处执行<strong>左旋</strong>,得到 $40$(黑)的红色左子 $30$。回溯到 $20$:左右子均不是红,无需处理。此时 $20$ 的右子 $40$ 与其左子 $30$ 构成 3-结点 $[30,40]$。</p>
+<p><strong>复杂度</strong>:LLRB 的高度不超过 $2\log_2 N$(对应 2-4 树高度 $\le \log_2 N$,每层最多多出一条红链接)。插入沿一条路径下行再回溯,每个结点最多做常数次旋转与翻转,因此</p>
+$$T_{\text{add}}(N)=O(\log N).$$
+<pre class="mermaid">flowchart TD
+    A["按 BST 规则插入红色叶结点"] --> B{"右子为红且左子不为红?"}
+    B -- 是 --> C["左旋"]
+    B -- 否 --> D{"左子与左孙均为红?"}
+    C --> D
+    D -- 是 --> E["右旋"]
+    D -- 否 --> F{"左右子均为红?"}
+    E --> F
+    F -- 是 --> G["颜色翻转(分裂 4-结点)"]
+    F -- 否 --> H["回溯到父结点"]
+    G --> H</pre>
+<p><em>add_fixup 在每个结点上的判断流程:依次修正右倾红边、连续红边,并分裂 4-结点。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

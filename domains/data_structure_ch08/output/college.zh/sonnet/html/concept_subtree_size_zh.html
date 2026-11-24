@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subtree Size | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="子树大小">子树大小</h2>
+<h3 id="定义">定义</h3>
+<p>在一棵二叉树中,以节点 $v$ 为根的<strong>子树大小</strong>(subtree size)指这棵子树所包含的节点总数,包括 $v$ 本身,记作 $\operatorname{size}(v)$。它满足递推关系:</p>
+$$
+\operatorname{size}(v)=
+\begin{cases}
+0, & v=\text{空},\\[4pt]
+1+\operatorname{size}(v.\text{left})+\operatorname{size}(v.\text{right}), & \text{否则}.
+\end{cases}
+$$
+<p>叶节点的子树大小为 $1$,整棵树的大小就是根节点的子树大小。子树大小常用来衡量<strong>平衡性</strong>:若每个节点的左右子树大小相差不大,树的高度就接近 $\log_2 n$,查找、插入等操作的代价也就接近 $O(\log n)$。</p>
+<h3 id="例题">例题</h3>
+<p>考虑如下二叉树:根节点 $A$ 的左孩子为 $B$,右孩子为 $C$;$B$ 的左孩子为 $D$,右孩子为 $E$;$E$ 的左孩子为 $F$。</p>
+<p>自底向上计算:</p>
+<li>$\operatorname{size}(D)=\operatorname{size}(C)=\operatorname{size}(F)=1$;</li>
+<li>$\operatorname{size}(E)=1+\operatorname{size}(F)+0=2$;</li>
+<li>$\operatorname{size}(B)=1+\operatorname{size}(D)+\operatorname{size}(E)=1+1+2=4$;</li>
+<li>$\operatorname{size}(A)=1+\operatorname{size}(B)+\operatorname{size}(C)=1+4+1=6$。</li>
+<pre class="mermaid">graph TD
+    A["A:大小 6"] --> B["B:大小 4"]
+    A --> C["C:大小 1"]
+    B --> D["D:大小 1"]
+    B --> E["E:大小 2"]
+    E --> F["F:大小 1"]</pre>
+<p><em>图中每个节点标注了以它为根的子树大小,数值由叶向根逐层累加得到。</em></p>
+<h3 id="问题求解应用-判断平衡条件">问题求解应用:判断平衡条件</h3>
+<p><strong>权重平衡</strong>(weight-balanced)树要求:对每个节点 $v$,较大的一侧子树大小不超过整棵子树的某个比例,例如</p>
+$$
+\max\big(\operatorname{size}(v.\text{left}),\ \operatorname{size}(v.\text{right})\big)\le \alpha\cdot \operatorname{size}(v),\quad \tfrac12<\alpha<1 .
+$$
+<p>取 $\alpha=\tfrac23$ 检查上例的根 $A$:较大一侧为 $\operatorname{size}(B)=4$,而 $\alpha\cdot 6=4$,$4\le 4$,条件成立。再检查 $B$:$\max(1,2)=2$,$\alpha\cdot 4\approx 2.67$,成立。检查 $E$:较大一侧为 $1$,$\alpha\cdot 2\approx1.33$,成立。所以这棵树满足 $\alpha=\tfrac23$ 的权重平衡。</p>
+<p><strong>为什么这能保证高度?</strong> 每向下走一步,子树大小至多变为原来的 $\alpha$ 倍,所以走 $h$ 步后大小至多为 $n\alpha^h$。大小至少为 $1$,故 $n\alpha^h\ge 1$,即</p>
+$$
+h\le \frac{\log n}{\log(1/\alpha)}=O(\log n).
+$$
+<p><strong>实现要点:</strong>在节点中缓存 $\operatorname{size}$ 字段,每次插入或删除后沿路径回溯更新:$v.\text{size}\leftarrow 1+\operatorname{size}(v.\text{left})+\operatorname{size}(v.\text{right})$。这样每次平衡检查只需 $O(1)$ 时间,而不必重新遍历整棵子树($O(n)$)。同一字段还能支持<strong>顺序统计</strong>:要找第 $k$ 小的元素,比较 $k$ 与 $\operatorname{size}(v.\text{left})+1$,即可决定向左、向右或就是当前节点,耗时 $O(h)$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+domain: data_structure_ods_python
+primitives:
+  bit_representation:
+    defines: A w-bit integer can be represented as a fixed-length binary string, allowing its value to
+      be encoded as a sequence of bits.
+    tier: 0
+  sset_interface:
+    defines: An abstract interface supporting add(x), remove(x), and find(x) operations over a set of
+      comparable values.
+    tier: 0
+  hash_table:
+    defines: A data structure supporting constant expected-time add, remove, and find operations, used
+      here as an auxiliary lookup structure indexed by level.
+    tier: 0
+  treap:
+    defines: A balanced binary search tree structure supporting logarithmic-time SSet operations, used
+      as a secondary structure.
+    tier: 0
+concepts:
+  binary_trie:
+    defines: A binary tree that encodes a set of w-bit integers as root-to-leaf paths, where the path
+      for x turns left or right at each level according to the corresponding bit of x.
+    composed_of:
+    - bit_representation
+    - sset_interface
+    tier: 1
+  jump_pointers:
+    defines: Auxiliary pointers stored at each trie node that, when a child is missing, point to the smallest
+      or largest leaf in that node's subtree, enabling find(x) to jump past missing branches.
+    composed_of:
+    - binary_trie
+    tier: 2
+  leaf_linked_list:
+    defines: A doubly-linked list connecting all leaves of a BinaryTrie in sorted order, reusing child
+      pointers, used to find successors/predecessors after a jump.
+    composed_of:
+    - binary_trie
+    tier: 2
+  level_based_binary_search:
+    defines: A technique for locating the deepest node on an integer's search path by binary searching
+      over levels using per-level hash tables of node labels.
+    composed_of:
+    - binary_trie
+    - hash_table
+    tier: 2
+  binary_trie_operations:
+    defines: The O(w)-time operations for searching, inserting, and deleting integers in a BinaryTrie
+      by walking the search path and updating jump pointers and the leaf list.
+    composed_of:
+    - binary_trie
+    - jump_pointers
+    - leaf_linked_list
+    tier: 3
+  xfasttrie:
+    defines: A BinaryTrie augmented with one hash table per level, enabling find(x) in O(log w) expected
+      time while add/remove remain O(w).
+    composed_of:
+    - binary_trie_operations
+    - level_based_binary_search
+    tier: 4
+  probabilistic_sampling:
+    defines: A technique where each inserted element is included in the XFastTrie sample independently
+      with probability 1/w, controlling the expected size of secondary treaps.
+    composed_of:
+    - xfasttrie
+    tier: 5
+applications:
+  van_emde_boas_tree:
+    defines: The original data structure providing O(log w) time add, remove, and find operations, using
+      arrays instead of hash tables at each level.
+    needs:
+    - xfasttrie
+    tier: 5
+  yfasttrie:
+    defines: A structure combining an XFastTrie storing a sparse O(n/w)-sized sample of elements with
+      secondary treaps storing the remaining elements, achieving O(log w) expected time for add, remove,
+      and find using only O(n) space.
+    needs:
+    - xfasttrie
+    - treap
+    - probabilistic_sampling
+    tier: 6
+  fusion_tree:
+    defines: A structure storing n w-bit integers in O(n) space with find(x) running in O(log n / log
+      w) time, combinable with YFastTrie to achieve O(sqrt(log n)) find time.
+    needs:
+    - yfasttrie
+    tier: 7

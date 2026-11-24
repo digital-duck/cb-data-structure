@@ -1,0 +1,81 @@
+domain: data_structure_ods_python
+primitives:
+  hash_table:
+    defines: A data structure for storing a small number n of items from a large key range U, mapping
+      keys to a small number of table locations via a hash function.
+    tier: 0
+  hash_function:
+    defines: A function hash(x) mapping a key x to an integer in {0,...,length(t)-1} indicating where
+      x should be stored in the hash table.
+    tier: 0
+  hash_code:
+    defines: A w-bit integer derived from a non-integer data item so that it can be used as a key in a
+      hash table, satisfying equal objects have equal codes and unequal objects rarely collide.
+    tier: 0
+concepts:
+  load_factor_invariant:
+    defines: The maintained relationship between the number of stored items n and the table length that
+      bounds expected list/probe lengths and triggers resizing.
+    composed_of:
+    - hash_table
+    tier: 1
+  multiplicative_hashing:
+    defines: A hash function hash(x) = ((z*x) mod 2^w) div 2^(w-d) using a random odd multiplier z, which
+      provably bounds collision probability.
+    composed_of:
+    - hash_function
+    tier: 1
+  open_addressing:
+    defines: A hash table strategy that stores elements directly in array slots, resolving collisions
+      by probing alternative locations.
+    composed_of:
+    - hash_table
+    - hash_function
+    tier: 1
+  tabulation_hashing:
+    defines: A hash function construction that splits a key's bits into small chunks used as indices into
+      precomputed random tables, combined with XOR.
+    composed_of:
+    - hash_function
+    tier: 1
+  polynomial_hashing:
+    defines: A hash code method for variable-length sequences that evaluates a polynomial with sequence
+      elements as coefficients modulo a prime.
+    composed_of:
+    - hash_code
+    tier: 1
+  amortized_resizing:
+    defines: Doubling/shrinking the underlying array and rehashing all elements when the load factor invariant
+      is violated, with amortized O(m) total cost.
+    composed_of:
+    - load_factor_invariant
+    tier: 2
+  chained_hash_table:
+    defines: A hash table implementation storing an array of lists, where items with the same hash value
+      are appended to the list at that index.
+    composed_of:
+    - hash_table
+    - hash_function
+    - load_factor_invariant
+    tier: 2
+  linear_hash_table:
+    defines: An open-addressing hash table that resolves collisions by scanning subsequent array slots
+      until finding a nil, del, or matching entry.
+    composed_of:
+    - open_addressing
+    - load_factor_invariant
+    tier: 2
+  compound_object_hashing:
+    defines: A method for combining hash codes of an object's fixed set of parts into a single hash code
+      using randomized coefficients and multiplicative hashing.
+    composed_of:
+    - hash_code
+    - multiplicative_hashing
+    tier: 2
+applications:
+  hash_collision_dos:
+    defines: A real-world attack in which an adversary crafts many keys that hash to the same table location,
+      degrading hash table operations to linear time and overwhelming a server.
+    needs:
+    - chained_hash_table
+    tier: 3

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weight Balanced Tree | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="权重平衡树-weight-balanced-tree">权重平衡树(Weight Balanced Tree)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>权重平衡树</strong>是一种与替罪羊树(ScapegoatTree)相关的二叉搜索树变体。它用子树大小(权重)来保证平衡:对每个结点 $u$,要求</p>
+$$
+\operatorname{size}(u) \le \tfrac{2}{3}\,\operatorname{size}(u.\text{parent}),
+$$
+<p>其中 $\operatorname{size}(u)$ 表示以 $u$ 为根的子树中的结点数。也就是说,任何孩子所含的结点数都不超过其父结点子树的 $2/3$。一旦某次插入或删除破坏了这一不变式,就把违规处的父结点子树<strong>整体重建</strong>为完全平衡的树。</p>
+<p><strong>为什么高度是对数级?</strong> 沿着从根到某结点的路径每向下一层,子树大小至少乘以 $2/3$。因此深度 $d$ 处的子树大小至多为 $n\left(\tfrac23\right)^d$。该值至少为 1,所以</p>
+$$
+d \le \log_{3/2} n = \frac{\ln n}{\ln 1.5} \approx 1.71\log_2 n = O(\log n).
+$$
+<h3 id="例题">例题</h3>
+<p>设某子树的根 $p$ 有 $\operatorname{size}(p)=9$,其左孩子 $\ell$ 有 $\operatorname{size}(\ell)=6$。</p>
+<li>检验:$6 \le \tfrac23\cdot 9 = 6$,不变式成立。</li>
+<li>在 $\ell$ 一侧再插入一个键。此时 $\operatorname{size}(p)=10$,$\operatorname{size}(\ell)=7$。</li>
+<li>检验:$7 > \tfrac23\cdot 10 \approx 6.67$,不变式被破坏。</li>
+<p>于是对 $p$ 的子树重建:先中序遍历得到 10 个有序键,再取中位数作为根,递归构造左右子树。重建后,左右孩子的大小分别为 4 和 5,均不超过 $6.67$,不变式恢复。</p>
+<p>重建的代价为 $O(\operatorname{size}(p))=O(10)$。</p>
+<h3 id="问题求解-均摊分析">问题求解:均摊分析</h3>
+<p><strong>问题</strong>:为什么偶尔一次昂贵的重建,不会拖慢整体性能?</p>
+<p><strong>解答</strong>:重建后,子树是完全平衡的,即两个孩子的大小都约为 $\tfrac12 s$($s$ 为该子树大小)。要再次违规,孩子的大小必须增长到超过 $\tfrac23 s$ 。</p>
+<p>两者之差为</p>
+$$
+\tfrac23 s-\tfrac12 s=\tfrac16 s .
+$$
+<p>因此,对这个结点的下一次重建,至少还需要 $\Omega(s)$ 次插入或删除。把一次重建的代价 $O(s)$ 摊到这些操作上,每次操作只多承担 $O(1)$。</p>
+<p>每次更新会经过 $O(\log n)$ 个祖先结点,每个祖先结点都按上述方式摊还,因此每次更新的<strong>均摊</strong>代价为 $O(\log n)$。查找则始终是最坏情况 $O(\log n)$,因为高度由上面的不等式严格限制。</p>
+<p><strong>与替罪羊树的对比</strong>:替罪羊树只在插入后检测到深度超标时才寻找"替罪羊"并重建。权重平衡树则在每个结点上直接维护比例条件,并在局部违规时重建。两者都依赖"重建后需要很多次更新才会再次失衡"这一均摊思想。</p>
+<pre class="mermaid">graph TD
+    A["父结点 p: size=10"] --> B["左孩子: size=7 (超过 2/3)"]
+    A --> C["右孩子: size=2"]
+    A --> D["检测到违规"]
+    D --> E["中序遍历得到有序键"]
+    E --> F["取中位数作根, 递归建树"]
+    F --> G["新左孩子: size=4"]
+    F --> H["新右孩子: size=5"]</pre>
+<p><em>图:违反 2/3 不变式后,对父结点子树执行重建,使左右孩子大小恢复为 4 和 5。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

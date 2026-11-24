@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jump Pointers | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="跳跃指针-jump-pointers">跳跃指针(Jump Pointers)</h2>
+<h3 id="定义">定义</h3>
+<p>在 x-fast trie(以及 y-fast trie 的底层结构)中,键是 $w$ 位整数,存放在深度为 $w$ 的二叉 trie 的叶子上。<strong>跳跃指针</strong>是存储在每个内部节点上的辅助指针:若某个节点缺少左孩子,它的跳跃指针指向其子树中<strong>最小的叶子</strong>;若缺少右孩子,则指向其子树中<strong>最大的叶子</strong>。</p>
+<p>这样,查询 $\text{find}(x)$ 走到"无路可走"的节点时,不必回溯,可以直接沿跳跃指针到达前驱或后继。叶子本身还串成一条双向链表,因此一次跳跃之后,另一侧的邻居只需再走一步。</p>
+<h3 id="例题">例题</h3>
+<p>设 $w=4$,键集 $S=\{2,\,3,\,9\}$,二进制为 $0010,\,0011,\,1001$。查询 $x=6=0110$ 的后继。</p>
+<li>各层前缀存入哈希表。$x$ 的前缀依次是 $0,\,01,\,011,\,0110$。</li>
+<li>对前缀长度做二分查找,找最长出现在 trie 中的前缀。$0$ 存在,$01$ 不存在,所以最长公共前缀是 $0$,对应节点 $u$。</li>
+<li>$u$ 的子树含键 $2,3$,只有左分支 $00$,缺少右孩子 $01$。$x$ 的下一位是 $1$,要走右边,但右孩子缺失,于是使用 $u$ 的<strong>右跳跃指针</strong>,它指向子树中最大的叶子 $3$。</li>
+<li>$3<x$,所以 $3$ 是 $x$ 的<strong>前驱</strong>。沿叶子链表向右一步,得到后继 $9$。</li>
+<p>整个过程只做了 $O(\log w)$ 次哈希查找,加上 $O(1)$ 次指针跳转。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>规则</strong>:设 $u$ 是与 $x$ 最长公共前缀对应的节点,$b$ 是 $x$ 在该节点之后的下一位。</p>
+<li>若 $b=1$,则 $u$ 没有右孩子,取右跳跃指针得到最大叶子 $\ell$,即 $x$ 的前驱,后继是 $\ell$ 的链表下一项。</li>
+<li>若 $b=0$,则 $u$ 没有左孩子,取左跳跃指针得到最小叶子 $\ell$,即 $x$ 的后继,前驱是 $\ell$ 的链表上一项。</li>
+<p><strong>练习</strong>:在上面的 $S$ 中查询 $x=5=0101$。最长公共前缀为 $0$,下一位 $b=1$,右孩子缺失。右跳跃指针指向 $3$,所以前驱是 $3$,后继是 $9$。</p>
+<p><strong>为什么正确?</strong> 若 $u$ 缺右孩子,则 $S$ 中所有以 $u$ 为前缀的键都以 $u0$ 开头,都小于 $x$。其中最大者就是这些键里最接近 $x$ 的,也就是前驱。对称情形同理。</p>
+<p><strong>复杂度</strong>:</p>
+$$T_{\text{find}}(w)=O(\log w)\ \text{(二分前缀)}+O(1)\ \text{(跳跃指针)}=O(\log w).$$
+<p>代价是空间。每个键最多使 $w$ 个前缀进入哈希表,所以空间为 $O(nw)$。y-fast trie 只对约每 $w$ 个键中的一个代表建 x-fast trie,把空间降到 $O(n)$。</p>
+<pre class="mermaid">graph TD
+    R["根(空前缀)"] --> A["节点 0"]
+    R --> B["节点 1"]
+    A --> C["节点 00"]
+    A -. "右孩子缺失:右跳跃指针" .-> L3["叶子 3"]
+    C --> L2["叶子 2"]
+    C --> L3
+    B --> D["节点 10"]
+    D --> L9["叶子 9"]</pre>
+<p><em>图:节点 0 缺少右孩子 01,其右跳跃指针直接指向子树中最大的叶子 3。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

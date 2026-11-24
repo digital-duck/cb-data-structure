@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black 2 4 Correspondence | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="红黑树与-2-4-树的对应关系">红黑树与 2-4 树的对应关系</h2>
+<h3 id="定义">定义</h3>
+<p><strong>红黑树</strong>是满足以下性质的二叉搜索树:</p>
+<li>每个结点非红即黑;根为黑。</li>
+<li>红结点的子结点必为黑(不存在连续两个红结点)。</li>
+<li>从任一结点到其所有后代空叶的路径上,黑结点数相同,称为<strong>黑高</strong> $bh$。</li>
+<p><strong>2-4 树</strong>是一种多路平衡搜索树:每个结点含 1、2 或 3 个键(即有 2、3 或 4 个子结点),且所有叶子在同一深度。</p>
+<p><strong>对应变换</strong>:把每个红结点"并入"其黑色父结点,形成一个多键结点。每个黑结点连同其红子结点构成一个结点,可能的形状为:</p>
+<li>黑结点无红子结点 → 含 1 个键的 2-结点;</li>
+<li>黑结点有 1 个红子结点 → 含 2 个键的 3-结点(红子结点在左或右均可);</li>
+<li>黑结点有 2 个红子结点 → 含 3 个键的 4-结点。</li>
+<p>由性质 2,红结点不会再有红子结点,所以合并后的结点最多含 3 个键。</p>
+<pre class="mermaid">graph TD
+    B1["黑 20"] --> R1["红 10"]
+    B1 --> R2["红 30"]
+    R1 --> L1["黑 5"]
+    R1 --> L2["黑 15"]
+    R2 --> L3["黑 25"]
+    R2 --> L4["黑 35"]
+    M["合并后的 4-结点: 10 | 20 | 30"] --> M1["5"]
+    M --> M2["15"]
+    M --> M3["25"]
+    M --> M4["35"]</pre>
+<p><em>左半部分为一棵红黑树,右半部分为其合并红结点后得到的 2-4 树:根的 4-结点 $[10,20,30]$ 拥有四个子结点。</em></p>
+<h3 id="工作示例">工作示例</h3>
+<p>考虑上图中的红黑树。黑结点 20 有两个红子结点 10 和 30,合并为 4-结点 $[10,20,30]$。红结点 10 的子结点 5、15 都是黑结点,各自成为独立结点,作为该 4-结点的第 1、2 个子结点;同理 25、35 是第 3、4 个子结点。所有叶子深度相同(都是 1),符合 2-4 树要求。</p>
+<p>这一对应的关键原因是性质 3:每个 2-4 树结点恰好含一个黑结点,所以 2-4 树的深度等于黑高(不计空叶)。因此叶子等深,由黑高相等直接得到。</p>
+<p>反方向也成立:2-结点对应一个黑结点;3-结点对应黑结点加一个红子结点;4-结点对应黑结点加两个红子结点。因此每棵 2-4 树至少对应一棵红黑树(3-结点有左倾、右倾两种选择),对应是双向的。</p>
+<h3 id="问题求解-高度上界-2-log-n">问题求解:高度上界 $2\log n$</h3>
+<p><strong>命题</strong> 含 $n$ 个内部结点的红黑树,高度 $h \le 2\log_2(n+1)$。</p>
+<p><strong>证明</strong>:设黑高为 $b$。</p>
+<li>由对应关系,红黑树对应一棵深度为 $b$ 的 2-4 树。该 2-4 树每个内部结点至少有 2 个子结点,故它至少有 $2^b$ 个叶子;而叶子数等于 $n+1$。所以 $n+1 \ge 2^b$,即 $b \le \log_2(n+1)$。</li>
+<li>由性质 2,任一根到叶路径上红结点不会相邻,所以红结点数至多等于黑结点数,路径长度 $h \le 2b$。</li>
+<li>合并得 $h \le 2b \le 2\log_2(n+1)$。 $\blacksquare$</li>
+<p><strong>应用</strong>:若树中有 $n = 10^6$ 个键,则 $h \le 2\log_2(10^6+1) \approx 40$,因此查找、插入、删除在最坏情况下都是 $O(\log n)$,约 40 步以内。</p>
+<p>另外,插入时的"变色"操作恰好对应 2-4 树中 4-结点的<strong>分裂</strong>,旋转对应 3-结点内部的重排。理解了 2-4 树,就能把红黑树复杂的情形分析转化为简单的结点分裂与合并。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

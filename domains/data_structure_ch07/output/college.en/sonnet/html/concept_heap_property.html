@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heap Property | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="heap-property">Heap Property</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>heap</strong> is a tree whose nodes carry priorities and satisfy the <strong>heap property</strong>: every node's priority is smaller than the priorities of its children. Formally, for every node $v$ with child $c$,</p>
+$$p(v) < p(c).$$
+<p>(Many texts use $\le$ to allow ties. Reversing the inequality gives a <em>max-heap</em>. The version above is a <em>min-heap</em>.) The property is local: it compares only parent and child, never siblings or cousins. It is transitive, though. Each node is smaller than its children, which are smaller than their children, and so on. So <strong>the root holds the minimum priority of the whole tree</strong>. This is why heaps work well as priority queues.</p>
+<p>Heaps are usually also <em>complete</em> binary trees, meaning every level is full except possibly the last, which fills left to right. This lets us store the tree in an array, with node $i$ (1-indexed) having children $2i$ and $2i+1$ and parent $\lfloor i/2 \rfloor$. In array form the property reads</p>
+$$A[\lfloor i/2 \rfloor] \le A[i] \quad \text{for all } i \ge 2.$$
+<h3 id="worked-example">Worked example</h3>
+<p>Test whether $A = [2, 5, 3, 9, 6, 4, 8]$ is a min-heap.</p>
+<p>| $i$ | $A[i]$ | parent index | $A[\text{parent}]$ | OK? | |---|---|---|---|---| | 2 | 5 | 1 | 2 | yes | | 3 | 3 | 1 | 2 | yes | | 4 | 9 | 2 | 5 | yes | | 5 | 6 | 2 | 5 | yes | | 6 | 4 | 3 | 3 | yes | | 7 | 8 | 3 | 3 | yes |</p>
+<p>Every node passes, so $A$ is a heap. Notice that $9$ and $4$ sit at different levels but have no required relationship. The property constrains only parent-child pairs.</p>
+<p>Now change $A[3]$ from $3$ to $7$, giving $[2,5,7,9,6,4,8]$. The pair at $i=6$ now fails, because $A[3]=7 > A[6]=4$. This is a violation.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p>Heap operations work by <strong>restoring the property locally</strong>.</p>
+<p><em>Insert</em> $1$ into the original heap. Place it at the next open position, $i=8$, so $A=[2,5,3,9,6,4,8,1]$. Its parent is $A[4]=9$, which violates the property. Swap them, then compare with the new parent $A[2]=5$ and swap again, then compare with $A[1]=2$ and swap again. The result is $[1,2,3,5,6,4,8,9]$. This is called <em>sift-up</em>.</p>
+<p><em>Extract-min</em> works in the other direction. Remove the root, move the last element to the root, and swap it downward with its <strong>smaller</strong> child until the property holds (<em>sift-down</em>). Choosing the smaller child matters. Swapping with the larger one would leave the new parent bigger than its other child, which is a new violation.</p>
+<p><strong>Cost.</strong> A complete tree with $n$ nodes has height $\lfloor \log_2 n \rfloor$. Each swap moves one level, so insert and extract-min both take $O(\log n)$ time, and reading the minimum takes $O(1)$.</p>
+<p><strong>Check yourself:</strong> Is $[1,3,2,4,5,\,2.5,\,6]$ a min-heap? Check each node against its parent. Position 6 holds $2.5$ with parent $A[3]=2$, which is fine. Every other pair also passes, so yes.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

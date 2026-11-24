@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Remove | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="scapegoat-remove">Scapegoat Remove</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>scapegoat tree</strong> is a binary search tree (BST) that stays balanced without storing balance information in each node. It keeps two counters:</p>
+<li>$n$, the number of nodes currently in the tree</li>
+<li>$q$, an upper-bound counter. It equals $n$ plus the number of deletions since the last full rebuild.</li>
+<p>A tree is <strong>$\alpha$-weight-balanced</strong> (for $\tfrac12 < \alpha < 1$) when every node's subtree sizes satisfy $\text{size}(\text{child}) \le \alpha \cdot \text{size}(\text{node})$. This guarantees height at most $\log_{1/\alpha} q$.</p>
+<p><strong><code>remove(x)</code></strong> works in three steps:</p>
+<li>Delete $x$ with standard BST deletion. If $x$ has two children, replace it with its in-order successor.</li>
+<li>Decrement $n$. Leave $q$ unchanged.</li>
+<li>If $q > 2n$, rebuild the <em>entire</em> tree into a perfectly balanced tree and set $q \leftarrow n$.</li>
+<pre><code>remove(x):
+    if BST-delete(x) succeeded:
+        n ← n − 1
+        if q &gt; 2n:
+            rebuild(root)
+            q ← n</code></pre>
+<p>The rebuild flattens the tree into a sorted list by in-order traversal. It then reconstructs the tree by recursively choosing the median as the root. This takes $O(n)$ time.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Start with $n = q = 8$. Remove keys one at a time.</p>
+<p>| Removal | $n$ | $q$ | $2n$ | $q > 2n$? | |---|---|---|---|---| | 1st | 7 | 8 | 14 | No | | 2nd | 6 | 8 | 12 | No | | 3rd | 5 | 8 | 10 | No | | 4th | 4 | 8 | 8 | No (equal) | | 5th | 3 | 8 | 6 | <strong>Yes</strong> |</p>
+<p>On the 5th removal, the whole 3-node tree is rebuilt as a balanced tree, and $q \leftarrow 3$. Deletions alone never trigger local scapegoat searches. Only the global rebuild restores the height bound.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><strong>Why rebuild at $q > 2n$?</strong> Insertions maintain the invariant $h \le \log_{1/\alpha} q$ using $q$, not $n$. Deletions shrink $n$ but not $q$, so the bound is stale. Without rebuilding, the tree could be tall relative to its current size. The rule $q > 2n$ guarantees</p>
+$$\log_{1/\alpha} q \le \log_{1/\alpha} 2n = \log_{1/\alpha} n + O(1),$$
+<p>so the height remains $O(\log n)$.</p>
+<p><strong>Amortized cost.</strong> A rebuild at $q > 2n$ occurs only after $q$ was last set to some value $q_0 = n_0$. Reaching $q > 2n$ then requires $n$ to fall below $q/2$. Since $q$ is at least $n_0$ (insertions only raise it), at least $n_0 - q/2 \ge n_0/2$ deletions must have occurred since the last rebuild, if no insertions happened. Each rebuild costs $O(n) \le O(n_0)$. Charging this to the $\Omega(n_0)$ deletions gives $O(1)$ amortized extra cost per deletion. Adding the $O(\log n)$ search and deletion gives:</p>
+$$\text{amortized cost of remove} = O(\log n).$$
+<p><strong>Practice problem.</strong> A tree has $n = 100$, $q = 130$. How many removals, with no insertions, trigger a rebuild?</p>
+<p><em>Solution.</em> After $k$ removals, $n = 100 - k$ and $q = 130$. We need $130 > 2(100 - k)$, so $k > 35$. The 36th removal triggers the rebuild, at which point $n = 64$ and $q$ resets to $64$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

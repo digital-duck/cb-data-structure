@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 4 Tree Add Leaf | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="2-4-树添加叶子节点">2 4 树添加叶子节点</h2>
+<h3 id="定义">定义</h3>
+<p><strong>2-4 树</strong>(2-4 tree)是一种平衡的多路查找树,具有以下性质:</p>
+<li>每个内部节点有 2、3 或 4 个孩子(分别称为 2-节点、3-节点、4-节点),对应存储 1、2、3 个键;</li>
+<li>所有叶子位于同一深度。</li>
+<p>这一性质称为<strong>度数性质</strong>(degree property)。</p>
+<p><strong>添加叶子</strong>的过程如下:</p>
+<li>沿查找路径找到应当容纳新键的位置,即倒数第二层的某个节点 $v$,把新键作为 $v$ 的新孩子(叶子)插入。</li>
+<li>若 $v$ 的孩子数变为 5(<strong>上溢</strong>,overflow),则<strong>分裂</strong>:5 个孩子拆成 3 个和 2 个,分别归入两个新节点;中间的键上移到父节点,作为父节点的一个新键,并增加一个孩子。</li>
+<li>父节点若也上溢,则重复第 2 步;若分裂到达根且根上溢,则新建一个根,树高增加 1。</li>
+<p>每次分裂只涉及常数个节点,而路径长度为 $O(\log n)$,因此插入的时间复杂度为</p>
+$$T(n)=O(\log n).$$
+<p>由于所有叶子的深度只有在根分裂时才同时增加 1,所以叶子始终保持同一深度。</p>
+<h3 id="工作示例">工作示例</h3>
+<p>设一个 2-4 树的根含键 $[10,\,20,\,30]$(4-节点),有 4 个叶子子节点。其中最左孩子含键 $[1,\,3,\,5]$,最右孩子含键 $[40,\,50]$。现在插入键 $4$。</p>
+<li>查找路径:$4<10$,进入最左孩子 $[1,\,3,\,5]$。该节点原有 4 个孩子(叶区间),插入后变为 5 个孩子,<strong>上溢</strong>。</li>
+<li>分裂:把键序列 $[1,3,4,5]$ 中的中间键 $3$ 上移,其余拆为 $[1]$ 与 $[4,5]$。</li>
+<li>此时根得到新键 $3$,键变为 $[3,10,20,30]$,孩子数为 5,<strong>根也上溢</strong>。</li>
+<li>分裂根:中间键 $10$ 上移,拆出左节点 $[3]$ 与右节点 $[20,30]$,新根为 $[10]$。树高增加 1,所有叶子仍在同一深度。</li>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:依次向空的 2-4 树插入 $1,2,3,4,5$,画出最终的树。</p>
+<p><strong>解</strong>:</p>
+<li>插入 $1,2,3$:得到单个节点 $[1,2,3]$(4-节点,合法)。</li>
+<li>插入 $4$:节点变为 $[1,2,3,4]$,共 4 个键、5 个孩子,上溢。取中间键 $2$(或 $3$,约定一致即可)上移,分裂为 $[1]$ 与 $[3,4]$,新根 $[2]$。</li>
+<li>插入 $5$:查找得 $5>2$,进入 $[3,4]$,变为 $[3,4,5]$,仍合法,无需分裂。</li>
+<p>最终:根 $[2]$,孩子 $[1]$ 与 $[3,4,5]$。</p>
+<p><strong>分析</strong>:设树的高度为 $h$,则 $n$ 个键满足</p>
+$$2^{h}-1\le n\le 4^{h}-1\;\Longrightarrow\;h=\Theta(\log n).$$
+<p>最坏情况下分裂会沿路径一直传到根,代价为 $O(h)=O(\log n)$;但摊还分析表明,分裂次数的平均值为 $O(1)$,因为每次分裂都会消耗掉一个"已满"节点,而产生的两个节点都有余量。</p>
+<pre class="mermaid">graph TD
+    A["插入叶子到倒数第二层节点"] --> B{"孩子数大于4?"}
+    B -->|"否"| C["结束"]
+    B -->|"是"| D["分裂为3个和2个孩子"]
+    D --> E["中间键上移到父节点"]
+    E --> F{"当前是根?"}
+    F -->|"是"| G["新建根,树高加1"]
+    F -->|"否"| B
+    G --> C</pre>
+<p><em>图:2-4 树插入叶子后,自底向上递归分裂上溢节点的流程。</em></p>
+<p><strong>要点</strong>:插入总是从底部开始,只有根分裂才增加树高,因此度数性质与等深叶子性质始终得以保持。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B Tree | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="b-树">B 树</h2>
+<p><strong>定义。</strong> B 树是一种所有叶子深度相同的平衡多路搜索树。设最小度数为 $B\ge 2$,则:</p>
+<li>每个非根内部节点有 $B$ 到 $2B$ 个孩子;根节点至少有 2 个孩子(若根不是叶子);</li>
+<li>一个有 $k$ 个孩子的内部节点,在有序数组中存放 $k-1$ 个键 $K_1<K_2<\dots<K_{k-1}$,并规定第 $i$ 个子树中的所有键落在 $(K_{i-1},K_i)$ 之间;</li>
+<li>所有叶子位于同一深度。</li>
+<p>这样的设计针对磁盘等外存:一次读取一整个节点(一个"页"),在节点内用二分查找定位,从而用很少的磁盘访问完成查找。</p>
+<p><strong>高度分析。</strong> 设树含 $n$ 个键,高度为 $h$(根为第 0 层)。根至少有 2 个孩子,其余内部节点至少有 $B$ 个孩子,所以第 $h$ 层至少有 $2B^{h-1}$ 个节点。每个节点至少含 $B-1$ 个键(根除外),因此</p>
+$$n \ge 1 + 2(B-1)\sum_{i=0}^{h-1}B^{i}=2B^{h}-1,$$
+<p>即</p>
+$$h \le \log_B\frac{n+1}{2}=O(\log_B n).$$
+<p>查找只需读取 $O(h)$ 个节点,而当 $B$ 很大时 $h$ 很小。</p>
+<p><strong>例题。</strong> 取 $B=2$(即 2–3–4 树,每个节点最多 3 个键),依次插入 $10,20,30,40$。</p>
+<li>插入 $10,20,30$:根节点为 $[10,20,30]$,已满。</li>
+<li>插入 $40$:根已满,先<strong>分裂</strong>。中间键 $20$ 上升成为新根,左右分别为 $[10]$ 和 $[30]$,再把 $40$ 放入右侧,得到 $[30,40]$。</li>
+<p>结果:根 $[20]$,孩子 $[10]$ 与 $[30,40]$。分裂只在根被分裂时才使树增高一层,因此所有叶子始终保持等深。</p>
+<p><strong>问题求解应用。</strong> 某数据库索引有 $n=10^9$ 条记录,每个磁盘页可容纳约 $2B-1=255$ 个键,所以 $B=128$。问最坏情况下一次查找需读多少个页?</p>
+<p>由高度上界,</p>
+$$h\le\log_{128}\frac{10^9+1}{2}\approx\frac{\ln(5\times10^{8})}{\ln 128}\approx\frac{20.03}{4.85}\approx 4.13,$$
+<p>所以 $h\le 4$,最多读取 $h+1=5$ 个页。相比之下,平衡二叉搜索树需约 $\log_2 10^9\approx 30$ 次访问。若根常驻内存,实际磁盘读取还更少。</p>
+<p><strong>要点。</strong></p>
+<li>查找:在节点内二分,再沿对应孩子下降,代价 $O(\log_B n)$ 次页访问。</li>
+<li>插入:找到叶子;若节点已有 $2B-1$ 个键,则沿路径将满节点按中位键分裂。</li>
+<li>删除:若节点键数低于 $B-1$,则向兄弟借键或与兄弟合并。</li>
+<li>三种操作都保持 $O(\log_B n)$ 的页访问代价,这正是 B 树成为数据库和文件系统索引标准结构的原因。</li>
+<pre class="mermaid">graph TD
+    R["根节点: 20"] --> L["叶子: 10"]
+    R --> M["叶子: 30, 40"]</pre>
+<p><em>插入 10、20、30、40 后($B=2$)的 B 树:根分裂后,两个叶子处于同一深度。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

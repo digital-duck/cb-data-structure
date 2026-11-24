@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yfasttrie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="yfasttrie">Yfasttrie</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>y-fast trie</strong> is an ordered-set data structure for $w$-bit integer keys that supports <code>add</code>, <code>remove</code>, and <code>find</code> (and predecessor/successor queries) in $O(\log w)$ expected time while using only $O(n)$ space. It repairs the main weakness of the <strong>x-fast trie</strong>, which achieves $O(\log w)$ queries but needs $O(n\,w)$ space because every key stores all $w$ of its prefixes in hash tables.</p>
+<p>The idea is to index only a <em>sample</em> of the data:</p>
+<li>Partition the sorted keys into consecutive groups of size $\Theta(w)$.</li>
+<li>Store each group in a balanced search structure, here a <strong>treap</strong> (a randomized BST), which has depth $O(\log w)$ for a group of size $\Theta(w)$.</li>
+<li>Put one representative from each group into an x-fast trie. There are $O(n/w)$ representatives.</li>
+<p>Space is the x-fast cost on the sample plus the cost of the treaps:</p>
+$$
+\underbrace{O\!\left(\frac{n}{w}\cdot w\right)}_{\text{x-fast trie}} + \underbrace{O(n)}_{\text{treaps}} = O(n).
+$$
+<h3 id="worked-example">Worked example</h3>
+<p>Let $w = 4$, so keys lie in $\{0,\dots,15\}$. Suppose the set is $\{1,2,4,5,7,9,10,12,13,15\}$ and groups have about $w=4$ elements:</p>
+<li>Group A: $\{1,2,4,5\}$, representative $2$</li>
+<li>Group B: $\{7,9,10,12\}$, representative $9$</li>
+<li>Group C: $\{13,15\}$, representative $13$</li>
+<p><strong>find(10).</strong> Query the x-fast trie for the predecessor representative of $10$. It returns $9$ in $O(\log w)$ time. Search the treap for group B. It has about $w$ nodes, so the search costs $O(\log w)$. We find $10$. Total: $O(\log w)$.</p>
+<p><strong>add(6).</strong> The predecessor representative is $2$, so $6$ goes into group A's treap, which now holds $\{1,2,4,5,6\}$ and has size $5$. This costs $O(\log w)$.</p>
+<h3 id="problem-solving-application-keeping-groups-balanced">Problem-solving application: keeping groups balanced</h3>
+<p>Insertions and deletions change group sizes. To keep every group's size in $[w/2,\,2w]$:</p>
+<li><strong>Split.</strong> If a group grows past $2w$, split it into two treaps of about $w$ elements. Treaps split in $O(\log w)$ time. Then insert one new representative into the x-fast trie, which costs $O(w)$ because an x-fast update touches all $w$ prefix levels.</li>
+<li><strong>Merge.</strong> If a group shrinks below $w/2$, merge it with a neighbor. If the merged group is too big, split it again.</li>
+<p><strong>Amortized analysis.</strong> After a split, each new group has about $w$ elements. At least $\Theta(w)$ updates must therefore happen to a group before it splits or merges again. The $O(w)$ x-fast cost is spread over those $\Theta(w)$ operations, so it adds only $O(1)$ amortized per update:</p>
+$$
+\frac{O(w)\ \text{(trie update)}}{\Omega(w)\ \text{(operations between rebalances)}} = O(1).
+$$
+<p>Each <code>add</code> or <code>remove</code> then costs</p>
+$$
+\underbrace{O(\log w)}_{\text{x-fast search}} + \underbrace{O(\log w)}_{\text{treap update}} + O(1)_{\text{amortized rebalance}} = O(\log w)\ \text{expected}.
+$$
+<p><strong>Exercise.</strong> With $w=64$ and $n=2^{20}$ keys, estimate the number of x-fast representatives and compare the space to a plain x-fast trie.</p>
+<p><em>Solution sketch:</em> There are about $n/w = 2^{20}/64 = 16{,}384$ representatives. Each stores about $w=64$ hash entries, giving roughly $10^6$ entries. A plain x-fast trie would store about $2^{20}\cdot 64 \approx 6.7\times10^7$ entries, which is about $64\times$ more. The y-fast trie's total is linear in $n$.</p>
+<h3 id="takeaway">Takeaway</h3>
+<p>The y-fast trie is a design pattern: <strong>index a sparse sample with a fast but space-hungry structure, and store the bulk in small balanced structures.</strong> Choosing group size $\Theta(w)$ makes the sample's space overhead cancel out. It also makes the treap depth equal $O(\log w)$, which matches the x-fast search time.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

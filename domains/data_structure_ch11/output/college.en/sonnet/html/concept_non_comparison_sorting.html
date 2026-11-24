@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non Comparison Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="non-comparison-sorting">Non Comparison Sorting</h2>
+<p><strong>Definition.</strong> Any algorithm that sorts by comparing pairs of elements (merge sort, quicksort, heapsort) needs $\Omega(n \log n)$ comparisons in the worst case. This follows from a decision-tree argument. The tree must have at least $n!$ leaves, one for each possible ordering. A binary tree with $n!$ leaves has height at least $\log_2(n!) = \Theta(n \log n)$.</p>
+<p><strong>Non-comparison sorts</strong> avoid this bound by never asking "is $a < b$?". Instead, they use an element's <em>value</em> as an array index. The lower bound only covers algorithms that learn about the input through pairwise comparisons, so these algorithms are not subject to it. The cost is an assumption about the input: the keys must be integers in a known, small range $0,\dots,k-1$.</p>
+<p><strong>Counting sort.</strong> Given $n$ keys in $\{0,\dots,k-1\}$:</p>
+<li>Count how many times each value occurs in an array $C[0..k-1]$.</li>
+<li>Replace $C$ with prefix sums, so $C[v]$ is the number of keys $\le v$. This is the index just past the last slot for value $v$.</li>
+<li>Scan the input from right to left. Place each key $x$ at position $C[x]-1$ of the output, then decrement $C[x]$.</li>
+<p>The right-to-left scan makes the sort <em>stable</em>: equal keys keep their original relative order. The running time is $\Theta(n+k)$, which is linear when $k = O(n)$.</p>
+<p><strong>Worked example.</strong> Sort $A = [2,5,3,0,2,3,0,3]$ with $k=6$.</p>
+<li>Counts: $C = [2,0,2,3,0,1]$ for values $0$ through $5$.</li>
+<li>Prefix sums: $C = [2,2,4,7,7,8]$.</li>
+<li>Scan from the right. The last element, $3$, goes to index $C[3]-1 = 6$, and $C[3]$ becomes $6$. The next element, $0$, goes to index $1$. Continuing gives $[0,0,2,2,3,3,3,5]$.</li>
+<p><strong>Radix sort.</strong> Counting sort becomes inefficient when $k$ is large, for example $k = n^2$. Radix sort handles this by sorting on one digit at a time, from least significant to most significant. Each pass uses a stable sort, usually counting sort. If keys have $d$ digits in base $b$, the total time is $\Theta(d(n+b))$. Stability is essential here. It preserves the order produced by earlier, lower-order digit passes.</p>
+<p><strong>Problem-solving application.</strong> Suppose you must sort $n = 10^6$ integers in $[0, 10^9)$.</p>
+<li>Counting sort directly needs $k = 10^9$, which is far too much memory.</li>
+<li>Choose base $b = 1000$, giving $d = 3$ digits. The cost is about $3(10^6 + 10^3) \approx 3\times10^6$ operations.</li>
+<li>A comparison sort needs about $n\log_2 n \approx 2\times 10^7$ comparisons.</li>
+<p>In general, choosing $b \approx n$ gives $d = \lceil \log_n M \rceil$ for keys below $M$. If $M = n^{O(1)}$, then $d = O(1)$ and the sort runs in $\Theta(n)$ time.</p>
+<p><strong>Limits.</strong> These methods require integer keys, or keys that can be mapped to integers, with a bounded range. If $k$ is much larger than $n$, or the keys are arbitrary objects, counting sort wastes time and memory. A comparison sort is then the better choice.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

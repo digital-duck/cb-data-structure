@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breadth First Search | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="breadth-first-search">Breadth First Search</h2>
+<p><strong>Definition.</strong> Breadth-first search (BFS) is a graph traversal that starts at a vertex $s$ and visits vertices in order of increasing distance (number of edges) from $s$: first $s$, then its neighbours, then their unvisited neighbours, and so on. It uses a <strong>queue</strong> (first in, first out) to hold vertices that have been discovered but not yet processed, and a <strong>seen</strong> array to ensure no vertex is enqueued twice.</p>
+<p>For a graph with $n$ vertices and $m$ edges stored as adjacency lists:</p>
+<pre><code>from collections import deque
+
+def bfs(adj, s):
+    n = len(adj)
+    seen = [False] * n
+    order = []
+    seen[s] = True
+    q = deque([s])
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v in adj[u]:
+            if not seen[v]:
+                seen[v] = True   # mark when enqueued, not when dequeued
+                q.append(v)
+    return order</code></pre>
+<p>Marking a vertex when it is <em>enqueued</em> is essential: it guarantees each vertex enters the queue at most once.</p>
+<p><strong>Worked example.</strong> Let $n=6$ with adjacency lists $0:[1,2]$, $1:[0,3]$, $2:[0,3,4]$, $3:[1,2,5]$, $4:[2]$, $5:[3]$. Run BFS from $s=0$.</p>
+<p>| Step | Dequeue | Newly enqueued | Queue after | |---|---|---|---| | 1 | 0 | 1, 2 | [1, 2] | | 2 | 1 | 3 | [2, 3] | | 3 | 2 | 4 | [3, 4] | | 4 | 3 | 5 | [4, 5] | | 5 | 4 | none | [5] | | 6 | 5 | none | [] |</p>
+<p>Visit order: $0,1,2,3,4,5$. Vertices 1 and 2 are at distance 1, vertices 3 and 4 at distance 2, and vertex 5 at distance 3.</p>
+<p><strong>Running time.</strong> Each vertex is enqueued and dequeued at most once, costing $O(n)$ in total. Each vertex's adjacency list is scanned exactly once, when it is dequeued. The list lengths sum to $2m$ for an undirected graph (or $m$ for a directed one). The total work is therefore</p>
+$$O(n) + O\!\left(\sum_{u} \deg(u)\right) = O(n+m).$$
+<p>An adjacency matrix would instead force $\Theta(n)$ work per vertex, giving $\Theta(n^2)$. This is why adjacency lists are the natural representation for BFS.</p>
+<p><strong>Problem-solving application: shortest paths.</strong> Because the queue is FIFO, vertices are dequeued in nondecreasing order of distance from $s$. This makes BFS correct for shortest paths in <em>unweighted</em> graphs. To exploit this, record a distance and a parent for each vertex:</p>
+<pre><code>def bfs_dist(adj, s):
+    dist = [-1] * len(adj)
+    parent = [None] * len(adj)
+    dist[s] = 0
+    q = deque([s])
+    while q:
+        u = q.popleft()
+        for v in adj[u]:
+            if dist[v] == -1:
+                dist[v] = dist[u] + 1
+                parent[v] = u
+                q.append(v)
+    return dist, parent</code></pre>
+<p>Here <code>dist[v] == -1</code> plays the role of the seen array. In the example, <code>dist[5] = 3</code>. Following parents from 5 gives $5 \to 3 \to 1 \to 0$, a shortest path of length 3. (Vertex 3 was first discovered from 1, so that is its parent.)</p>
+<p>Other standard uses follow from the same idea:</p>
+<li><strong>Connectivity:</strong> any vertex with <code>dist == -1</code> after the search is unreachable from $s$. Repeating BFS from each unseen vertex counts connected components in $O(n+m)$ total.</li>
+<li><strong>Bipartite testing:</strong> colour vertices by the parity of <code>dist</code>. The graph is bipartite exactly when no edge joins two vertices of the same parity.</li>
+<li><strong>Grid mazes:</strong> treat each open cell as a vertex and each adjacent open cell as a neighbour. BFS gives the fewest-move route.</li>
+<p><strong>Caution:</strong> with weighted edges, BFS no longer yields shortest paths, because fewer edges does not mean smaller total weight. Use Dijkstra's algorithm in that case.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

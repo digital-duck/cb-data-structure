@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resize Operation | Data Structure Ch02</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="resize-operation">Resize Operation</h2>
+<p>A dynamic array (such as Python's <code>list</code> or Java's <code>ArrayList</code>) presents the illusion of arbitrary growth, but underneath it holds a fixed-size backing array. When an insertion would exceed that capacity, the structure performs a <strong>resize</strong>: it allocates a new backing array — typically double the current capacity — copies every existing element into it, and then completes the insertion. A symmetric shrink can happen when the array becomes sparse (e.g., dropping below one-quarter full), halving capacity to reclaim memory. This operation is what makes dynamic arrays "dynamic" while still offering the fast, indexed access of a plain array.</p>
+<p><strong>Worked example.</strong> Suppose a backing array has capacity 4 and is full: <code>[3, 7, 1, 9]</code>. Appending <code>5</code> triggers a resize: allocate a new array of capacity 8, copy the four elements over, then insert <code>5</code> at index 4, yielding <code>[3, 7, 1, 9, 5, _, _, _]</code>. The next three appends are cheap — no copying needed — until capacity 8 fills, prompting a resize to 16.</p>
+<p><strong>Why doubling, not adding a fixed amount?</strong> This is where the concept demands formal analysis. If capacity grew by a constant $c$ each time, inserting $n$ elements would trigger $n/c$ resizes, and the $k$-th resize copies $O(k \cdot c)$ elements, giving total copying work $\sum_{k=1}^{n/c} kc = O(n^2/c)$ — quadratic. Doubling instead makes resizes exponentially rarer: the $i$-th resize (capacity $2^i$) copies $2^i$ elements, and resizes occur at sizes $1, 2, 4, \dots, n$. Total copying cost is $\sum_{i=0}^{\log_2 n} 2^i = 2^{\lceil \log_2 n \rceil + 1} - 1 = O(n)$, a geometric series dominated by its last term. Spread over $n$ insertions, this gives <strong>amortized $O(1)$</strong> per append — even though any single append can cost $O(n)$ in the worst case.</p>
+<p><strong>Problem-solving application.</strong> This amortized-cost argument, called the <em>accounting</em> or <em>potential method</em>, generalizes: whenever an expensive operation is triggered rarely enough that its cost can be "paid off" by cheap operations preceding it, you get good amortized bounds despite bad worst-case bounds. Recognizing this pattern lets you correctly analyze structures like hash tables (which resize their bucket arrays the same way) instead of mistakenly assuming every insertion is $O(n)$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch2: Array-Based Lists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

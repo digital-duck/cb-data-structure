@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amortized Potential Method | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="摊还分析的势能法">摊还分析的势能法</h2>
+<p><strong>定义。</strong> 势能法(potential method)为数据结构的每个状态 $D$ 指定一个非负实数 $\Phi(D)$,称为<strong>势能函数</strong>,并要求 $\Phi(D_0)=0$。第 $i$ 次操作的<strong>摊还代价</strong>定义为</p>
+$$\hat c_i = c_i + \Phi(D_i) - \Phi(D_{i-1}),$$
+<p>其中 $c_i$ 是实际代价。对 $m$ 次操作求和,中间的势能项相互抵消(望远镜求和):</p>
+$$\sum_{i=1}^{m}\hat c_i=\sum_{i=1}^{m}c_i+\Phi(D_m)-\Phi(D_0)\ \ge\ \sum_{i=1}^{m}c_i .$$
+<p>因为 $\Phi(D_m)\ge 0=\Phi(D_0)$,总摊还代价是总实际代价的上界。直观上,势能是"预存的积蓄":便宜的操作多交一点"税",存入势能;昂贵的操作用积蓄支付。</p>
+<p><strong>例题:二进制计数器。</strong> 对计数器执行 $m$ 次 INCREMENT。一次操作若翻转 $t$ 个末尾的 1 并把一个 0 变为 1,则实际代价 $c_i=t+1$。取 $\Phi=$ 当前 1 的个数 $b_i$。则 $b_i=b_{i-1}-t+1$,所以</p>
+$$\hat c_i=(t+1)+(b_i-b_{i-1})=(t+1)+(1-t)=2 .$$
+<p>因此 $m$ 次操作总代价不超过 $2m=O(m)$,尽管单次操作最坏可达 $\Theta(\log m)$。</p>
+<p><strong>应用:红黑树的修复工作。</strong> 在红黑树中,插入新结点(染红)后可能出现"红-红"冲突,需要修复。修复分两类:</p>
+<li><strong>重新着色</strong>(叔结点为红):父、叔变黑,祖父变红,冲突上移两层,代价 $O(1)$,可能连续发生;</li>
+<li><strong>旋转</strong>(叔结点为黑):至多 2 次旋转后结束,总共只发生一次。</li>
+<p>设 $\Phi(T)=$ 树中<strong>红色结点的子结点为黑、且自身有两个红色... </strong>——为避免复杂,采用更直接的选择:令 $\Phi(T)=$ 同时拥有两个黑色子结点的"黑结点"之外的<strong>黑结点且两个子结点均为红</strong>的个数,记作 $\Phi(T)=\#\{\text{两个子结点都是红色的黑结点}\}$。</p>
+<li>每次重新着色把一个"两子为红的黑结点"(祖父)变成红结点,并使 $\Phi$ 减少 1(其父、叔变黑),实际代价为常数 $1$,所以摊还代价 $\hat c = 1+(-1)=0$ 或更小。</li>
+<li>一次插入本身(含最终的旋转)实际代价 $O(1)$,至多使 $\Phi$ 增加 $O(1)$,摊还代价为 $O(1)$。</li>
+<p>于是 $m$ 次更新的摊还总代价为 $O(m)$。由于 $\Phi\ge 0$ 且 $\Phi(T_0)=0$,<strong>总修复工作为 $O(m)$</strong>,即每次更新平均只做常数次结构调整,即使个别更新的重新着色会沿路径上溯 $O(\log n)$ 层。</p>
+<p><strong>解题步骤小结。</strong></p>
+<li>找出"昂贵步骤"消耗的资源(如 1 的个数、冲突结点数)。</li>
+<li>选取 $\Phi$,使昂贵步骤令 $\Phi$ 下降,抵消其实际代价。</li>
+<li>验证 $\Phi\ge 0$、$\Phi(D_0)=0$,再逐类操作计算 $\hat c_i$。</li>
+<pre class="mermaid">flowchart LR
+A[实际代价 c_i] --> C[摊还代价]
+B[势能变化 ΔΦ] --> C
+C --> D[求和后望远镜抵消]
+D --> E[总代价 ≤ 总摊还代价]</pre>
+<p><em>摊还代价由实际代价与势能变化相加得到,求和时势能项抵消,从而给出总代价上界。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

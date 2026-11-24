@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yfasttrie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="y-快速字典树-y-fast-trie">Y-快速字典树(Y-Fast Trie)</h2>
+<h3 id="定义">定义</h3>
+<p>设全域为 $U=\{0,1,\dots,2^w-1\}$(字长为 $w$ 位的整数),集合中有 $n$ 个元素。<strong>Y-快速字典树</strong>要解决动态有序集合问题:支持 <code>add</code>、<code>remove</code>、<code>find</code>(以及前驱/后继查询),并且空间只用 $O(n)$。</p>
+<p>它在 X-快速字典树(XFastTrie)的基础上改进。X-快速字典树对前驱查询只需 $O(\log w)$ 时间,但要为每一层存哈希表,空间为 $O(n\,w)$。Y-快速字典树的思路是<strong>分块</strong>:</p>
+<li>把有序元素切成大小约为 $\Theta(w)$ 的连续块,共 $O(n/w)$ 块。</li>
+<li>每块用一棵<strong>平衡二叉搜索树(treap)</strong> 存放块内元素,块内操作耗时 $O(\log w)$。</li>
+<li>每块选一个<strong>代表元</strong>,所有代表元放入一个 XFastTrie。</li>
+<p>于是 XFastTrie 只存 $O(n/w)$ 个元素,占用空间 $O\!\left(\tfrac{n}{w}\cdot w\right)=O(n)$;所有 treap 合计占用 $O(n)$,总空间为 $O(n)$。</p>
+<h3 id="例题">例题</h3>
+<p>取 $w=4$,$U=\{0,\dots,15\}$,集合 $S=\{1,3,4,6,9,10,12,15\}$。按块大小约 $w=4$ 切分:</p>
+<li>块 A:$\{1,3,4,6\}$,代表元 $3$</li>
+<li>块 B:$\{9,10,12,15\}$,代表元 $10$</li>
+<p>XFastTrie 中只存 $\{3,10\}$。</p>
+<p><strong>查询 <code>find(12)</code>:</strong></p>
+<li>在 XFastTrie 中求 $12$ 的前驱代表元。通过对二进制前缀做哈希表二分,只需 $O(\log w)=O(2)$ 步,得到代表元 $10$。</li>
+<li>进入代表元 $10$ 所在的块 B 的 treap,查找 $12$,耗时 $O(\log w)$,命中。</li>
+<p>总时间为 $O(\log w)+O(\log w)=O(\log w)$。</p>
+<h3 id="问题求解应用-插入与删除如何保持块大小">问题求解应用:插入与删除如何保持块大小</h3>
+<p>块大小必须始终保持在 $\Theta(w)$,否则 treap 的 $O(\log w)$ 保证会失效。</p>
+<li><strong><code>add(x)</code></strong>:先用 XFastTrie 定位目标块,再插入该块的 treap。若块大小超过 $2w$,则<strong>分裂</strong>为两个大小约 $w$ 的块,并把新代表元插入 XFastTrie。</li>
+<li><strong><code>remove(x)</code></strong>:先在块的 treap 中删除。若块大小低于 $w/4$,则与相邻块<strong>合并</strong>,必要时再分裂,并相应更新 XFastTrie 中的代表元。</li>
+<p><strong>摊还分析:</strong> 分裂或合并涉及 $\Theta(w)$ 个元素,并对 XFastTrie 做一次 $O(w)$ 代价的更新(每层哈希表各改一次)。但一次分裂或合并之后,块大小回到 $\Theta(w)$ 附近,至少还需要 $\Omega(w)$ 次操作才会再次触发。因此每次操作分摊的额外代价为</p>
+$$
+\frac{O(w)}{\Omega(w)}=O(1),
+$$
+<p>整体期望时间仍为 $O(\log w)$。其中"期望"来自 treap 的随机优先级和 XFastTrie 的哈希表。</p>
+<h3 id="小结">小结</h3>
+<p>| 结构 | 查询时间 | 空间 | |---|---|---| | 平衡二叉搜索树 | $O(\log n)$ | $O(n)$ | | XFastTrie | $O(\log w)$ | $O(n\,w)$ | | <strong>Y-快速字典树</strong> | $O(\log w)$ 期望 | $O(n)$ |</p>
+<p>当 $w\ll\log n$ 不成立(即 $w$ 较大)时,收益有限;当全域是整数且 $w=O(\log n)$ 时,$\log w=O(\log\log n)$,它比平衡树快得多。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

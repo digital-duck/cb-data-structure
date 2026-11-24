@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Removal | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="bst-removal">Bst Removal</h2>
+<p><strong>Definition.</strong> Given a binary search tree $T$ and a key $k$, <em>BST removal</em> produces a new tree $T'$ that contains every node of $T$ except the node with key $k$, while preserving the BST invariant: for every node $n$ with left subtree $L$ and right subtree $R$,</p>
+$$\forall x \in L,\; x.\mathit{key} < n.\mathit{key} \quad \text{and} \quad \forall y \in R,\; y.\mathit{key} > n.\mathit{key}.$$
+<p>Removal is handled by three cases determined by the number of children of the target node $v$:</p>
+<li><strong>Leaf node</strong> ($v$ has no children): delete $v$ directly.</li>
+<li><strong>One child</strong>: replace $v$ with its sole child; the subtree rooted there already satisfies the BST invariant.</li>
+<li><strong>Two children</strong>: find $v$'s <em>in-order successor</em> $s$ — the minimum-key node in $v$'s right subtree — copy $s.\mathit{key}$ into $v$, then recursively remove $s$ from the right subtree. Because $s$ is a minimum, it has no left child, so this recursive call falls into case 1 or 2.</li>
+<p><strong>Worked example.</strong> Consider the BST with keys $\{10, 5, 15, 3, 7, 12, 20\}$ and root $10$. Remove $k = 15$ (a two-child node). Its right subtree contains $\{20\}$ and its left subtree contains $\{12\}$, so the in-order successor is $s = 12$. Copy $12$ into the node formerly holding $15$, then delete the original node holding $12$ (a leaf). The resulting tree has root $10$, left child $5$, and right child $12$ (with right child $20$). Verify: $10 < 12 < 20$ along the right spine — the invariant holds.</p>
+<p><strong>Key theorem (correctness).</strong> Let $T$ be a BST satisfying the BST invariant and let $v$ be the node with key $k$. The tree $T'$ produced by the three-case procedure above satisfies the BST invariant and contains exactly the keys $\mathit{keys}(T) \setminus \{k\}$.</p>
+<p><em>Proof sketch.</em> Cases 1 and 2 preserve the invariant locally by direct substitution. For case 3, the in-order successor $s$ satisfies $v.\mathit{key} < s.\mathit{key} \leq y$ for every $y$ in $v$'s right subtree, so replacing $v.\mathit{key}$ with $s.\mathit{key}$ maintains the ordering between the left subtree, the new root key, and the right subtree. $\blacksquare$</p>
+<p>The worst-case time complexity is $O(h)$ where $h$ is the tree height; for a balanced BST this gives $O(\log n)$.</p>
+<pre><code>from sympy import symbols, Function, Piecewise
+
+# Lab: trace BST removal symbolically
+class BSTNode:
+    def __init__(self, key, left=None, right=None):
+        self.key, self.left, self.right = key, left, right
+
+def bst_remove(node, k):
+    if node is None:
+        return None
+    if k &lt; node.key:
+        node.left = bst_remove(node.left, k)
+    elif k &gt; node.key:
+        node.right = bst_remove(node.right, k)
+    else:                                  # found target
+        if node.left is None:
+            return node.right
+        if node.right is None:
+            return node.left
+        # two children: find in-order successor
+        s = node.right
+        while s.left:
+            s = s.left
+        node.key = s.key
+        node.right = bst_remove(node.right, s.key)
+    return node
+
+def inorder(node):
+    return inorder(node.left) + [node.key] + inorder(node.right) if node else []
+
+root = BSTNode(10, BSTNode(5, BSTNode(3), BSTNode(7)),
+                   BSTNode(15, BSTNode(12), BSTNode(20)))
+print("Before:", inorder(root))          # [3, 5, 7, 10, 12, 15, 20]
+bst_remove(root, 15)
+print("After removing 15:", inorder(root))  # [3, 5, 7, 10, 12, 20]</code></pre>
+  </main>
+  <footer class="spl-credit">Generated by SPL &middot; Powered by SPL.py</footer>
+</div>
+</body>
+</html>

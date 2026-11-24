@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 4 Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="2-4-树">2 4 树</h2>
+<h3 id="定义">定义</h3>
+<p><strong>2-4 树</strong>(2-4 tree,又称 2-3-4 树)是一种满足以下条件的有根树:</p>
+<li><strong>结构性质</strong>:每个内部节点有 2、3 或 4 个孩子,分别称为 2-节点、3-节点和 4-节点。一个有 $k$ 个孩子的节点存储 $k-1$ 个键(key)。</li>
+<li><strong>有序性质</strong>:节点内的键升序排列,第 $i$ 个孩子子树中的所有键,介于第 $i-1$ 个键与第 $i$ 个键之间(与二叉搜索树的推广一致)。</li>
+<li><strong>深度性质</strong>:所有叶子具有相同的深度。</li>
+<p><strong>高度定理。</strong> 设 2-4 树存有 $n$ 个键,高度为 $h$。则</p>
+$$
+\log_4(n+1) \le h+1 \le \log_2(n+1).
+$$
+<p><em>证明。</em> 因为所有叶子同深度,第 $d$ 层($d=0,\dots,h$)至少有 $2^d$ 个节点,至多有 $4^d$ 个节点,每个节点含 1 至 3 个键。于是</p>
+$$
+n \ge \sum_{d=0}^{h} 2^d = 2^{h+1}-1,\qquad n \le 3\sum_{d=0}^{h}4^d = 4^{h+1}-1.
+$$
+<p>分别取对数即得结论。$\blacksquare$</p>
+<p>因此查找、插入、删除的代价均为 $O(\log n)$。</p>
+<h3 id="例题-插入与分裂">例题:插入与分裂</h3>
+<p>向空树依次插入键 $1,2,3,4$。前三个键放入同一个节点 $[1,2,3]$(这是一个 4-节点)。</p>
+<p>插入 $4$ 时,采用<strong>自顶向下</strong>的策略:沿路径下行时,遇到 4-节点就<strong>预先分裂</strong>。根 $[1,2,3]$ 是 4-节点,于是中间键 $2$ 上升成为新根,左右分别留下 $[1]$ 与 $[3]$:</p>
+<pre><code>     [2]
+    /   \
+  [1]   [3]</code></pre>
+<p>随后 $4$ 进入 $[3]$,得到 $[3,4]$。整棵树高度增加了 1,而且是<strong>根分裂</strong>才会使高度增加,因此所有叶子仍保持同深度。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:一棵 2-4 树存有 $n=1000$ 个键,其高度(边数)至多是多少?至少是多少?</p>
+<p><strong>解</strong>:由高度定理,</p>
+<li>至多:$h+1 \le \log_2(1001)\approx 9.97$,所以 $h+1\le 9$,即 $h\le 8$。</li>
+<li>至少:$h+1 \ge \log_4(1001)\approx 4.98$,所以 $h+1\ge 5$,即 $h\ge 4$。</li>
+<p>因此高度在 $4$ 到 $8$ 之间,一次查找至多访问 9 个节点。</p>
+<p><strong>要点总结</strong>:</p>
+<li>分裂操作只在节点内部与父节点之间调整,代价为 $O(1)$;沿路径最多分裂 $O(h)=O(\log n)$ 次。</li>
+<li>删除时则相反:遇到 2-节点就向兄弟借键或与兄弟合并,保证下行路径上不会出现需要回溯的情况。</li>
+<li>2-4 树与<strong>红黑树</strong>一一对应:把 3-节点、4-节点按固定方式展开成红、黑二叉节点,即得红黑树。这解释了红黑树的 $O(\log n)$ 高度,也是实际中常以红黑树实现 2-4 树的原因。</li>
+<pre class="mermaid">graph TD
+A["根节点: 2"] --> B["节点: 1"]
+A --> C["节点: 3, 4"]</pre>
+<p><em>插入 1、2、3、4 后的 2-4 树:根分裂使中间键 2 上升,两个叶子位于同一深度。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Removal | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="二叉搜索树的删除-bst-removal">二叉搜索树的删除(Bst Removal)</h2>
+<h3 id="定义">定义</h3>
+<p>在二叉搜索树(BST)中删除一个值 $k$,必须保持 BST 性质:对每个结点,左子树所有值 $<$ 该结点的值 $<$ 右子树所有值。先按搜索路径找到值为 $k$ 的结点 $x$,再按其孩子数分三种情形:</p>
+<li><strong>叶子结点</strong>(0 个孩子):直接摘除,父结点对应指针置空。</li>
+<li><strong>只有一个孩子</strong>:用该孩子"接替"$x$,即把父结点指向 $x$ 的指针改为指向 $x$ 的唯一孩子(拼接,splice)。</li>
+<li><strong>有两个孩子</strong>:找到 $x$ 右子树中的最小值(中序后继)$s$,把 $x$ 的值改为 $s$ 的值,然后在右子树中删除 $s$。因为 $s$ 是最小值,它不可能有左孩子,所以这一步归结为情形 1 或 2。</li>
+<p>情形 3 之所以正确:$s$ 大于左子树所有值(它来自右子树),又不大于右子树其余值,因此放在 $x$ 的位置仍满足 BST 性质。</p>
+<h3 id="例题">例题</h3>
+<p>考虑如下 BST(先序:50, 30, 20, 40, 70, 60, 80):</p>
+<pre class="mermaid">graph TD
+A[50] --> B[30]
+A --> C[70]
+B --> D[20]
+B --> E[40]
+C --> F[60]
+C --> G[80]</pre>
+<p><em>初始的二叉搜索树。</em></p>
+<li><strong>删除 20(叶子)</strong>:把 30 的左指针置空。</li>
+<li><strong>删除 30(此时只剩右孩子 40)</strong>:50 的左指针改指向 40。</li>
+<li><strong>删除 50(两个孩子)</strong>:右子树 $\{70, 60, 80\}$ 的最小值是 60。把根的值改为 60,再从右子树删除原来的 60(叶子)。结果根为 60,右孩子 70 仍有孩子 80。</li>
+<p>中序遍历结果始终保持升序:删除 20、30、50 后得到 40, 60, 70, 80。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>代码实现:</strong></p>
+<pre><code>def remove(node, k):
+    if node is None:
+        return None
+    if k &lt; node.val:
+        node.left = remove(node.left, k)
+    elif k &gt; node.val:
+        node.right = remove(node.right, k)
+    else:
+        if node.left is None:      # 情形 1、2
+            return node.right
+        if node.right is None:
+            return node.left
+        s = node.right             # 情形 3:找右子树最小值
+        while s.left:
+            s = s.left
+        node.val = s.val
+        node.right = remove(node.right, s.val)
+    return node</code></pre>
+<p><strong>复杂度分析:</strong> 设树高为 $h$。查找路径长 $O(h)$,寻找后继最多再走 $O(h)$,递归删除后继也至多 $O(h)$(后继所在路径总长不超过树高),所以总时间为 $O(h)$。树平衡时 $h = O(\log n)$;若按升序插入产生退化的链,则 $h = n$,删除变为 $O(n)$。</p>
+<p><strong>练习:</strong> 对上面的原始树依次删除 70、50,画出结果树并验证中序遍历。 <em>提示:</em> 删除 70 时它有两个孩子,后继为 80;删除 50 时后继为 60。最终中序序列应为 20, 30, 40, 60, 80 的升序子集(依次去掉被删值)。</p>
+<p><strong>常见错误:</strong> 情形 3 中若用左子树最大值替换也是正确的(对称做法),但必须在对应子树中继续删除该值;若忘记这一步,树中会出现重复值,破坏 BST 性质。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

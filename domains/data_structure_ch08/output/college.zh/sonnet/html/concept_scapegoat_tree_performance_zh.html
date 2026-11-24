@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Tree Performance | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="替罪羊树的性能">替罪羊树的性能</h2>
+<p><strong>定义。</strong> 替罪羊树(ScapegoatTree)是一种基于"懒惰重建"的二叉搜索树。它不存储平衡信息,只维护节点数 $n$ 和上界 $q\ge n$。设平衡参数 $\alpha\in(1/2,1)$,则树始终满足:</p>
+$$h(T)\le \log_{1/\alpha} q + 1 .$$
+<p>插入后若新节点深度超过 $\log_{1/\alpha} q$,就沿路径向上找到第一个满足 $\text{size}(\text{child}) > \alpha\cdot \text{size}(u)$ 的节点 $u$(即"替罪羊"),并调用 $\text{rebuild}(u)$,把以 $u$ 为根的子树重建为完全平衡的树,代价为 $O(\text{size}(u))$。删除时,若 $q > 2n$,则重建整棵树。</p>
+<p><strong>性能结论。</strong></p>
+<li>$\text{find}(x)$:树高为 $O(\log n)$,所以最坏情况 $O(\log n)$。</li>
+<li>$\text{add}(x)$ 与 $\text{remove}(x)$:<strong>摊还</strong> $O(\log n)$。</li>
+<li>在从空树开始的 $m$ 次操作中,所有 $\text{rebuild}(u)$ 的总代价为 $O(m\log m)$。</li>
+<p><strong>论证思路(势能法)。</strong> 重建前,$u$ 的某个孩子 $v$ 满足 $\text{size}(v)>\alpha\,\text{size}(u)$,所以另一个孩子的大小小于 $(1-\alpha)\,\text{size}(u)$。两者的差距至少为 $(2\alpha-1)\,\text{size}(u)$。这意味着自上次 $u$ 被重建(那时两边几乎相等)以来,至少发生了 $\Omega(\text{size}(u))$ 次插入或删除作用于 $u$ 的子树。于是重建代价 $O(\text{size}(u))$ 可以分摊到这些操作上。每次操作只影响其路径上 $O(\log n)$ 个祖先,每个祖先承担 $O(1)$ 的摊还费用,因此每次操作总共多付 $O(\log n)$。</p>
+<p><strong>例题。</strong> 取 $\alpha=2/3$,某子树 $u$ 有 $\text{size}(u)=30$,刚重建时左右各 $14$ 个。之后连续向左侧插入,直到左孩子大小超过 $\alpha\cdot\text{size}(u)$。</p>
+<li>当 $\text{size}(u)=31+k$ 时,左孩子大小为 $14+k+1$。解 $15+k>\tfrac23(31+k)$,得 $k>17$,即至少 $18$ 次插入。</li>
+<li>此时重建代价约为 $\text{size}(u)\approx 49$,平均每次插入分摊 $49/18\approx 2.7=O(1)$。</li>
+<p><strong>应用。</strong> 设你要连续执行 $m=10^6$ 次操作。</p>
+<li>单次 $\text{find}$ 最多比较约 $\log_{3/2} 10^6\approx 34$ 次。</li>
+<li>重建总代价为 $O(m\log m)\approx 10^6\times 20$ 量级,即平均每次操作仅多付约 $\log m$ 的常数倍。</li>
+<p>因此,若应用允许个别操作偶尔较慢(如一次 $O(n)$ 的重建),而更看重平均速度和实现简单,替罪羊树是很好的选择。若要求每次操作都有最坏情况保证,则应选择红黑树等结构。</p>
+<pre class="mermaid">flowchart TD
+A[插入或删除] --> B{深度超限或 q>2n?}
+B -- 否 --> C[操作完成 O1 额外代价]
+B -- 是 --> D[向上寻找替罪羊 u]
+D --> E[rebuild u 代价 O size u]
+E --> F[代价分摊到此前 Ω size u 次操作]
+F --> G[每次操作摊还 O log n]</pre>
+<p><em>图:一次操作何时触发重建,以及重建代价如何被分摊到先前的操作上。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

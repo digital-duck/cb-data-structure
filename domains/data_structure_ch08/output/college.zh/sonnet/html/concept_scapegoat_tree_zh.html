@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Tree | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="替罪羊树">替罪羊树</h2>
+<p><strong>定义。</strong> 替罪羊树(scapegoat tree)是一种自平衡二叉搜索树,它不使用旋转,也不在节点中存储平衡因子或颜色,只额外维护两个计数器:$n$ 为当前节点数,$q$ 为自上次整体重建以来的"上界"计数(插入时增加,删除时 $n$ 减少,而 $q$ 保持不变,仅当 $n<\alpha q$ 时重建整棵树并令 $q=n$)。设平衡参数 $\alpha\in(\tfrac12,1)$。树被称为 <strong>$\alpha$-高度平衡</strong>,当且仅当其高度满足</p>
+$$h\le \lfloor\log_{1/\alpha} q\rfloor .$$
+<p>若插入后某节点深度超过 $\log_{1/\alpha} q$,就沿插入路径向上寻找一个"替罪羊":满足</p>
+$$\frac{\text{size}(\text{子节点})}{\text{size}(\text{该节点})}>\alpha$$
+<p>的最近祖先。随后将以替罪羊为根的子树拍平成有序序列,再重建为完全平衡的子树。这就是<strong>部分重建</strong>。</p>
+<p><strong>例题。</strong> 取 $\alpha=\tfrac23$,依次插入 $1,2,3,4$ 得到一条链:$1\to2\to3\to4$,此时 $n=q=4$。允许的最大深度为 $\lfloor\log_{3/2}4\rfloor=\lfloor 3.42\rfloor=3$。插入 $4$ 的深度恰为 $3$,未超限。再插入 $5$,此时 $n=q=5$,深度为 $4$,而 $\lfloor\log_{3/2}5\rfloor=\lfloor3.97\rfloor=3$,违反条件。从新节点 $5$ 向上检查:</p>
+<li>节点 $4$:$\text{size}(5)/\text{size}(4)=1/2\le\tfrac23$,不是替罪羊;</li>
+<li>节点 $3$:$2/3\le\tfrac23$,不是;</li>
+<li>节点 $2$:$3/4>\tfrac23$,是替罪羊。</li>
+<p>将以 $2$ 为根的子树 $\{2,3,4,5\}$ 中序拍平,取中位数重建,得到根为 $3$(或 $4$)的平衡子树。整棵树高度降为 $3$,条件恢复。</p>
+<p><strong>问题求解应用。</strong> 为什么重建代价是可接受的?关键是摊还分析:</p>
+<li><strong>查找</strong> 始终是 $O(\log n)$,因为高度 $\le\log_{1/\alpha}q$,且 $q\le n/\alpha$,故 $h=O(\log n)$。</li>
+<li><strong>重建</strong> 一棵含 $s$ 个节点的子树需要 $\Theta(s)$ 时间。替罪羊子树在重建后是完全平衡的,要再次变得失衡(某子节点占比超过 $\alpha$),必须在其中再做 $\Omega(s)$ 次插入或删除。因此重建代价可分摊到这些操作上,每次操作摊还 $O(\log n)$。</li>
+<li><strong>删除</strong> 只做普通 BST 删除,并令 $n$ 减 1;当 $n<\alpha q$ 时重建整棵树,代价 $\Theta(n)$ 可由此前至少 $(1-\alpha)q$ 次删除分摊。</li>
+<p><strong>小结。</strong> 替罪羊树用"偶尔大扫除"取代"每次小调整":查找最坏 $O(\log n)$,插入与删除摊还 $O(\log n)$,实现简单、节点无额外字段,代价是个别操作可能耗时 $O(n)$。$\alpha$ 越接近 $\tfrac12$,树越矮但重建越频繁;越接近 $1$,则相反。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

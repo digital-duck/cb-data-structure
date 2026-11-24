@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilistic Sampling | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="probabilistic-sampling">Probabilistic Sampling</h2>
+<p><strong>Definition.</strong> An x-fast trie on $w$-bit keys stores $O(n \log w)$ words when it holds $n$ keys, because every key contributes a root-to-leaf path of $w$ prefixes. That is too much space. <em>Probabilistic sampling</em> fixes this by putting only a random subset of the keys into the x-fast trie. Each inserted key is included in the sample independently with probability $1/w$. The unsampled keys live in secondary balanced structures, here treaps, each covering the gap between two consecutive sampled keys. This is the idea behind the y-fast trie.</p>
+<p>Let $n$ be the number of inserted keys. Let $X_i$ be the indicator that key $i$ is sampled, so $\Pr[X_i = 1] = 1/w$. By linearity of expectation, the sample size $S = \sum_i X_i$ satisfies</p>
+$$\mathbb{E}[S] = \frac{n}{w}.$$
+<p>The x-fast trie therefore uses expected space</p>
+$$O\!\left(\frac{n}{w}\cdot w\right) = O(n).$$
+<p><strong>Worked example.</strong> Take $w = 32$ and $n = 3200$ keys. The expected sample size is $3200/32 = 100$. Sorted by value, the keys fall into gaps between consecutive sampled keys. The gap length is the number of unsampled keys before the next sampled one. It is geometric with success probability $p = 1/w$, so its mean is</p>
+$$\mathbb{E}[\text{gap}] = \frac{1-p}{p} = w - 1 = 31.$$
+<p>A typical treap therefore holds about 31 keys. Its depth is $O(\log 31)\approx 5$ levels, which is $O(\log w)$.</p>
+<p><strong>Problem-solving application.</strong> Suppose we want the cost of a predecessor query.</p>
+<li>Query the x-fast trie for the predecessor among the sampled keys. This takes $O(\log w)$ expected time.</li>
+<li>Follow that sampled key to its treap and search it. A treap with $m$ keys costs $O(\log m)$.</li>
+<p>Step 2 depends on $m$. Since $\log$ is concave, Jensen's inequality gives $\mathbb{E}[\log m] \le \log \mathbb{E}[m]$. The treap that a query lands in is size-biased, because longer gaps are more likely to contain the query. The size of that gap has expectation at most about $2w$, so</p>
+$$\mathbb{E}[\log m] \le \log(2w) = O(\log w).$$
+<p>The total expected query time is $O(\log w)$. Insertions and deletions have the same bound, plus an $O(1)$ expected cost for deciding whether to sample.</p>
+<p><strong>Why $1/w$?</strong> The sampling probability $p$ trades one cost against the other.</p>
+<p>| Choice of $p$ | Trie space | Treap size | |---|---|---| | $p = 1$ | $O(nw)$ words | 1 | | $p = 1/w$ | $O(n)$ words | $\approx w$ | | $p = 1/w^2$ | $O(n/w)$ words | $\approx w^2$ |</p>
+<p>The choice $p = 1/w$ keeps the trie linear in $n$ and keeps treap depth at $O(\log w)$. A smaller $p$ would save space the structure no longer needs, and it would make the secondary searches slower.</p>
+<p><strong>Check yourself.</strong> For $w = 64$ and $n = 10^6$, the expected number of sampled keys is $10^6/64 = 15{,}625$. The expected trie size is about $15{,}625 \times 64 = 10^6$ words, which is linear in $n$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

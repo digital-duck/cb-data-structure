@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queue | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="queue">Queue</h2>
+<p>A <strong>queue</strong> is a collection that follows the <strong>first-in, first-out (FIFO)</strong> rule: the element that has waited longest is the next one removed. It supports two core operations:</p>
+<li><strong>enqueue(x)</strong>: add $x$ at the back.</li>
+<li><strong>dequeue()</strong>: remove and return the element at the front.</li>
+<p>With a linked list or a circular array, both operations take $O(1)$ time. Peeking at the front and testing for emptiness are also $O(1)$.</p>
+<p>In graph traversal, the queue holds vertices that have been discovered but not yet processed. Because vertices leave in the order they entered, the traversal finishes every vertex at distance $d$ from the start before it touches any vertex at distance $d+1$. This is <strong>breadth-first search (BFS)</strong>.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Consider the undirected graph with edges $A\!-\!B$, $A\!-\!C$, $B\!-\!D$, $C\!-\!D$, $D\!-\!E$. Run BFS from $A$. Mark a vertex as visited when you enqueue it.</p>
+<p>| Step | Dequeue | Enqueue (new neighbors) | Queue after step (front → back) | |---|---|---|---| | 0 | — | $A$ | $[A]$ | | 1 | $A$ | $B, C$ | $[B, C]$ | | 2 | $B$ | $D$ | $[C, D]$ | | 3 | $C$ | none ($D$ already marked) | $[D]$ | | 4 | $D$ | $E$ | $[E]$ | | 5 | $E$ | none | $[\,]$ |</p>
+<p>The visit order is $A, B, C, D, E$. Marking at enqueue time is what stops $D$ from being added twice at step 3.</p>
+<pre><code>from collections import deque
+
+def bfs(adj, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        v = q.popleft()          # dequeue
+        order.append(v)
+        for w in adj[v]:
+            if w not in seen:
+                seen.add(w)      # mark when enqueued
+                q.append(w)      # enqueue
+    return order</code></pre>
+<p>Use <code>deque</code>, not a list. <code>list.pop(0)</code> shifts every remaining element, so it costs $O(n)$ per call.</p>
+<h3 id="problem-solving-application-shortest-path-in-an-unweighted-graph">Problem-solving application: shortest path in an unweighted graph</h3>
+<p>Suppose you need the fewest edges from $A$ to $E$ in the graph above. BFS already gives the answer if you record a distance when you enqueue each vertex: $\text{dist}(w) = \text{dist}(v) + 1$. This reuses the <code>bfs</code> code with one extra dictionary and introduces no new data structure.</p>
+<li>$\text{dist}(A)=0$.</li>
+<li>$B$ and $C$ are discovered from $A$, so each gets distance 1.</li>
+<li>$D$ is discovered from $B$, so $\text{dist}(D)=2$.</li>
+<li>$E$ is discovered from $D$, so $\text{dist}(E)=3$.</li>
+<p>The shortest path therefore has 3 edges, for example $A\to B\to D\to E$.</p>
+<p>This works because the queue releases vertices in nondecreasing order of distance. A vertex is first discovered by a vertex at the smallest possible distance, so its first recorded distance is its true shortest distance. A stack would break this property. It would follow one branch deep and could record a longer route first.</p>
+<p><strong>Cost.</strong> Each vertex is enqueued and dequeued at most once, and each adjacency entry is examined once. BFS therefore runs in $O(V+E)$ time and uses $O(V)$ space for the queue and the visited set.</p>
+<p><strong>Common pitfalls.</strong></p>
+<li>Marking at dequeue time instead of enqueue time. This allows duplicates in the queue.</li>
+<li>Forgetting to handle disconnected graphs. Restart BFS from each unvisited vertex.</li>
+<li>Using BFS distances on weighted graphs. Edge weights require a different method.</li>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

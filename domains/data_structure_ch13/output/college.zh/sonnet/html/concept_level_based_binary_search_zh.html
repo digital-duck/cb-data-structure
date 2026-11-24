@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level Based Binary Search | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="基于层级的二分查找">基于层级的二分查找</h2>
+<p><strong>定义。</strong> 设整数键取自 $w$ 位二进制全域 $\{0,1,\dots,2^w-1\}$,并存放在深度为 $w$ 的二叉字典树(trie)中:第 $\ell$ 层的节点对应键的长度为 $\ell$ 的前缀。对任意整数 $x$,其<strong>搜索路径</strong>是从根出发、沿着 $x$ 的各位向下走、直到无法继续为止所经过的节点序列。我们要找的是这条路径上<strong>最深的节点</strong>,即 $x$ 与已存键的<strong>最长公共前缀</strong>所对应的节点。</p>
+<p>朴素做法逐层下降,耗时 $O(w)$。<strong>基于层级的二分查找</strong>的思路是:为每一层 $\ell$ 维护一张哈希表 $H_\ell$,存放该层所有节点的标签(即长度为 $\ell$ 的前缀)。于是判断"$x$ 的前 $\ell$ 位前缀是否是 trie 中的节点"只需一次期望 $O(1)$ 的哈希查询。</p>
+<p><strong>为什么可以二分。</strong> 路径具有<strong>单调性</strong>:若 $x$ 的长度为 $\ell$ 的前缀在 trie 中存在,则它所有更短的前缀也必然存在。因此谓词 $P(\ell)=[\,x$ 的前 $\ell$ 位 $\in H_\ell\,]$ 先为真、后为假,可以对 $\ell\in[0,w]$ 做二分,求最大的使 $P(\ell)$ 为真的 $\ell$。共需 $O(\log w)$ 次哈希查询。</p>
+<p><strong>算法。</strong></p>
+<pre><code>def deepest(x, H, w):
+    lo, hi = 0, w            # 不变式:P(lo) 为真
+    while lo &lt; hi:
+        mid = (lo + hi + 1) // 2
+        if (x &gt;&gt; (w - mid)) in H[mid]:   # 取前 mid 位
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo</code></pre>
+<p><strong>例题。</strong> 取 $w=4$,键集 $\{0101,\,0110,\,1100\}$,查询 $x=0111$。各层节点标签为:$H_1=\{0,1\}$,$H_2=\{01,11\}$,$H_3=\{010,011,110\}$,$H_4=\{0101,0110,1100\}$。</p>
+<li>初始 $lo=0,\ hi=4$。取 $mid=2$:前缀 $01\in H_2$,故 $lo=2$。</li>
+<li>取 $mid=3$:前缀 $011\in H_3$,故 $lo=3$。</li>
+<li>取 $mid=4$:前缀 $0111\notin H_4$,故 $hi=3$。此时 $lo=hi=3$,结束。</li>
+<p>答案为深度 3,节点标签 $011$(对应 $0110$ 的前缀)。仅用 3 次查询,而逐层扫描需要 4 次。</p>
+<p><strong>问题求解应用。</strong> 该技术是 y-fast trie 与 van Emde Boas 类结构实现<strong>前驱/后继查询</strong>的核心:先用二分找到最深节点,再借助该节点上保存的子树最小值或最大值指针,在 $O(1)$ 内得到 $x$ 的前驱或后继。总时间</p>
+$$T(w)=O(\log w)$$
+<p>对 $w=64$ 的整数只需约 6 次哈希查询。</p>
+<p><strong>正确性要点。</strong> 循环不变式为:$P(lo)$ 为真,且对所有 $\ell>hi$,$P(\ell)$ 为假。每轮区间 $[lo,hi]$ 的长度至少减半,而由单调性,两种分支都不会丢掉答案。空间代价为 $O(nw)$,因为每个键在每一层各贡献一个前缀;y-fast trie 通过只存每 $w$ 个键中的一个代表来降到 $O(n)$。</p>
+<p><strong>练习。</strong> 对上面的键集查询 $x=1000$,写出每一步的 $lo,hi,mid$,并说明最终得到的是哪个节点。</p>
+<pre class="mermaid">flowchart TD
+A["区间 lo=0, hi=w"] --> B["取 mid=(lo+hi+1)/2"]
+B --> C{"前 mid 位前缀在 H_mid 中?"}
+C -->|"是"| D["lo=mid"]
+C -->|"否"| E["hi=mid-1"]
+D --> F{"lo<hi?"}
+E --> F
+F -->|"是"| B
+F -->|"否"| G["返回最深节点深度 lo"]</pre>
+<p><em>图:层级二分查找的流程。每次哈希查询把候选层数范围缩小一半。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

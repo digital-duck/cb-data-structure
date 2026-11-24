@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Total Order | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="全序关系-total-order">全序关系(Total Order)</h2>
+<h3 id="定义">定义</h3>
+<p>设 $S$ 是一个集合,$\le$ 是 $S$ 上的二元关系。若 $\le$ 满足以下四条性质,则称它是 $S$ 上的<strong>全序</strong>(total order):</p>
+<li><strong>自反性</strong>:对任意 $a\in S$,$a \le a$。</li>
+<li><strong>反对称性</strong>:若 $a\le b$ 且 $b\le a$,则 $a=b$。</li>
+<li><strong>传递性</strong>:若 $a\le b$ 且 $b\le c$,则 $a\le c$。</li>
+<li><strong>全比较性(完全性)</strong>:对任意 $a,b\in S$,$a\le b$ 与 $b\le a$ 至少有一个成立。</li>
+<p>前三条合起来称为<strong>偏序</strong>。第四条把偏序升级为全序,它保证任意两个元素都可以比较。例如,实数在通常的 $\le$ 下是全序;而集合的包含关系 $\subseteq$ 只是偏序,因为 $\{1\}$ 与 $\{2\}$ 互不包含。</p>
+<h3 id="例题">例题</h3>
+<p><strong>判断</strong>:在平面点 $(x,y)$ 上定义 $(x_1,y_1)\preceq(x_2,y_2)$ 当且仅当 $x_1\le x_2$ 且 $y_1\le y_2$。它是全序吗?</p>
+<p>取 $(1,2)$ 与 $(2,1)$。因为 $1\le 2$ 但 $2\not\le 1$,所以 $(1,2)\not\preceq(2,1)$。同理 $(2,1)\not\preceq(1,2)$。全比较性不成立,所以 $\preceq$ 不是全序。</p>
+<p><strong>修正</strong>:改用<strong>字典序</strong>:先比较 $x$,仅当 $x_1=x_2$ 时再比较 $y$。</p>
+$$(x_1,y_1)\preceq(x_2,y_2)\iff x_1<x_2\ \text{或}\ (x_1=x_2\ \text{且}\ y_1\le y_2)$$
+<p>此时 $(1,2)\preceq(2,1)$,任意两点都能比较。可以验证这四条性质均成立,所以字典序是全序。</p>
+<h3 id="问题求解应用-二叉搜索树">问题求解应用:二叉搜索树</h3>
+<p>二叉搜索树(BST)把数据存放在节点中,并规定:每个节点 $v$ 的左子树中所有键都满足 $k<\text{key}(v)$,右子树中所有键都满足 $k>\text{key}(v)$。</p>
+<p>这一规则能够成立,依赖全序的各条性质:</p>
+<li><strong>全比较性</strong>保证插入任何新键时,与当前节点比较后必然能决定向左或向右,不会出现"无法比较"而卡住的情况。</li>
+<li><strong>传递性</strong>保证只比较路径上的节点就足够了。若 $k<\text{key}(v)$,而 $v$ 的左子树中所有键都 $<\text{key}(v)$,则无需逐一检查整棵左子树。</li>
+<li><strong>反对称性</strong>保证"既不小于也不大于"就意味着相等,从而可以判定键已存在。</li>
+<pre class="mermaid">graph TD
+    A["节点 8"] --> B["节点 3"]
+    A --> C["节点 10"]
+    B --> D["节点 1"]
+    B --> E["节点 6"]
+    C --> F["空"]
+    C --> G["节点 14"]</pre>
+<p><em>一棵二叉搜索树:每个节点左侧的键更小,右侧的键更大。</em></p>
+<p><strong>查找 6</strong>:$6<8$,向左;$6>3$,向右;找到 $6$,共比较 3 次。若树高为 $h$,查找最多比较 $h+1$ 次,所以树较平衡时代价为 $O(\log n)$。</p>
+<p><strong>实践提醒</strong>:在程序中自定义比较函数时,必须确保它是全序。例如对浮点数,<code>NaN</code> 与任何数比较都为假,会破坏全比较性,使 BST 的查找和排序出错。因此处理含 <code>NaN</code> 的数据时,需要先约定它的位置,或先将其过滤掉。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

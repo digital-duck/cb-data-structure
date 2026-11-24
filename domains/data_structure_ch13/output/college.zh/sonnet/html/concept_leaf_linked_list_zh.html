@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf Linked List | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="叶子链表-leaf-linked-list">叶子链表(Leaf Linked List)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>叶子链表</strong>是在二进制字典树(BinaryTrie)的所有叶子之间建立的一条<strong>双向链表</strong>,链表顺序与叶子所存键的大小顺序一致。其关键设计是<strong>复用指针</strong>:叶子节点没有子节点,其 <code>left</code> 与 <code>right</code> 两个子指针槽位本来就是空的,因此可以直接改作 <code>prev</code>(前驱叶子)和 <code>next</code>(后继叶子)。这样链表不需要额外内存,总空间仍为 $O(n)$。</p>
+<p>它解决的问题是:在字典树中"跳"到某个位置后,如何快速找到相邻的键。若只有树结构,求后继可能需要沿树向上回溯再向下,最坏需 $O(w)$ 步($w$ 为键的位数);有了叶子链表,只要定位到一个叶子,前驱和后继就是一步指针跳转 $O(1)$。</p>
+<h3 id="worked-example">worked example</h3>
+<p>设 $w=4$,键集合 $S=\{2,5,9,12\}$,二进制为 $0010,0101,1001,1100$。叶子链表为:</p>
+$$2 \leftrightarrow 5 \leftrightarrow 9 \leftrightarrow 12$$
+<p>查询 $\text{succ}(6)$,即大于等于 6 的最小键:</p>
+<li>从根沿 6 的二进制 $0110$ 向下走:第一位 $0$ 到左子树,第二位 $1$ 到达键 5 所在的分支;下一位 $1$ 时该分支没有对应子节点,下行<strong>停止</strong>。</li>
+<li>停下时落在叶子 5(最长公共前缀对应的叶子)。比较 $5<6$,说明答案在其右侧。</li>
+<li>沿 <code>next</code> 指针一步到达 9,即 $\text{succ}(6)=9$。</li>
+<p>若落点叶子本身已不小于查询值,则它就是后继,其前驱则由 <code>prev</code> 给出。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:对有序集合 $S$ 做范围查询 $[a,b]$,输出其中所有键。</p>
+<p><strong>解法</strong>:</p>
+<li>用上述方法求 $\text{succ}(a)$,耗时 $O(w)$。</li>
+<li>从该叶子出发,沿 <code>next</code> 依次输出,直到键大于 $b$。</li>
+<p>设输出 $k$ 个键,总时间为</p>
+$$T = O(w + k).$$
+<p>没有叶子链表时,每输出一个键都要在树中做一次后继查询,代价为 $O(k\cdot w)$。以 $S$ 查询 $[4,10]$ 为例:定位得到 5,然后依次输出 $5\to9$,遇到 12 超出范围即停,共 2 个键、1 次定位。</p>
+<p><strong>维护插入</strong>:插入新键 $x$ 时,先找到 $\text{pred}(x)$ 对应的叶子 $p$,再创建叶子 $x$ 并令</p>
+$$x.\text{prev}=p,\quad x.\text{next}=p.\text{next},$$
+<p>随后修正 $p.\text{next}$ 与原后继的 <code>prev</code> 指向 $x$。删除则是相反的两次指针改写。每次更新只额外耗费 $O(1)$。</p>
+<p><strong>注意</strong>:由于叶子的指针槽被复用,程序必须能区分"叶子"与"内部节点"(例如依据深度等于 $w$ 判断),否则会把链表指针误当作子节点继续下行。</p>
+<h3 id="小结">小结</h3>
+<p>叶子链表以零额外空间,把"定位"与"相邻遍历"分离:树负责 $O(w)$ 的定位,链表负责 $O(1)$ 的前驱/后继移动。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

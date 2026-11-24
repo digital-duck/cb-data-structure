@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Removal | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="bst-removal">Bst Removal</h2>
+<p><strong>Definition.</strong> Removing a value $k$ from a binary search tree (BST) means deleting the node that stores $k$ while preserving the BST invariant: for every node $x$, all keys in its left subtree are less than $x.\text{key}$ and all keys in its right subtree are greater. After a search locates the node $z$ holding $k$, exactly one of three cases applies:</p>
+<li><strong>Leaf (no children):</strong> splice $z$ out by setting its parent's pointer to null.</li>
+<li><strong>One child:</strong> splice $z$ out by linking its parent directly to $z$'s only child. The child's subtree already lies on the correct side of the parent.</li>
+<li><strong>Two children:</strong> do not remove $z$ structurally. Find its <strong>in-order successor</strong> $s$, the minimum of $z$'s right subtree. Copy $s.\text{key}$ into $z$, then remove $s$ from the right subtree. Since $s$ is the leftmost node there, it has no left child, so its removal is case 1 or 2.</li>
+<p>The successor works because $s.\text{key}$ is larger than everything in $z$'s left subtree and no larger than anything else in $z$'s right subtree. Overwriting $z$'s key with it keeps the invariant intact.</p>
+<p><strong>Worked example.</strong> Insert 50, 30, 70, 20, 40, 60, 80, 65 into an empty BST. Node 70 has left child 60 (which has right child 65) and right child 80.</p>
+<li><em>Remove 20 (leaf):</em> node 30's left pointer becomes null.</li>
+<li><em>Remove 60 (one child, 65):</em> node 70's left pointer now points to 65.</li>
+<li><em>Remove 50 (two children):</em> the minimum of the right subtree is found by starting at 70 and going left until there is no left child. That gives 65 (after the previous step). Copy 65 into the root, then splice out the original 65 node, a leaf.</li>
+<p>The root now holds 65, with left subtree $\{30, 40\}$ and right subtree $\{70, 80\}$. An in-order traversal gives $30, 40, 65, 70, 80$, which is sorted, so the invariant holds.</p>
+<pre class="mermaid">graph TD
+  A["65 (was 50)"] --> B["30"]
+  A --> C["70"]
+  B --> D["null"]
+  B --> E["40"]
+  C --> F["null"]
+  C --> G["80"]</pre>
+<p><em>The tree after removing 20, 60, then 50. The root's key was replaced by its successor 65, whose original node was spliced out.</em></p>
+<p><strong>Problem-solving application.</strong> Suppose a BST has height $h$. The search costs $O(h)$. In case 3, finding the successor costs at most the remaining height below $z$, and the final splice costs $O(1)$. Together the descent is a single root-to-leaf path, so</p>
+$$T_{\text{remove}}(h) = O(h).$$
+<p>This is $O(\log n)$ for a balanced tree but $O(n)$ for a degenerate one. Inserting $1,2,\dots,n$ in sorted order produces a chain.</p>
+<p>To solve removal problems, follow this checklist:</p>
+<li>Search for $k$, tracking the parent.</li>
+<li>Count the children of the found node.</li>
+<li>For 0 or 1 children, redirect the parent's pointer. Handle the case where $z$ is the root, because then the root pointer itself changes.</li>
+<li>For 2 children, find the successor, copy its key, and recursively delete the successor from the right subtree.</li>
+<p>A compact recursive implementation:</p>
+<pre><code>def remove(node, k):
+    if node is None: return None
+    if k &lt; node.key:   node.left  = remove(node.left, k)
+    elif k &gt; node.key: node.right = remove(node.right, k)
+    else:
+        if node.left is None:  return node.right
+        if node.right is None: return node.left
+        s = node.right
+        while s.left: s = s.left
+        node.key = s.key
+        node.right = remove(node.right, s.key)
+    return node</code></pre>
+<p>Returning the (possibly changed) subtree root at each level handles the root case automatically. A common error is forgetting that the successor may have a right child. In that case it must be spliced to its parent, not simply dropped. The recursive call handles this correctly.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

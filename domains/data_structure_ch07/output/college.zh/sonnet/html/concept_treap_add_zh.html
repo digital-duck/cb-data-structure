@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap Add | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="树堆插入-treap-add">树堆插入(Treap Add)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>树堆(treap)</strong>是同时满足两种性质的二叉树:对键值 $key$ 是<strong>二叉搜索树</strong>(左子树键值更小,右子树键值更大),对随机<strong>优先级</strong> $pri$ 是<strong>堆</strong>(本文取最大堆:父节点优先级不小于子节点)。</p>
+<p><strong>插入(add)</strong>分两步:</p>
+<li>按二叉搜索树规则下降,把新节点作为<strong>叶子</strong>挂上,并为其赋一个独立的随机优先级(例如 $[0,1)$ 上的均匀随机数)。</li>
+<li>若新节点优先级大于父节点,就做一次<strong>旋转</strong>把它上移,重复直到堆性质恢复(称为"冒泡")。</li>
+<p>旋转不改变中序顺序,所以搜索树性质始终保持。设 $x$ 是 $p$ 的左孩子,右旋后 $x$ 成为 $p$ 的父节点,$x$ 原来的右子树变为 $p$ 的左子树;右孩子的情形是镜像的左旋。</p>
+<h3 id="例题">例题</h3>
+<p>向空树依次插入 (键, 优先级):$(5, 0.6)$、$(3, 0.2)$、$(8, 0.9)$。</p>
+<li>插入 $(5,0.6)$:成为根。</li>
+<li>插入 $(3,0.2)$:$3<5$,作为左孩子;$0.2<0.6$,无需旋转。</li>
+<li>插入 $(8,0.9)$:$8>5$,作为右孩子;$0.9>0.6$,违反堆性质,对 $5$ 做<strong>左旋</strong>,$8$ 上升为根,$5$ 成为 $8$ 的左孩子,$3$ 仍是 $5$ 的左孩子。</li>
+<p>最终:根 $(8,0.9)$,其左孩子 $(5,0.6)$,再左孩子 $(3,0.2)$。中序仍为 $3,5,8$,且每个父节点优先级都不小于子节点。</p>
+<pre class="mermaid">graph TD
+    A["插入前:根 5, 优先级 0.6"] --> B["左孩子 3, 优先级 0.2"]
+    A --> C["新叶子 8, 优先级 0.9"]
+    C -. "0.9 大于 0.6,左旋" .-> D["结果:根 8"]
+    D --> E["左孩子 5"]
+    E --> F["左孩子 3"]</pre>
+<p><em>新叶子 8 的优先级超过父节点,触发一次左旋并上升为根。</em></p>
+<h3 id="问题求解-为什么期望是-o-log-n">问题求解:为什么期望是 $O(\log n)$</h3>
+<p><strong>定理的核心结论:</strong> 优先级互不相同时,树堆的形状由优先级唯一确定——它与"按优先级从大到小依次插入的普通二叉搜索树"完全相同。由于优先级是独立随机的,这等价于<strong>随机顺序插入</strong>的二叉搜索树。</p>
+<p>于是第 $k$ 小的节点深度可以这样计算:节点 $j$ 是节点 $k$ 的祖先,当且仅当 $j$ 在键值区间 $[\min(j,k),\max(j,k)]$ 内优先级最大,概率为 $\dfrac{1}{|j-k|+1}$。由期望的线性性,</p>
+$$
+\mathbb{E}[\text{depth}(k)]=\sum_{j\ne k}\frac{1}{|j-k|+1}\le 2\sum_{i=2}^{n}\frac1i=2(H_n-1)=O(\log n).
+$$
+<p>下降查找路径的代价与深度成正比;旋转次数等于新节点最终上升的层数,不超过其叶子深度,同样是期望 $O(\log n)$。(事实上期望旋转次数小于 $2$,因为它等于新节点在最终树中子树的"脊"长度,期望为常数。)</p>
+<p><strong>应用提示:</strong> 用有序键值批量构建数据结构时,若插入顺序恰好有序,普通二叉搜索树会退化为 $O(n)$ 的链表;树堆因为随机优先级,与输入顺序无关,仍保持期望 $O(\log n)$ 的深度。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

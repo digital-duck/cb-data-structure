@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointer Reference | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="指针引用">指针引用</h2>
+<p><strong>定义。</strong> 指针引用(pointer reference)是存放在某个节点中的一个值,它指向另一个节点(通常保存的是该节点的内存地址或索引),从而把彼此独立的节点串成一个序列。一个单向链表节点包含两部分:</p>
+<li><code>data</code>:该节点存储的数据;</li>
+<li><code>next</code>:指针引用,指向下一个节点;最后一个节点的 <code>next</code> 为空值(<code>None</code> 或 <code>NULL</code>),表示序列结束。</li>
+<p>与数组不同,链表节点在内存中不必连续排列,"顺序"完全由指针引用所编码。</p>
+<pre class="mermaid">flowchart LR
+    H["头指针 head"] --> A["节点A: 数据=3"]
+    A -->|next| B["节点B: 数据=7"]
+    B -->|next| C["节点C: 数据=9"]
+    C -->|next| N["空值"]</pre>
+<p><em>图:三个节点通过 next 指针引用串成单向链表,最后一个节点指向空值。</em></p>
+<p><strong>例题。</strong> 用 Python 构造链表 $3 \to 7 \to 9$ 并遍历:</p>
+<pre><code>class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None   # 指针引用,初始为空
+
+a, b, c = Node(3), Node(7), Node(9)
+a.next = b
+b.next = c
+
+p = a                      # 从头节点出发
+while p is not None:
+    print(p.data)
+    p = p.next             # 沿指针引用前进一步</code></pre>
+<p>输出 <code>3 7 9</code>。关键在于 <code>p = p.next</code>:每执行一次,<code>p</code> 就从当前节点"跳"到它所指向的节点。遍历 $n$ 个节点需要 $n$ 步,时间复杂度为 $O(n)$。</p>
+<p><strong>问题求解应用。</strong> <em>在节点 B 之后插入值为 8 的新节点。</em></p>
+<pre><code>new = Node(8)
+new.next = b.next   # ① 新节点先接住后继 C
+b.next = new        # ② 再让 B 指向新节点</code></pre>
+<p>结果为 $3 \to 7 \to 8 \to 9$。<strong>顺序不能颠倒</strong>:若先执行 <code>b.next = new</code>,指向 C 的唯一引用就丢失了,节点 C 及其后面的所有节点将无法访问。已知前驱节点时,插入只需修改两个指针,时间为 $O(1)$,不必像数组那样移动 $O(n)$ 个元素;但要找到"节点 B"本身,仍需 $O(n)$ 的遍历。</p>
+<p><strong>常见错误与检查。</strong></p>
+<li><strong>空指针解引用</strong>:对 <code>None</code> 访问 <code>.next</code> 会报错,遍历时必须先判断 <code>p is not None</code>。</li>
+<li><strong>断链</strong>:修改指针前,先确认原有引用已被另一个变量或指针保存。</li>
+<li><strong>环</strong>:若某节点的 <code>next</code> 指回前面的节点,遍历将永不终止。</li>
+<p><strong>小结。</strong> 指针引用把"下一个是谁"这一信息存进节点自身,使序列可以动态增长和重组。掌握它,就为理解链表、树、图等所有链式数据结构打下基础。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

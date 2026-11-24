@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integer Sorting Via Indexing | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="通过下标索引进行整数排序">通过下标索引进行整数排序</h2>
+<p><strong>定义。</strong> 基于比较的排序在最坏情况下需要 $\Omega(n\log n)$ 次比较。但若键是整数,我们可以直接把键值当作数组下标,绕开比较。设 $n$ 个整数取值于 $\{0,1,\dots,k-1\}$:</p>
+<li><strong>计数排序(counting sort)</strong>:统计每个值出现的次数,对计数数组做前缀和,得到每个值在输出中的末位置,再从后向前扫描输入,把元素放入对应位置。时间 $O(n+k)$,且是<strong>稳定</strong>的。</li>
+<li><strong>基数排序(radix sort)</strong>:取基数 $b$,把每个整数写成 $d$ 位 $b$ 进制数,从最低位到最高位,依次对每一位做一次稳定的计数排序。时间 $O\big(d\,(n+b)\big)$。</li>
+<p><strong>为什么必须稳定。</strong> 处理第 $i$ 位时,稳定性保证第 $i$ 位相同的元素保持此前由低位 $0,\dots,i-1$ 所决定的相对顺序。由归纳法,$d$ 轮之后序列按完整数值有序。</p>
+<p><strong>核心结论。</strong> 若键取值于 $\{0,\dots,n^c-1\}$($c$ 为常数),取基数 $b=n$,则每个数恰有 $d=\lceil\log_n n^c\rceil=c$ 位,总时间为</p>
+$$
+O\big(c\,(n+n)\big)=O(cn)=O(n).
+$$
+<p><strong>例题。</strong> 取 $n=5$,$c=2$,键值范围 $\{0,\dots,24\}$,基数 $b=5$。输入:$[17,\,3,\,24,\,8,\,13]$。每个数写成两位五进制数 $(\text{高位},\text{低位})$:$17=(3,2)$,$3=(0,3)$,$24=(4,4)$,$8=(1,3)$,$13=(2,3)$。</p>
+<li>第 1 轮(按低位稳定排序):低位为 2 的是 17;低位为 3 的依次是 3、8、13;低位为 4 的是 24。得 $[17,\,3,\,8,\,13,\,24]$。</li>
+<li>第 2 轮(按高位稳定排序):高位 0:3;高位 1:8;高位 2:13;高位 3:17;高位 4:24。得 $[3,\,8,\,13,\,17,\,24]$。</li>
+<p>两轮即完成,每轮只做 $O(n+b)=O(n)$ 次数组操作,没有任何一次元素间的比较。</p>
+<p><strong>问题求解应用。</strong> 问:要对 $10^6$ 个取值于 $\{0,\dots,10^{12}-1\}$ 的整数排序,应如何选取基数?</p>
+<p>此时 $n=10^6$,$10^{12}=n^2$,故 $c=2$。取 $b=n=10^6$,只需 2 轮,总代价约 $2\times(10^6+10^6)=4\times10^6$ 次基本操作。比较排序约需 $n\log_2 n\approx 2\times10^7$ 次比较。</p>
+<p><strong>选基数的权衡。</strong> 总代价 $d(n+b)$ 中,$b$ 太小会使位数 $d=\log_b U$ 变大($U$ 为值域上界),$b$ 太大则每轮的 $O(b)$ 开销占主导。取 $b\approx n$ 使两者平衡。若值域是 $n^{c}$ 且 $c$ 不是常数(例如 $c=\log n$),则 $O(cn)$ 不再线性,这时基数排序就不再比 $O(n\log n)$ 有优势。</p>
+<p><strong>要点。</strong> 整数排序的速度来自"键值即地址":用数组下标代替比较。这不违反比较排序下界,因为该下界只适用于仅靠比较获取信息的算法。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

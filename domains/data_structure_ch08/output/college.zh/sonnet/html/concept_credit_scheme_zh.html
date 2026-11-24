@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Scheme | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="信用方案-credit-scheme">信用方案(Credit Scheme)</h2>
+<h3 id="定义">定义</h3>
+<p>在重建式平衡树(如替罪羊树、或带有 $\text{rebuild}(u)$ 操作的结构)中,当子树 $u$ 失衡时,我们将整棵子树重建为完全平衡的树,代价为 $\Theta(s(u))$,其中 $s(u)$ 是该子树的节点数。单次重建可能很昂贵,所以需要<strong>摊还分析</strong>。</p>
+<p><strong>信用方案</strong>的思想是:每次插入或删除时,给路径上的每个节点预先"存入"一定的信用(credit);当之后某次 $\text{rebuild}(u)$ 发生时,用这些已存入的信用支付重建费用。这样,重建的真实代价被"提前分摊"到之前的更新操作上。</p>
+<h3 id="例题">例题</h3>
+<p><strong>关键事实</strong>:若子树 $u$ 在上一次重建后恰好完全平衡,则触发下一次重建之前,必须有至少 $c\cdot s(u)$ 次(其中 $c>0$ 为常数,取决于失衡阈值 $\alpha$)经过 $u$ 的更新操作。原因:要让某个孩子的规模超过 $\alpha\, s(u)$,而重建后孩子规模约为 $s(u)/2$,二者之差是 $\Theta(s(u))$。</p>
+<p><strong>分配规则</strong>:每次更新(插入或删除)沿根到叶的路径,给路径上每个节点 $v$ 存入 $\dfrac{K}{c}$ 个信用($K$ 为重建单位代价常数)。</p>
+<p><strong>验证</strong>:当 $\text{rebuild}(u)$ 触发时,$u$ 已累计收到至少</p>
+$$
+c\, s(u)\cdot \frac{K}{c} = K\, s(u)
+$$
+<p>个信用,恰好覆盖真实代价 $K\, s(u)$。因此重建"免费",信用随后清零。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:对 $m$ 次操作,求总重建代价上界。</p>
+<p><strong>解</strong>:树的高度为 $O(\log m)$(平衡性保证,节点数至多 $m$)。每次操作经过 $O(\log m)$ 个节点,每个节点存入 $O(1)$ 个信用(常数 $K/c$),所以每次操作新增信用总量为</p>
+$$
+O(\log m)\cdot \frac{K}{c} = O(\log m).
+$$
+<p>所有重建的总代价不超过所存入的信用总量(信用不会透支,因为每次重建前信用已足够):</p>
+$$
+\sum_{\text{rebuild}} K\, s(u)\;\le\; m\cdot O(\log m)=O(m\log m).
+$$
+<p>再加上搜索与更新本身每次 $O(\log m)$ 的代价,总代价仍为 $O(m\log m)$,即<strong>摊还</strong>每次操作 $O(\log m)$。</p>
+<p><strong>检验要点</strong>(解题时务必检查):</p>
+<li><strong>信用不透支</strong>:证明重建触发时 $u$ 的信用余额 $\ge$ 重建代价;</li>
+<li><strong>不重复计费</strong>:重建后子树内所有节点信用清零,避免同一信用被使用两次;</li>
+<li><strong>路径长度有界</strong>:依赖树高 $O(\log m)$,这是最终得到 $\log m$ 因子的来源。</li>
+<h3 id="小结">小结</h3>
+<p>信用方案把"稀少但昂贵"的重建分摊到"频繁但廉价"的更新上:每次更新沿路径付出 $O(\log m)$ 的信用,换来总重建代价 $O(m\log m)$ 的保证。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

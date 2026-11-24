@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Operations | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="二叉字典树的基本操作">二叉字典树的基本操作</h2>
+<p><strong>二叉字典树(BinaryTrie)</strong> 把 $w$ 位整数按二进制位从高到低存储:每个节点的左、右孩子分别对应下一位是 $0$ 或 $1$,深度为 $w$ 的叶子代表一个具体的整数。所有叶子按数值顺序串成一条<strong>双向链表</strong>;每个缺少孩子的内部节点还有一个<strong>跳转指针(jump pointer)</strong>:缺左孩子时指向其子树中最小的叶子,缺右孩子时指向其子树中最大的叶子。这些指针使得"找前驱/后继"无需回溯。三种基本操作的时间复杂度均为 $O(w)$,与元素个数 $n$ 无关。</p>
+<h3 id="查找-find">查找(find)</h3>
+<p>从根出发,依次读取 $x$ 的第 $i=1,\dots,w$ 位 $c_i$,走向孩子 $c_i$。</p>
+<li>若走满 $w$ 步到达叶子,则 $x$ 在集合中。</li>
+<li>若在第 $i$ 步遇到空孩子,当前节点 $u$ 的跳转指针指向一个叶子:若 $c_i=0$ 则指向 $u$ 子树中最小的叶子,否则指向最大的叶子。该叶子就是 $x$ 的后继(当 $c_i=0$)或前驱的相邻者(当 $c_i=1$ 时再取链表的 <code>next</code>),所以 <code>find</code> 可同时回答前驱/后继查询。</li>
+<h3 id="插入-add">插入(add)</h3>
+<li>沿路径下行,直到遇到空孩子(深度 $i$),此时得到 $x$ 的前驱或后继叶子,取其在链表中的位置。</li>
+<li>从深度 $i$ 起新建通向叶子的一条链,共 $w-i$ 个节点。</li>
+<li>把新叶子接入双向链表(位于前驱与后继之间)。</li>
+<li>沿原路径<strong>回溯</strong>,更新每个祖先的跳转指针:若某祖先缺左孩子且 $x$ 小于其当前指针所指叶子,则改指向 $x$;缺右孩子时同理取更大者。</li>
+<h3 id="删除-remove">删除(remove)</h3>
+<li>沿路径找到叶子,从链表中摘除,记住其前驱和后继。</li>
+<li>自底向上删除只有该叶子的节点链,直到遇到一个另有孩子的祖先 $u$。</li>
+<li>继续向上,对每个缺孩子的祖先重设跳转指针:缺左孩子则指向其右子树最小叶(或链表中 $x$ 的后继),缺右孩子则指向最大叶(或 $x$ 的前驱)。</li>
+<h3 id="例题">例题</h3>
+<p>设 $w=4$,集合 $S=\{2,\,5,\,13\}$,即 $0010,\,0101,\,1101$。执行 <code>add(4)</code>,$4=0100_2$:</p>
+<li>路径:根 →(0)→(1)→(0)。节点"01"已存在(因 $5=0101$),其左孩子("010")空缺。</li>
+<li>在深度 $i=3$ 遇到空孩子,新建节点 "010" 与叶子 "0100",共 $w-i=1$ 个新节点(叶子本身)。</li>
+<li>链表中,$4$ 插入 $2$ 与 $5$ 之间:$2\leftrightarrow4\leftrightarrow5\leftrightarrow13$。</li>
+<li>回溯更新:节点"01"原缺左孩子的跳转指针指向 $5$,现已有左孩子,指针作废;其他缺孩子的祖先若子树最值改变则更新。</li>
+<h3 id="复杂度与应用">复杂度与应用</h3>
+<p>每次操作:下行 $O(w)$,新建/删除至多 $w$ 个节点 $O(w)$,回溯更新 $O(w)$,链表接入 $O(1)$,因此</p>
+$$T(n)=O(w).$$
+<p>应用:要在 $w=32$ 的整数集合中处理 $10^6$ 次前驱查询,每次最多 $32$ 步,而平衡二叉搜索树需约 $\log_2 n\approx 20$ 步比较——当 $w$ 与 $\log n$ 同阶时二者相当,但 BinaryTrie 的优势在于它是后续 XFastTrie($O(\log w)$ 查询)的基础。</p>
+<p><strong>练习:</strong> 对上面的结果集 $\{2,4,5,13\}$ 执行 <code>remove(5)</code>,写出被删除的节点,以及哪些祖先的跳转指针需要修改。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

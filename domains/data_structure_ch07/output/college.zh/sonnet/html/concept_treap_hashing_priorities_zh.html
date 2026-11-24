@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap Hashing Priorities | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap-哈希优先级-treap-hashing-priorities">Treap 哈希优先级(Treap Hashing Priorities)</h2>
+<h3 id="定义">定义</h3>
+<p>Treap 是一棵同时满足两种顺序的二叉树:关键字满足<strong>二叉搜索树</strong>性质,优先级满足<strong>堆</strong>性质(如最小堆)。若优先级是独立均匀随机的,则期望深度为 $O(\log n)$。朴素实现需为每个结点额外存储一个随机数,即 $\Theta(n)$ 个字。</p>
+<p><strong>哈希优先级</strong>的做法是:不存储优先级,而是在需要时用哈希函数 $h$ 对结点的内存地址 $a$ 现场计算:</p>
+$$p(v) = h(\text{addr}(v)).$$
+<p>这里要求 $h$ 来自一个<strong>最小独立(min-wise independent)</strong>哈希族 $\mathcal{H}$:对任意不同元素集合 $X$($|X|=m$)及任意 $x\in X$,</p>
+$$\Pr_{h\in\mathcal{H}}\big[h(x)=\min h(X)\big]=\frac{1}{m}.$$
+<p>也就是说,集合中每个元素成为"最小者"的机会均等,这正是 Treap 分析所需要的性质。</p>
+<h3 id="为什么够用">为什么够用</h3>
+<p>在以优先级为堆序的 Treap 中,结点 $v$ 是根,当且仅当它在子树范围内优先级最小。分析期望深度时,只需知道"某个结点是其区间内最小者"的概率,而不需要完全独立。设 $x_i$ 为第 $i$ 小的关键字,则 $x_j$ 是 $x_i$ 的祖先,当且仅当 $x_j$ 在 $x_i,\dots,x_j$(或 $x_j,\dots,x_i$)中优先级最小,概率为 $\frac{1}{|i-j|+1}$。因此</p>
+$$\mathbb{E}[\text{depth}(x_i)]=\sum_{j\ne i}\frac{1}{|i-j|+1}\le 2H_n-2=O(\log n).$$
+<p>最小独立性恰好保证上式成立。</p>
+<h3 id="例题">例题</h3>
+<p>设 4 个结点地址为 $a_1<a_2<a_3<a_4$,关键字依次为 10, 20, 30, 40,哈希值为 $h(a_1),\dots,h(a_4)=7,\,2,\,9,\,4$。</p>
+<li>最小优先级为 2,对应关键字 20,故根为 20。</li>
+<li>左子树 $\{10\}$;右子树 $\{30,40\}$ 中最小为 4,即 40,作为右子树根。</li>
+<li>30 在 40 的左侧,成为其左孩子。</li>
+<p>树高为 3。插入或删除时,无需读取存储的优先级,只需重新计算 $h(\text{addr})$ 再做旋转。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>空间对比</strong>:$n=10^6$ 个结点,每个优先级占 8 字节,则显式存储需 8 MB;哈希方案只需存储哈希函数的种子(常数个字),节省 $\Theta(n)$ 空间。</p>
+<p><strong>代价</strong>:每次比较多一次哈希计算,时间常数增大。此外:</p>
+<li>若结点在内存中<strong>被移动</strong>(如垃圾回收压缩),地址改变,优先级随之改变,堆序被破坏,因此需要地址稳定的分配器。</li>
+<li>完全的最小独立族需要很大的种子;实践中常用 $O(\log (1/\varepsilon))$-wise 独立的近似族,使 $\Pr[h(x)=\min]=\frac{1}{m}(1\pm\varepsilon)$,期望深度仍为 $O(\log n)$。</li>
+<li>哈希必须是<strong>确定性</strong>的(种子固定),否则同一结点两次比较会得到不同优先级。</li>
+<p><strong>练习</strong>:若 $h(a)=a \bmod 8$ 且四个地址为 16, 24, 32, 40,会发生什么?(提示:所有哈希值均为 0,优先级全部相同,堆序退化,树可能变成链,深度为 $\Theta(n)$。这说明为何必须使用具有最小独立性的哈希族,而不能用简单取模。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

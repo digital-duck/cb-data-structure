@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>No Red Edge Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="无红边性质">无红边性质</h2>
+<p><strong>定义。</strong> 红黑树是一棵二叉搜索树,其中每个结点被染成红色或黑色。<strong>无红边性质</strong>(No Red Edge Property,也称"无连续红结点"性质)规定:</p>
+<p>> 若结点 $x$ 为红色,则它的两个孩子都必须是黑色(空指针 NIL 视为黑色)。</p>
+<p>等价地说,树中不存在连接两个红结点的边,即不存在"红—红"的父子对。注意这条性质只限制红色:两个黑结点可以相邻,黑色结点的孩子可以是红色或黑色。</p>
+<p><strong>与其他性质的配合。</strong> 红黑树还要求:根为黑色;每条从某结点到其后代 NIL 叶子的路径上,黑结点数量相同(黑高度一致)。这两条性质共同决定了树的高度上界,无红边性质正是其中"限制红结点数量"的那一环。</p>
+<p><strong>工作示例。</strong> 考虑下面这棵树(R 表示红,B 表示黑):</p>
+<pre class="mermaid">graph TD
+    A["10 黑"] --> B["5 红"]
+    A --> C["15 黑"]
+    B --> D["3 黑"]
+    B --> E["7 黑"]
+    C --> F["12 红"]
+    C --> G["20 红"]</pre>
+<p><em>图:一棵满足无红边性质的红黑树。每个红结点(5、12、20)的孩子或为黑结点,或为 NIL。</em></p>
+<p>逐个检查红结点:5 的孩子为 3、7(均为黑);12 和 20 的孩子均为 NIL(黑)。因此性质成立。</p>
+<p>现在向树中插入键 $1$。按二叉搜索树规则,它成为结点 3 的左孩子,并先染成红色(这样不改变黑高度)。但 3 是黑色,所以仍然合法。若改为插入键 $6$,它成为 7 的左孩子,7 是黑色,同样合法。再看一个会违规的情形:若 3 是红色,插入红色的 1 就产生"红—红"边,必须通过<strong>重新染色</strong>或<strong>旋转</strong>修复。</p>
+<p><strong>问题求解应用:高度上界。</strong> 设红黑树有 $n$ 个内部结点,黑高度为 $b$(从根到 NIL 路径上的黑结点数,不含根自身时记为 $bh$)。</p>
+<li>由于红结点的孩子必为黑,任一条根到叶子的路径上,红结点不可能连续出现,所以红结点数至多等于黑结点数。因此树高 $h \le 2b$。</li>
+<li>黑高度为 $b$ 的树至少包含 $2^{b}-1$ 个内部结点(最少情形是全为黑的满二叉树),故 $n \ge 2^{b}-1$。</li>
+<li>联立得 $b \le \log_2(n+1)$,从而</li>
+$$h \le 2\log_2(n+1).$$
+<p><strong>结论。</strong> 如果没有无红边性质,红结点可以连续堆叠,第 1 步的 $h\le 2b$ 就不成立,树可能退化为链。正是这一性质保证了查找、插入、删除的最坏时间复杂度均为 $O(\log n)$。在插入修复中,"出现红—红边"就是需要处理的唯一违规信号:若叔叔结点为红,则重新染色并向上继续检查;若叔叔为黑,则通过旋转加染色一次性消除违规。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

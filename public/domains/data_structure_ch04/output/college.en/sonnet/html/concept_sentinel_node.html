@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel Node | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sentinel-node">Sentinel Node</h2>
+<p>A <strong>sentinel node</strong> (also called a <em>header</em> or <em>head node</em>) is a special dummy node placed at the start of every level of a skip list. It stores no real data. Its key is conceptually $-\infty$, so it compares less than every possible search key. Each of its forward pointers, one per level, anchors the start of the search path at that level.</p>
+<p>Without a sentinel, an insertion or deletion at the front of a level would need special-case code, because the head pointer itself would have to change. With a sentinel, every real node has a predecessor on every level it occupies. The same pointer-update code then works for every position.</p>
+<p>A skip list with maximum height $L$ has a sentinel with $L$ forward pointers. Often a matching tail sentinel with key $+\infty$ ends each level, so the search loop needs no null checks.</p>
+<pre class="mermaid">graph LR
+    H3["HEAD (-inf) L3"] --> N3["17"]
+    H2["HEAD L2"] --> A2["9"]
+    A2 --> N2["17"]
+    H1["HEAD L1"] --> A1["3"]
+    A1 --> B1["9"]
+    B1 --> C1["17"]
+    C1 --> D1["25"]</pre>
+<p><em>The head sentinel has a forward pointer at every level. Each search starts there and moves right and down.</em></p>
+<h3 id="worked-example">Worked example</h3>
+<p>Consider a skip list holding keys $3, 9, 17, 25$, where 9 and 17 also appear on level 2, and 17 also appears on level 3. Search for $25$:</p>
+<li>Start at HEAD on level 3. Its next node is 17, and $17 < 25$, so move to 17.</li>
+<li>On level 3, 17 has no successor (or the tail $+\infty$). Drop to level 2. The next key is the tail, so drop again.</li>
+<li>On level 1, 17's next is 25. Since $25 \not< 25$ fails to rule it out, we stop at 25 and check for equality. Found.</li>
+<p>Now search for $1$. HEAD's level-3 successor is 17, and $17 \ge 1$, so drop. The same happens on level 2 (next is 9). On level 1 the next is 3, and $3 \ge 1$. The search ends at HEAD with no match. The sentinel gave the search a valid place to stop, even though no real node precedes the key.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Insert key 2.</strong> We must find the predecessor of 2 on each level. Because the sentinel's key is $-\infty$, the search ends at HEAD on every level. Say the coin flips give node 2 a height of 2. Then:</p>
+<li>Set <code>new.next[i] = head.next[i]</code> for $i = 1, 2$.</li>
+<li>Set <code>head.next[i] = new</code>.</li>
+<p>This is the standard splice. No "empty list" or "insert at front" branch is needed. Without the sentinel, we would write separate code for modifying a head pointer.</p>
+<p><strong>Cost.</strong> The sentinel adds only $O(L)$ extra space, and $L = O(\log n)$ for $n$ keys. It doesn't change the expected search time of $O(\log n)$. It makes the code simpler and less error-prone.</p>
+<p><strong>Check yourself:</strong> In a skip list with $L = 4$, how many forward pointers does the head sentinel hold? (Answer: 4, one per level, whether or not any real node reaches that level.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sset Interface | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="sset-interface">Sset Interface</h2>
+<h3 id="definition">Definition</h3>
+<p>An <strong>SSet</strong> (sorted set) is an abstract data type that stores a collection of elements drawn from a totally ordered universe, meaning any two elements $x, y$ can be compared with $<$, $=$, or $>$. It is defined by three operations on a set $S$:</p>
+<li><strong>add(x):</strong> insert $x$ into $S$. Return <code>true</code> if $x$ was not already present (so $S$ grew), otherwise return <code>false</code>. Duplicates are never stored.</li>
+<li><strong>remove(x):</strong> delete $x$ from $S$. Return the removed element if it was present, otherwise <code>null</code>.</li>
+<li><strong>find(x):</strong> return the <em>smallest</em> element $y \in S$ with $y \ge x$, or <code>null</code> if no such element exists.</li>
+<p>The third operation is what separates an SSet from an ordinary hash-style set. Because <code>find(x)</code> is a <strong>successor search</strong>, it works even when $x \notin S$. It answers "what is the next element at or after $x$?" For this reason, SSet structures must keep their elements ordered. Examples include binary search trees, skiplists, and sorted arrays.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Start with $S = \{3, 8, 12, 20\}$ and apply these operations in order:</p>
+<p>| Operation | Result | $S$ afterward | |---|---|---| | find(8) | 8 | $\{3, 8, 12, 20\}$ | | find(9) | 12 | $\{3, 8, 12, 20\}$ | | add(9) | true | $\{3, 8, 9, 12, 20\}$ | | add(9) | false | $\{3, 8, 9, 12, 20\}$ | | find(9) | 9 | $\{3, 8, 9, 12, 20\}$ | | find(25) | null | $\{3, 8, 9, 12, 20\}$ | | remove(12) | 12 | $\{3, 8, 9, 20\}$ | | find(10) | 20 | $\{3, 8, 9, 20\}$ |</p>
+<p>Notice that <code>find(9)</code> returned $12$ before $9$ was added and returned $9$ afterward. <code>find</code> does not report membership. It reports the <em>successor</em>, so you test membership by checking whether the returned value equals $x$.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><strong>Problem.</strong> Given a set of meeting start times in minutes after midnight, $S=\{540, 600, 780, 900\}$, each meeting lasting 50 minutes, decide whether a new meeting starting at time $t$ would overlap with an existing one. Use only SSet operations.</p>
+<p><strong>Solution.</strong> A new meeting $[t, t+50)$ conflicts with a later meeting if that meeting starts before $t+50$. It conflicts with an earlier meeting if that one started within the last 50 minutes. The key step is to use <code>find</code> to get the next start time at or after $t$:</p>
+<li>Let $y = \text{find}(t)$.</li>
+<li>If $y \neq \text{null}$ and $y < t + 50$, there is a conflict with a later meeting.</li>
+<li>Check earlier meetings by calling $z = \text{find}(t-49)$. If $z \neq \text{null}$ and $z < t$, an earlier meeting started within the last 50 minutes, so there is a conflict.</li>
+<p>For $t = 570$: $\text{find}(570) = 600$, and $600 < 620$, so there is a conflict. For $t = 650$: $\text{find}(650) = 780 \ge 700$, and $\text{find}(601) = 780 \not< 650$, so there is no conflict. We then call add(650).</p>
+<p>Each check costs one or two <code>find</code> calls. If the SSet is a balanced search tree, each call runs in $O(\log n)$ time, so scheduling stays efficient as the calendar grows. This is why the interface matters: the ordering guarantee behind <code>find</code> lets you answer range-style questions that an unordered set cannot.</p>
+<h3 id="key-takeaways">Key Takeaways</h3>
+<li>SSet = set of comparable elements with <code>add</code>, <code>remove</code>, and successor-style <code>find</code>.</li>
+<li><code>find(x)</code> returns the smallest element $\ge x$, not just a yes/no answer.</li>
+<li>Membership test: <code>find(x) == x</code>.</li>
+<li>The interface says <em>what</em> must be supported, not <em>how</em>. Implementations differ in cost, commonly $O(\log n)$ per operation.</li>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

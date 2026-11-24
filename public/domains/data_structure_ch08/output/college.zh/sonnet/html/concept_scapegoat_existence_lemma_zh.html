@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Existence Lemma | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="替罪羊存在性引理">替罪羊存在性引理</h2>
+<p><strong>背景。</strong> 替罪羊树(scapegoat tree)是一种不存储平衡信息的二叉搜索树。设当前树中有 $q$ 个节点,平衡参数取 $\alpha = 2/3$。若插入后新节点的深度超过 $\log_{3/2} q$,就必须找出一个"替罪羊"并重建其子树。本节证明:这样的节点一定存在。</p>
+<p><strong>定义。</strong> 记 $\mathrm{size}(v)$ 为以 $v$ 为根的子树的节点数。若节点 $v$ 的某个孩子 $c$ 满足</p>
+$$\mathrm{size}(c) > \tfrac{2}{3}\,\mathrm{size}(v),$$
+<p>则称 $v$ 是<strong>不平衡</strong>节点,也就是替罪羊的候选。</p>
+<p><strong>引理 8.1。</strong> 若节点 $u$ 的深度 $d(u) > \log_{3/2} q$,则从 $u$ 到根的路径上至少有一个不平衡节点。</p>
+<p><strong>证明(反证法)。</strong> 设路径为 $u = v_d, v_{d-1}, \dots, v_0 = \text{根}$,并假设路径上每个节点都平衡。于是对每个 $i$,</p>
+$$\mathrm{size}(v_{i+1}) \le \tfrac{2}{3}\,\mathrm{size}(v_i).$$
+<p>从根出发逐层应用,得到</p>
+$$\mathrm{size}(v_d) \le \left(\tfrac{2}{3}\right)^{d} \mathrm{size}(v_0) \le \left(\tfrac{2}{3}\right)^{d} q.$$
+<p>又因为 $\mathrm{size}(v_d) \ge 1$,所以</p>
+$$1 \le \left(\tfrac{2}{3}\right)^{d} q \;\Longrightarrow\; \left(\tfrac{3}{2}\right)^{d} \le q \;\Longrightarrow\; d \le \log_{3/2} q.$$
+<p>这与 $d > \log_{3/2} q$ 矛盾。因此路径上必有不平衡节点。$\blacksquare$</p>
+<p><strong>例题。</strong> 设 $q = 100$,则 $\log_{3/2} 100 = \dfrac{\ln 100}{\ln 1.5} \approx \dfrac{4.605}{0.405} \approx 11.36$。若新插入节点深度为 $12$,引理保证路径上存在不平衡节点。检验:若 12 层全部平衡,叶子所在子树大小至多 $100\cdot(2/3)^{12} \approx 100 \times 0.0077 = 0.77 < 1$,不可能,因为子树至少含 1 个节点。</p>
+<p><strong>应用:如何找到替罪羊。</strong> 引理只保证存在,算法则要实际找出它。做法是从新节点向根回溯,沿途计算每个祖先的子树大小,遇到第一个满足 $\mathrm{size}(c) > \tfrac{2}{3}\,\mathrm{size}(v)$ 的 $v$ 就停止,并重建以 $v$ 为根的子树。回溯最多走 $O(\log q)$ 层,但需要逐层求子树大小,所以单次查找的代价与被重建子树的规模同阶。这就是替罪羊树的均摊分析要处理的内容。</p>
+<p><strong>要点。</strong></p>
+<li>深度超限是"存在不平衡祖先"的充分条件。</li>
+<li>证明的核心是:每一层平衡会让子树大小至少缩小为原来的 $2/3$,而子树大小不能小于 $1$。</li>
+<li>引理保证重建操作总能执行,树高因而维持在 $O(\log q)$。</li>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

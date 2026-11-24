@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel Node | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="哨兵节点">哨兵节点</h2>
+<p><strong>定义。</strong> 哨兵节点(sentinel node,也称头节点)是跳表中一个不存储真实数据的特殊"虚拟"节点。它位于每一层链表的最前端,键值被设为 $-\infty$,因此任何真实键都比它大。所有查找、插入和删除路径都从它出发,所以它是整个结构的统一入口。</p>
+<p>一个高度为 $L$ 的跳表,其哨兵节点拥有 $L$ 个前向指针,第 $i$ 层的指针指向该层的第一个真实节点;若该层为空,则指向 <code>NIL</code>(可视为键为 $+\infty$ 的尾哨兵)。</p>
+<p><strong>为什么需要它?</strong> 没有哨兵时,必须单独处理"在表头插入"和"删除第一个元素"这类边界情况,因为表头的指针本身要被修改。有了哨兵,每个真实节点都有前驱,插入和删除的代码可以统一为同一段逻辑,不再出现特判。</p>
+<p><strong>例题。</strong> 设跳表有 3 层(第 0 层为最底层),键集合为 $\{3, 7, 12\}$,其中 7 同时出现在第 0、1 层,其余只在第 0 层。查找键 $12$:</p>
+<li>从哨兵的第 1 层出发,下一个节点是 $7$。因为 $7<12$,前进到 $7$。</li>
+<li>在 $7$ 的第 1 层,下一个是 <code>NIL</code>($+\infty>12$),下降到第 0 层。</li>
+<li>在第 0 层,$7$ 的下一个是 $12$,命中。</li>
+<p>注意:第 2 层为空,哨兵的第 2 层指针直接指向 <code>NIL</code>,查找会在该层立即下降,不需要额外判断。</p>
+<pre class="mermaid">graph LR
+    H["哨兵节点 -∞"] -->|"第1层"| N7["节点 7"]
+    N7 -->|"第1层"| NIL1["NIL +∞"]
+    H -->|"第0层"| N3["节点 3"]
+    N3 -->|"第0层"| N7b["节点 7"]
+    N7b -->|"第0层"| N12["节点 12"]
+    N12 -->|"第0层"| NIL0["NIL +∞"]</pre>
+<p><em>图:哨兵节点作为各层链表的共同起点,每层各有一条从它发出的路径。</em></p>
+<p><strong>问题求解应用。</strong> 在插入键 $k$ 时,需要记录每一层中"最后一个小于 $k$ 的节点",记为数组 <code>update[i]</code>。因为所有路径都从哨兵开始,即便 $k$ 小于所有现有键,<code>update[i]</code> 也恒为哨兵,不会为空。于是插入步骤固定为:</p>
+<pre><code>new.next[i] = update[i].next[i]
+update[i].next[i] = new</code></pre>
+<p>这两行适用于每一层,无需判断 <code>update[i]</code> 是否存在。</p>
+<p>若新节点的随机高度超过当前层数,只需把哨兵多出的那些层的 <code>update[i]</code> 设为哨兵本身。因此哨兵的预分配高度应取 $L_{\max}=\lceil \log_{1/p} n\rceil$(常取 $p=\tfrac12$),保证期望查找代价为 $O(\log n)$。</p>
+<p><strong>小结。</strong> 哨兵节点不保存数据,但提供了统一的起点和前驱,消除了边界特判,让查找、插入、删除的逻辑保持一致。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>No Red Edge Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="no-red-edge-property">No Red Edge Property</h2>
+<p><strong>Definition.</strong> A red-black tree is a binary search tree whose nodes are colored red or black. The <strong>no red edge property</strong> (also called the <em>red condition</em>) states:</p>
+<p>> If a node is red, then both of its children are black.</p>
+<p>Equivalently, no edge in the tree joins two red nodes, so no root-to-leaf path contains two consecutive red nodes. Null (leaf) children count as black. This property works together with the <strong>black-height property</strong>: every path from a given node to its descendant null leaves contains the same number of black nodes. We write $bh(x)$ for that count, excluding $x$ itself.</p>
+<p><strong>Why it matters.</strong> Let $h$ be the height of a tree with $n$ nodes. Along any root-to-leaf path, red nodes can never be adjacent, so at most half the nodes on the path are red. Hence</p>
+$$h \le 2\,bh(\text{root}).$$
+<p>A subtree rooted at $x$ contains at least $2^{bh(x)}-1$ internal nodes (induction: the base case is a null leaf with $bh=0$ and $2^0-1=0$ nodes; each child has black-height at least $bh(x)-1$). So $n \ge 2^{bh(\text{root})}-1$, which gives $bh(\text{root}) \le \log_2(n+1)$ and therefore</p>
+$$h \le 2\log_2(n+1) = O(\log n).$$
+<p>Without the no red edge property, a path could be nearly all red while keeping equal black counts, and this bound would fail.</p>
+<p><strong>Worked example.</strong> Consider the tree with root $B(10)$, left child $R(5)$, right child $R(15)$, and $R(15)$ having a left child $R(12)$.</p>
+<li>Node 15 is red and its child 12 is red, so the property is <strong>violated</strong>.</li>
+<li>Check black-heights anyway: every path to a null leaf from the root passes through exactly one black node (the root). The black-height property holds, but the tree is still invalid.</li>
+<p><strong>Problem-solving application.</strong> Insertion shows how the property is maintained. New nodes are colored red, because that cannot change any black-height. The only possible violation is a red node with a red parent. Let $z$ be the new node, $p$ its parent, and $u$ its uncle:</p>
+<li>If $p$ is black, nothing is violated. Stop.</li>
+<li>If $p$ and $u$ are both red, recolor $p$ and $u$ black and the grandparent red. This pushes the possible violation two levels up, so repeat there.</li>
+<li>If $p$ is red and $u$ is black, perform one or two rotations and recolor. This restores the property locally, and the process ends.</li>
+<p>Apply this to the example. Node 12 is a red child of red 15, and its uncle (the null left child of... actually 15's sibling, node 5) is red. This is case 2. Recolor 5 and 15 black, and make 10 red. Since 10 is the root, recolor it black. The result has black-height 2 on every path, and no red node has a red child.</p>
+<p><strong>Key takeaway.</strong> Insertion and deletion fix violations by recoloring and rotating. Each repair step either ends the process or moves the violation up one level. At most $O(\log n)$ steps are needed, so every operation takes $O(\log n)$ time.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

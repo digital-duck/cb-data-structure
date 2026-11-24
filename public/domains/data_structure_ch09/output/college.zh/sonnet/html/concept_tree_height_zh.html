@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Height | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="树的高度">树的高度</h2>
+<h3 id="定义">定义</h3>
+<p>在一棵树中,<strong>高度</strong>(height)是从根节点到任意叶节点的最长路径所包含的<strong>边数</strong>。记树 $T$ 的高度为 $h(T)$,则可递归定义为:</p>
+$$
+h(T)=\begin{cases}
+-1 & T \text{ 为空树},\\
+0 & T \text{ 只有一个节点},\\
+1+\max\limits_{c\,\in\,\text{根的子树}} h(c) & \text{其他情况}.
+\end{cases}
+$$
+<p>(有些教材按节点数计算,此时所有结果加 1;使用时务必先确认约定。本节统一按边数计算。)</p>
+<p>高度之所以重要,是因为查找、插入、删除等操作都是沿着一条从根出发的路径向下走,<strong>最坏情况的代价正比于 $h$</strong>。</p>
+<h3 id="例题">例题</h3>
+<p>对下面的二叉树计算高度:</p>
+<pre class="mermaid">graph TD
+    A((8)) --> B((3))
+    A --> C((10))
+    B --> D((1))
+    B --> E((6))
+    E --> F((4))
+    E --> G((7))</pre>
+<p><em>根节点 8 的最长路径是 8→3→6→4(或 8→3→6→7),共 3 条边。</em></p>
+<p>按递归定义自底向上计算:</p>
+<li>叶节点 1、4、7、10:$h=0$。</li>
+<li>节点 6:$h = 1+\max(0,0)=1$。</li>
+<li>节点 3:$h = 1+\max(h(1),h(6)) = 1+\max(0,1)=2$。</li>
+<li>节点 10:$h=0$。</li>
+<li>根节点 8:$h = 1+\max(2,0)=3$。</li>
+<p>所以 $h(T)=3$。注意左右子树的高度不同,取的是<strong>较大者</strong>。</p>
+<h3 id="问题求解-高度如何决定查找代价">问题求解:高度如何决定查找代价</h3>
+<p><strong>问题</strong>:一棵含 $n=1023$ 个节点的二叉搜索树,最坏情况下需要比较多少次?</p>
+<p><strong>分析</strong>:查找每下降一层最多比较一次,因此最坏比较次数为 $h+1$。关键在于 $h$ 的范围。</p>
+<li><strong>最好情形(完全平衡)</strong>:高度为 $h$ 的二叉树最多有 $2^{h+1}-1$ 个节点。令 $2^{h+1}-1\ge n$,得</li>
+$$
+h \ge \lceil \log_2(n+1)\rceil - 1 .
+$$
+<p>当 $n=1023$ 时,$h_{\min}=\log_2 1024-1=9$,最坏只需 10 次比较。</p>
+<li><strong>最坏情形(退化为链)</strong>:若按递增顺序依次插入 $1,2,\dots,n$,每个节点只有右孩子,则 $h=n-1=1022$,查找退化成线性扫描,需 1023 次比较。</li>
+<p>因此对于 $n$ 个节点的二叉树,</p>
+$$
+\lceil \log_2(n+1)\rceil-1 \;\le\; h \;\le\; n-1,
+$$
+<p>即查找的最坏代价可以从 $O(\log n)$ 一直变化到 $O(n)$。</p>
+<p><strong>结论</strong>:树的高度,而不是节点总数,才是衡量查找效率的真正指标。这正是 AVL 树、红黑树等<strong>自平衡树</strong>存在的原因:它们在每次插入或删除后通过旋转把高度维持在 $O(\log n)$,从而保证最坏情况下的对数级查找。</p>
+<p><strong>练习</strong>:对一棵有 $n=100$ 个节点的二叉树,求高度的最小可能值与最大可能值。(答案:$\lceil\log_2 101\rceil-1=6$;$99$。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

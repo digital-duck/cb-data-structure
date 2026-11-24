@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Tree | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="binary-tree">Binary Tree</h2>
+<p>A <strong>binary tree</strong> is a rooted tree in which every node has at most two children, designated the <strong>left child</strong> and the <strong>right child</strong>. The two positions are distinguished: a node whose only child is on the left is a different structure from one whose only child is on the right. Any missing child position is filled by an <strong>external node</strong> (a placeholder leaf), while nodes that carry data are called <strong>internal nodes</strong>. Equivalently, a binary tree is either empty (a single external node) or consists of a root together with an ordered pair of binary trees, its left and right subtrees.</p>
+<p><strong>Key measures.</strong> The <em>depth</em> of a node is the number of edges from the root to it. The <em>height</em> $h$ of a tree is the maximum depth of any internal node. A tree with $n$ internal nodes has exactly $n+1$ external nodes.</p>
+<p><em>Proof (induction on $n$).</em> For $n=0$ the tree is one external node, so $0+1=1$. Suppose the claim holds for all smaller trees. A tree with $n$ internal nodes has root subtrees with $n_L$ and $n_R$ internal nodes, where $n_L+n_R=n-1$. By hypothesis, the external node count is $(n_L+1)+(n_R+1)=n+1$. $\blacksquare$</p>
+<p>Level $d$ holds at most $2^d$ nodes, so a tree of height $h$ has at most</p>
+$$n \le 2^{h+1}-1$$
+<p>internal nodes. Rearranging gives $h \ge \lceil \log_2(n+1)\rceil - 1$. Height therefore ranges from about $\log_2 n$ (balanced) to $n-1$ (a chain), and this range governs the running time of tree algorithms.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Consider a tree with root $A$, left child $B$, and right child $C$. Node $B$ has a left child $D$ and no right child. Node $C$ has no children.</p>
+<li>Internal nodes: $A, B, C, D$, so $n=4$.</li>
+<li>External nodes: $B$'s right slot, plus two slots each for $C$ and $D$, giving $1+2+2=5 = n+1$. ✓</li>
+<li>Depths: $A=0$; $B,C=1$; $D=2$. Height $h=2$.</li>
+<li>Bound check: $2^{h+1}-1 = 7 \ge 4$. ✓</li>
+<p>A recursive <strong>inorder traversal</strong> (left subtree, node, right subtree) visits $D, B, A, C$.</p>
+<pre class="mermaid">graph TD
+  A --> B
+  A --> C
+  B --> D
+  B --> X1[external]
+  D --> X2[external]
+  D --> X3[external]
+  C --> X4[external]
+  C --> X5[external]</pre>
+<p><em>The example tree. Squares of missing children are shown as external nodes; $n=4$ internal and $5$ external.</em></p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A binary tree must store $1{,}000{,}000$ keys. What is the smallest possible height, and what is the worst case?</p>
+<p><strong>Solution.</strong> Use $n \le 2^{h+1}-1$, so $2^{h+1} \ge 1{,}000{,}001$. Since $2^{19}=524{,}288$ and $2^{20}=1{,}048{,}576$, we need $h+1 \ge 20$, so $h_{\min}=19$. The worst case is a chain with $h = n-1 = 999{,}999$.</p>
+<p><strong>Why it matters.</strong> A search that follows one root-to-leaf path costs $O(h)$. In the balanced case that is about $20$ steps. In the degenerate case it is nearly a million. This gap is why balanced variants such as AVL and red-black trees exist: they keep $h = O(\log n)$ regardless of insertion order.</p>
+<p><strong>Check yourself.</strong> A binary tree has $15$ external nodes. How many internal nodes does it have? (Answer: $n+1=15$, so $n=14$.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

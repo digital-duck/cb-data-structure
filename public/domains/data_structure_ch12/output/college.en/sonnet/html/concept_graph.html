@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="graph">Graph</h2>
+<p>A <strong>directed graph</strong> is a pair $G = (V, E)$, where $V$ is a finite set of <strong>vertices</strong> (nodes) and $E \subseteq V \times V$ is a set of <strong>directed edges</strong>. An edge $(u, v) \in E$ points from $u$ to $v$. We say $v$ is an <em>out-neighbor</em> of $u$ and $u$ is an <em>in-neighbor</em> of $v$. The <strong>out-degree</strong> $\deg^+(v)$ counts edges leaving $v$, and the <strong>in-degree</strong> $\deg^-(v)$ counts edges entering it.</p>
+<p>Two facts are used constantly:</p>
+$$\sum_{v \in V} \deg^+(v) = \sum_{v \in V} \deg^-(v) = |E|, \qquad |E| \le |V|^2.$$
+<p>The first holds because every edge has exactly one tail and one head. The second holds because $E$ is a subset of $V \times V$.</p>
+<p>A <strong>path</strong> is a sequence of vertices $v_0, v_1, \dots, v_k$ with $(v_{i-1}, v_i) \in E$ for each $i$. A <strong>cycle</strong> is a path of length $k \ge 1$ with $v_0 = v_k$. A graph with no cycles is a <strong>directed acyclic graph</strong> (DAG).</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $V = \{A, B, C, D\}$ and $E = \{(A,B), (A,C), (B,D), (C,D)\}$.</p>
+<li>$\deg^+(A) = 2$, $\deg^-(A) = 0$.</li>
+<li>$\deg^+(D) = 0$, $\deg^-(D) = 2$.</li>
+<li>Both degree sums equal $4 = |E|$.</li>
+<li>$A, B, D$ is a path of length 2.</li>
+<li>No path returns to its starting vertex, so $G$ is a DAG.</li>
+<pre class="mermaid">graph TD
+    A --> B
+    A --> C
+    B --> D
+    C --> D</pre>
+<p><em>A four-vertex DAG. Every edge points downward, so no cycle can form.</em></p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> Course prerequisites form a graph: an edge $(u, v)$ means "take $u$ before $v$." Can a student finish all courses, and in what order?</p>
+<p><strong>Method.</strong> A valid ordering exists exactly when the graph is a DAG. The ordering is a <strong>topological sort</strong>. Repeat these steps:</p>
+<li>Pick a vertex with in-degree $0$. Such a vertex has no unmet prerequisites.</li>
+<li>Output it and delete it with its outgoing edges.</li>
+<li>If no vertex has in-degree $0$ while vertices remain, every remaining vertex has an in-neighbor. Following in-neighbors backward must eventually repeat a vertex, which gives a cycle. The prerequisites are then impossible to satisfy.</li>
+<p><strong>Apply to the example.</strong></p>
+<li>$A$ is the only vertex with in-degree $0$. Output $A$ and remove it.</li>
+<li>$B$ and $C$ now have in-degree $0$. Output $B$ and remove it.</li>
+<li>$C$ still has in-degree $0$. Output $C$ and remove it.</li>
+<li>$D$ now has in-degree $0$. Output $D$.</li>
+<p>The result is $A, B, C, D$. The order $A, C, B, D$ also works, so valid orderings need not be unique.</p>
+<p><strong>Cost.</strong> If you store each vertex's out-neighbors in an adjacency list and keep in-degree counts, each edge is removed once and each vertex is output once. The running time is $O(|V| + |E|)$.</p>
+<p><strong>Test your understanding.</strong> Add the edge $(D, A)$ to $E$. Is there now a valid ordering? No. $A \to B \to D \to A$ is a cycle, and every vertex then has in-degree at least $1$, so step 3 applies immediately.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

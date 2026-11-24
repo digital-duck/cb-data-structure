@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node Height | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="节点高度">节点高度</h2>
+<p><strong>定义。</strong> 在跳表(skip list)中,设最底层链表为 $L_0$,它包含全部元素;更高的层 $L_1, L_2, \dots$ 依次是上一层的"抽样子集"。对元素 $x$,其<strong>节点高度</strong>(node height)$h(x)$ 定义为 $x$ 出现的最高层的下标:</p>
+$$h(x)=\max\{\,r : x\in L_r\,\}.$$
+<p>高度由<strong>重复抛硬币</strong>决定:每次抛一枚均匀硬币,若为正面,则 $x$ 再升一层;一旦出现反面就停止。因此 $x$ 至少出现在 $L_0$,即 $h(x)\ge 0$。</p>
+<p><strong>分布。</strong> 因为每次"升层"的概率都是 $\tfrac12$,且各次抛掷相互独立,所以</p>
+$$\Pr[h(x)\ge r]=2^{-r},\qquad \Pr[h(x)=r]=2^{-(r+1)}.$$
+<p>这是一个几何分布,期望高度为</p>
+$$\mathbb{E}[h(x)]=\sum_{r\ge1}\Pr[h(x)\ge r]=\sum_{r\ge1}2^{-r}=1.$$
+<p>也就是说,平均每个节点只比底层多出 1 层,总空间期望为 $O(n)$。</p>
+<p><strong>例题。</strong> 设依次为元素 $x_1,\dots,x_5$ 抛硬币,结果如下(H 为正面,T 为反面):</p>
+<p>| 元素 | 抛掷序列 | $h(x)$ | |---|---|---| | $x_1$ | T | 0 | | $x_2$ | H T | 1 | | $x_3$ | T | 0 | | $x_4$ | H H H T | 3 | | $x_5$ | H T | 1 |</p>
+<p>于是 $L_0=\{x_1,\dots,x_5\}$,$L_1=\{x_2,x_4,x_5\}$,$L_2=L_3=\{x_4\}$。注意 $x_4$ 的概率只有 $2^{-4}=\tfrac1{16}$,高节点稀少,但正是它们提供了"高速公路"。</p>
+<pre class="mermaid">graph BT
+    A["L0: x1 x2 x3 x4 x5"]
+    B["L1: x2 x4 x5"]
+    C["L2: x4"]
+    D["L3: x4"]
+    A --> B
+    B --> C
+    C --> D</pre>
+<p><em>各层元素逐层减半:元素出现在 $L_r$ 的概率为 $2^{-r}$,$x_4$ 的高度为 3。</em></p>
+<p><strong>问题求解:最大高度有多大?</strong> 对 $n$ 个元素,问至少有一个节点高度 $\ge r$ 的概率。由并集界(union bound):</p>
+$$\Pr[\max_x h(x)\ge r]\le n\cdot 2^{-r}.$$
+<p>取 $r=c\log_2 n$,则概率不超过 $n^{1-c}$。例如 $c=3$ 时,失败概率至多 $n^{-2}$。因此以高概率(w.h.p.)有</p>
+$$\max_x h(x)=O(\log n).$$
+<p>这说明跳表只需约 $\log n$ 层。实现时常把最大层数设为 $\lceil 2\log_2 n\rceil$ 或固定上限(如 32),并在插入新元素时用 <code>while random() &lt; 0.5: h += 1</code> 生成其高度。</p>
+<p><strong>小结。</strong> 节点高度由独立抛硬币决定,服从参数为 $\tfrac12$ 的几何分布:$\mathbb{E}[h]=1$ 保证了线性空间,而 $\max h=O(\log n)$(高概率)保证了搜索、插入、删除的期望时间均为 $O(\log n)$。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

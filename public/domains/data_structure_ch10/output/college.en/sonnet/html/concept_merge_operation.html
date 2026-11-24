@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge Operation | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="merge-operation">Merge Operation</h2>
+<p><strong>Definition.</strong> In a <em>leftist-free</em> randomized meldable heap (a min-heap-ordered binary tree with no structural constraint), the operation $\textsf{merge}(h_1, h_2)$ combines two heaps into one. Every other operation reduces to it. The rule is:</p>
+<li>If $h_1$ is empty, return $h_2$. If $h_2$ is empty, return $h_1$.</li>
+<li>Otherwise, if $h_1.\text{key} > h_2.\text{key}$, swap $h_1$ and $h_2$. The root of $h_1$ is now the smaller key, so it becomes the root of the result.</li>
+<li>Flip a fair coin. If heads, set $h_1.\text{left} \leftarrow \textsf{merge}(h_1.\text{left}, h_2)$. If tails, set $h_1.\text{right} \leftarrow \textsf{merge}(h_1.\text{right}, h_2)$.</li>
+<li>Return $h_1$.</li>
+<p>Heap order is preserved because the smaller root stays on top, and the other heap goes into a subtree whose keys are all at least as large as that root.</p>
+<pre><code>def merge(a, b):
+    if a is None: return b
+    if b is None: return a
+    if a.key &gt; b.key: a, b = b, a
+    if random.random() &lt; 0.5:
+        a.left = merge(a.left, b)
+    else:
+        a.right = merge(a.right, b)
+    return a</code></pre>
+<p><strong>Worked example.</strong> Let $h_1$ have root 3 with left child 8 and no right child. Let $h_2$ be the single node 5. Then $3 < 5$, so there is no swap. Suppose the coin gives tails. Then $h_1.\text{right} \leftarrow \textsf{merge}(\varnothing, h_2) = h_2$, and 5 becomes the right child of 3. Had the coin given heads, we would call $\textsf{merge}(\text{node } 8, \text{node } 5)$. Since $8 > 5$, we swap, so 5 becomes the root of that subtree. A second coin then decides whether 8 hangs to its left or right. The result is a valid heap either way, but its shape depends on the coin tosses.</p>
+<p><strong>Problem-solving application: expected running time.</strong> The cost is proportional to the length of the random path the recursion follows. This path goes down through $h_1$ and $h_2$ together, so it is at most $\text{depth}_1 + \text{depth}_2$ steps long, where these are the lengths of the random walks taken in each tree.</p>
+<p><em>Lemma.</em> In a binary tree with $n$ nodes, a random walk that goes left or right with probability $\tfrac12$ each, stopping at a missing child, has expected length at most $\log_2(n+1)$.</p>
+<p><em>Proof sketch.</em> Let $T$ be a tree with $n$ nodes and $E(T)$ the expected walk length. A walk ending at an external (null) position of depth $d$ has probability $2^{-d}$. Using $\mathbb{E}[d] = \sum_{\text{leaves}} 2^{-d}\, d$, Jensen's inequality, and the Kraft equality $\sum 2^{-d} = 1$ over the $n+1$ external positions, we get</p>
+$$
+\mathbb{E}[d] = \sum 2^{-d}\log_2\!\left(2^{d}\right) \le \log_2\!\sum 2^{-d}\cdot 2^{d} = \log_2(n+1). \qquad\blacksquare
+$$
+<p>Applying the lemma to both trees gives</p>
+$$
+\mathbb{E}[\text{steps}] \le \log_2(n_1+1) + \log_2(n_2+1) = O(\log n),
+$$
+<p>where $n = n_1 + n_2$. So a merge takes expected $O(\log n)$ time.</p>
+<p><em>Using it.</em> $\textsf{insert}(x)$ is $\textsf{merge}(h, \text{node}(x))$. $\textsf{deleteMin}$ is $\textsf{merge}(h.\text{left}, h.\text{right})$, which discards the root. Both therefore take expected $O(\log n)$ time. Note that this is an <em>expected</em> bound over the coin tosses. It holds for every input, because the adversary cannot predict the coins.</p>
+<pre class="mermaid">flowchart TD
+    A["merge(h1, h2)"] --> B{"Either empty?"}
+    B -- Yes --> C["Return the other heap"]
+    B -- No --> D["Swap so h1 has the smaller root"]
+    D --> E{"Coin toss"}
+    E -- Heads --> F["h1.left = merge(h1.left, h2)"]
+    E -- Tails --> G["h1.right = merge(h1.right, h2)"]
+    F --> H["Return h1"]
+    G --> H</pre>
+<p><em>Control flow of the merge: the smaller root is kept, and the coin toss selects which subtree absorbs the other heap.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

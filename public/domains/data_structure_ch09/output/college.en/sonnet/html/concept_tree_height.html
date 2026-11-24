@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Height | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="tree-height">Tree Height</h2>
+<h3 id="definition">Definition</h3>
+<p>The <strong>height</strong> of a tree is the number of edges on the longest path from the root down to a leaf. A tree with only a root has height $0$, and by convention an empty tree has height $-1$. This gives a clean recursive definition:</p>
+$$h(T) = \begin{cases} -1 & T = \varnothing \\ 1 + \max\big(h(T_L),\, h(T_R)\big) & \text{otherwise} \end{cases}$$
+<p>where $T_L$ and $T_R$ are the left and right subtrees. (Some texts count nodes instead of edges, which adds $1$. Always check which convention is in use.)</p>
+<p>Height matters because searching, inserting, and deleting in a binary search tree (BST) each follow a single root-to-leaf path. The worst-case cost is therefore $O(h)$.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Insert the keys $10, 5, 15, 3, 7, 20, 25$ into an empty BST in that order. The resulting structure is:</p>
+<pre class="mermaid">graph TD
+  A[10] --> B[5]
+  A --> C[15]
+  B --> D[3]
+  B --> E[7]
+  C --> F[20]
+  F --> G[25]</pre>
+<p><em>A BST built from the keys 10, 5, 15, 3, 7, 20, 25. The longest path is 10 → 15 → 20 → 25.</em></p>
+<p>Apply the recursion bottom-up:</p>
+<li>Leaves $3$, $7$, $25$: $h = 0$.</li>
+<li>Node $20$: $1 + \max(-1, 0) = 1$.</li>
+<li>Node $5$: $1 + \max(0, 0) = 1$.</li>
+<li>Node $15$: $1 + \max(-1, 1) = 2$.</li>
+<li>Root $10$: $1 + \max(1, 2) = 3$.</li>
+<p>So $h = 3$. Searching for $25$ takes $3$ edge-steps, which is the worst case for this tree.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Bounds on height.</strong> A binary tree with $n$ nodes satisfies</p>
+$$\lfloor \log_2 n \rfloor \le h \le n - 1.$$
+<p>The lower bound occurs when the tree is as full as possible. A tree of height $h$ holds at most $2^{h+1}-1$ nodes, so $n \le 2^{h+1}-1$, which gives $h \ge \log_2(n+1) - 1$. The upper bound occurs when each node has one child, making the tree a linked list.</p>
+<p><strong>Problem.</strong> A BST receives $1023$ keys. What are the best-case and worst-case search costs?</p>
+<p><em>Best case:</em> a perfectly balanced tree has $n = 2^{h+1}-1$, so $1023 = 2^{10}-1$ gives $h = 9$. A search needs at most $9$ edge-steps.</p>
+<p><em>Worst case:</em> inserting the keys in sorted order produces a chain, so $h = 1022$. A search may need $1022$ steps.</p>
+<p>The same data can therefore cost $O(\log n)$ or $O(n)$ per search, depending only on insertion order. Self-balancing trees such as AVL and red-black trees address this by keeping $h = O(\log n)$ after every update, which guarantees logarithmic worst-case search.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code>def height(node):
+    if node is None:
+        return -1
+    return 1 + max(height(node.left), height(node.right))</code></pre>
+<p>This visits each node once, so it runs in $O(n)$ time. It uses $O(h)$ stack space for the recursion.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

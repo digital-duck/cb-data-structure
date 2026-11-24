@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eytzinger Method | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="eytzinger-method">Eytzinger Method</h2>
+<p><strong>Definition.</strong> The Eytzinger method stores a complete binary tree in a plain array by listing its nodes in breadth-first (level-by-level, left-to-right) order. With 0-based indexing, the node at index $i$ has</p>
+$$\text{left}(i) = 2i+1,\qquad \text{right}(i) = 2i+2,\qquad \text{parent}(i) = \left\lfloor \frac{i-1}{2} \right\rfloor \ (i>0).$$
+<p>No pointers are stored; the tree's shape is encoded entirely in the index arithmetic. Because the tree is <em>complete</em> (every level full except possibly the last, which fills from the left), the array has no gaps. Level $d$ (root is $d=0$) occupies indices $2^d-1$ through $2^{d+1}-2$, so a tree with $n$ nodes has height $\lfloor \log_2 n \rfloor$.</p>
+<p><strong>Why the formulas hold.</strong> Level $d$ begins at index $2^d-1$. The node at offset $k$ in that level has index $i = 2^d - 1 + k$. Its left child is at offset $2k$ in level $d+1$, so its index is $2^{d+1}-1+2k = 2(2^d-1+k)+1 = 2i+1$. The right child is one position later, $2i+2$. Inverting gives the parent formula: if $i = 2p+1$ or $i=2p+2$, then $p=\lfloor (i-1)/2\rfloor$.</p>
+<p><strong>Worked example.</strong> Store the tree with root 40, children 25 and 60, and grandchildren 10, 30, 50 (left to right):</p>
+<p>| index | 0 | 1 | 2 | 3 | 4 | 5 | |---|---|---|---|---|---|---| | value | 40 | 25 | 60 | 10 | 30 | 50 |</p>
+<p>The node 25 is at $i=1$. Its children are at $2(1)+1=3$ and $2(1)+2=4$, which hold 10 and 30. The node 50 is at $i=5$, so its parent is at $\lfloor (5-1)/2\rfloor = 2$, which holds 60. Both agree with the picture. Index 6 would be 60's right child, but $6 \ge n$, so the child is absent.</p>
+<pre class="mermaid">graph TD
+A["40 (i=0)"] --> B["25 (i=1)"]
+A --> C["60 (i=2)"]
+B --> D["10 (i=3)"]
+B --> E["30 (i=4)"]
+C --> F["50 (i=5)"]</pre>
+<p><em>The same six-node tree, with each node labeled by its array index. Indices increase level by level, left to right.</em></p>
+<p><strong>Problem-solving application.</strong> <em>Search a binary search tree (BST) stored in Eytzinger order, for target 30.</em></p>
+<p>Start at $i=0$. Repeat: if $i \ge n$, the target is absent. If $a[i]$ equals the target, stop. If the target is smaller, set $i \leftarrow 2i+1$. Otherwise set $i \leftarrow 2i+2$.</p>
+<li>$i=0$: $a[0]=40$, and $30<40$, so $i=1$.</li>
+<li>$i=1$: $a[1]=25$, and $30>25$, so $i=4$.</li>
+<li>$i=4$: $a[4]=30$. Found.</li>
+<p>This took 3 steps, which is at most the height plus one, so a search costs $O(\log n)$. A heap uses this same layout, which is why heap insertion and deletion move only along parent and child indices ("sift up" and "sift down"). The layout also has a performance benefit. The top levels of the tree sit together at the start of the array, so they stay in cache. For large sorted arrays, an Eytzinger-ordered binary search often beats the standard sorted-array version for this reason.</p>
+<p><strong>Caveat.</strong> The method wastes space on sparse trees. A degenerate chain of $n$ nodes needs an array of size $2^n-1$, since each right-only step doubles the index. Use it only when the tree is complete or nearly so.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

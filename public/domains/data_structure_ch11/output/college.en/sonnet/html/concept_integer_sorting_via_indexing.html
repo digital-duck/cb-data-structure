@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integer Sorting Via Indexing | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="integer-sorting-via-indexing">Integer Sorting Via Indexing</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>comparison sort</strong> must use $\Omega(n \log n)$ comparisons in the worst case. That bound applies only to algorithms that learn about the input solely by comparing pairs of keys. If the keys are integers, an algorithm can instead use a key as an <strong>array index</strong>, which gives it far more information in one step than a comparison does.</p>
+<p><strong>Counting sort</strong> takes $n$ integers from $\{0,\dots,k-1\}$. It builds an array $C[0..k-1]$ in which $C[v]$ counts the keys equal to $v$. It then takes prefix sums, so $C[v]$ becomes the number of keys $\le v$. Finally, it scans the input from right to left and places each key $x$ at position $C[x]-1$, then decrements $C[x]$. The running time is $\Theta(n+k)$. The sort is <strong>stable</strong>: equal keys keep their input order.</p>
+<p><strong>Radix sort</strong> handles large ranges. Write each key in base $b$ with $d$ digits. Run a stable sort on each digit, starting with the least significant. After pass $i$, the keys are sorted by their lowest $i$ digits. Stability is what makes this work, because it preserves the order that earlier passes established. With counting sort on each digit, the cost is $\Theta(d(n+b))$.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>Sort $A=[3,1,3,0,2,1]$ with $k=4$.</p>
+<li>Counts: $C=[1,2,1,2]$.</li>
+<li>Prefix sums: $C=[1,3,4,6]$.</li>
+<li>Scan right to left. The last key, $1$, goes to index $C[1]-1=2$, and $C[1]$ becomes $2$. The next key, $2$, goes to index $3$. Continuing this way gives $[0,1,1,2,3,3]$.</li>
+<p>No two keys were ever compared.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><strong>Problem.</strong> Sort $n$ integers in $\{0,\dots,n^c-1\}$, where $c$ is a constant, in $O(cn)$ time.</p>
+<p>A single counting sort needs $k=n^c$ buckets, which costs $\Theta(n^c)$ and is too slow when $c>1$. Instead, choose the base $b=n$.</p>
+<li>Every key $x<n^c$ has at most $c$ digits in base $n$, so $d=c$. The digits are $x \bmod n$, then $\lfloor x/n\rfloor \bmod n$, and so on.</li>
+<li>Each digit lies in $\{0,\dots,n-1\}$. A counting sort on one digit therefore takes $\Theta(n+n)=\Theta(n)$ time.</li>
+<li>Radix sort makes $c$ passes, so the total time is</li>
+$$T(n)=c\cdot\Theta(n)=O(cn).$$
+<p><strong>Correctness (by induction on the pass number).</strong> Suppose that after pass $i$ the keys are sorted by their lowest $i$ digits. In pass $i+1$, two keys with different digit $i+1$ are ordered correctly by that digit. Two keys with equal digit $i+1$ keep their relative order because the sort is stable, and that order is already correct by their lower digits. So the keys are sorted by their lowest $i+1$ digits. After $c$ passes, the whole array is sorted.</p>
+<p><strong>Concrete case.</strong> Take $n=1000$ and $c=2$, so the keys lie in $\{0,\dots,999{,}999\}$. Radix sort makes two passes with 1000 buckets each, which is about $2(1000+1000)=4000$ basic steps plus bookkeeping. A comparison sort needs about $n\log_2 n\approx 10{,}000$ comparisons. The gap widens as $n$ grows.</p>
+<p><strong>Caveats.</strong></p>
+<li>The method requires $c=O(1)$, or at least $c \ll \log n$, to beat $n\log n$.</li>
+<li>Keys must be integers (or be encodable as integers) that can be used as array indices.</li>
+<li>The method uses $\Theta(n)$ extra memory.</li>
+<li>The $O(cn)$ bound assumes that extracting a digit and indexing an array each take constant time, as in the word-RAM model.</li>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

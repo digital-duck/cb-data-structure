@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooted Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="rooted-tree">Rooted Tree</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>rooted tree</strong> is a connected graph with no cycles in which one node, the <strong>root</strong>, has been singled out. Every other node then lies at the end of exactly one simple path from the root. This gives the tree a direction: "downward" means away from the root.</p>
+<p>Formally, a tree with $n$ nodes has exactly $n-1$ edges. Removing any edge disconnects it.</p>
+<p>The vocabulary below comes from this direction:</p>
+<li><strong>Parent/child:</strong> if $u$ immediately precedes $v$ on the path from the root, $u$ is the parent of $v$ and $v$ is a child of $u$.</li>
+<li><strong>Leaf:</strong> a node with no children.</li>
+<li><strong>Ancestor/descendant:</strong> $u$ is an ancestor of $v$ if $u$ lies on the path from the root to $v$.</li>
+<li><strong>Depth</strong> of $v$: the number of edges on the path from the root to $v$. The root has depth $0$.</li>
+<li><strong>Height</strong> of the tree: the maximum depth of any node.</li>
+<li><strong>Subtree</strong> at $v$: $v$ together with all its descendants. It is itself a rooted tree with root $v$.</li>
+<p>The last item gives the structure its recursive character: a rooted tree is a root plus a (possibly empty) collection of smaller rooted trees.</p>
+<pre class="mermaid">graph TD
+    A((A)) --> B((B))
+    A --> C((C))
+    A --> D((D))
+    B --> E((E))
+    B --> F((F))
+    D --> G((G))
+    G --> H((H))</pre>
+<p><em>A rooted tree with root A. Node B is the parent of E and F; E, F, C, and H are leaves; H has depth 3, which is the height of the tree.</em></p>
+<h3 id="worked-example">Worked example</h3>
+<p>Using the tree above:</p>
+<li>Nodes: $n = 8$, so there must be $n-1 = 7$ edges. Counting gives A–B, A–C, A–D, B–E, B–F, D–G, G–H, which is 7.</li>
+<li>The depth of H is the length of the path A → D → G → H, so $\text{depth}(H)=3$.</li>
+<li>The ancestors of H are G, D, and A.</li>
+<li>The subtree at B contains $\{B, E, F\}$.</li>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> Compute the height of a rooted tree recursively.</p>
+<p>Let $h(v)$ be the height of the subtree at $v$. A leaf has $h=0$. Otherwise, the height is one more than the tallest child subtree:</p>
+$$h(v) = 1 + \max_{c \in \text{children}(v)} h(c).$$
+<pre><code>def height(node):
+    if not node.children:
+        return 0
+    return 1 + max(height(c) for c in node.children)</code></pre>
+<p>Applying this to the example:</p>
+<li>$h(H)=0$, so $h(G)=1$ and $h(D)=2$.</li>
+<li>$h(E)=h(F)=0$, so $h(B)=1$; also $h(C)=0$.</li>
+<li>$h(A) = 1+\max(h(B),h(C),h(D)) = 1+\max(1,0,2) = 3$.</li>
+<p>This matches the depth of H.</p>
+<p><strong>Why the recursion works.</strong> Each node's subtree is a smaller rooted tree, so the same rule applies at every level. The function visits each node once and does constant work per child, so its running time is $O(n)$.</p>
+<p><strong>Why height matters.</strong> If every node has at most $k$ children, a tree of height $h$ has at most</p>
+$$\sum_{i=0}^{h} k^i = \frac{k^{h+1}-1}{k-1}$$
+<p>nodes. For a binary tree ($k=2$) with $n$ nodes, this means $h \ge \lceil \log_2(n+1) \rceil - 1$. A balanced tree can therefore reach any of $n$ items in $O(\log n)$ steps. A degenerate, chain-like tree has $h = n-1$, which is why balance matters in structures such as binary search trees.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

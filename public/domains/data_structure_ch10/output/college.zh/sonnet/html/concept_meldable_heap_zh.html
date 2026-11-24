@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meldable Heap | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="可合并堆-meldable-heap">可合并堆(Meldable Heap)</h2>
+<p><strong>定义。</strong> 可合并堆是一种基于<strong>堆序二叉树</strong>的优先队列,其树形不受限制:只要求每个节点的值不大于其子节点的值(最小堆),不要求完全或平衡。它的核心是一个操作 $\text{merge}(h_1,h_2)$,把两个堆合并为一个堆。其余操作都归约为合并:</p>
+<li>$\text{add}(x)$:把 $x$ 看作单节点堆,与原堆合并;</li>
+<li>$\text{remove}()$:取出根节点,再合并其左、右子树。</li>
+<p>因此只需把 $\text{merge}$ 做对、做快。</p>
+<p><strong>随机合并算法。</strong> 设 $h_1$ 的根不大于 $h_2$ 的根(否则交换)。将 $h_2$ 与 $h_1$ 的左子树或右子树合并,<strong>用抛硬币决定</strong>走哪一边:</p>
+<pre><code>import random
+
+def merge(h1, h2):
+    if h1 is None: return h2
+    if h2 is None: return h1
+    if h2.x &lt; h1.x:
+        h1, h2 = h2, h1          # 保证 h1 根更小
+    if random.random() &lt; 0.5:
+        h1.left = merge(h1.left, h2)
+    else:
+        h1.right = merge(h1.right, h2)
+    return h1</code></pre>
+<p><strong>例题。</strong> 合并 $h_1$(根 3,左子 7,右子为空)与 $h_2$(单节点 5)。</p>
+<li>$3<5$,$h_1$ 的根保留。</li>
+<li>若硬币选“右”:$\text{merge}(\text{None},5)$ 返回节点 5,于是 5 成为 3 的右子。</li>
+<li>若选“左”:比较 7 与 5,5 更小,5 成为新子树根,7 挂到 5 的随机一侧。</li>
+<p>两种结果都满足堆序,只是形状不同,这正是“树形不受限制”的含义。</p>
+<p><strong>性能分析。</strong> 合并沿一条随机路径下降。设 $n=|h_1|+|h_2|$。每一步向左或向右的概率各为 $1/2$,一条随机路径的期望长度满足</p>
+$$
+E[\text{长度}] \le \log_2 n + O(1)
+$$
+<p>(可以这样理解:一条长度为 $k$ 的特定路径出现的概率是 $2^{-k}$,而深度超过 $2\log_2 n$ 的节点极少。)因此 $\text{merge}$、$\text{add}$、$\text{remove}$ 的<strong>期望</strong>时间都是 $O(\log n)$。要注意这是期望界,而非最坏情况界:最坏情况下树可能退化为一条链。</p>
+<p><strong>问题应用。</strong> 要合并 $m$ 个各有 $n/m$ 个元素的有序任务队列,可逐个调用 $\text{merge}$,总期望时间为 $O(m\log n)$。相比之下,把所有元素逐个插入新堆需要 $O(n\log n)$。当 $m\ll n$ 时,可合并堆的优势明显。二叉堆(数组实现)合并需重建,代价为 $O(n)$,所以在需要频繁合并队列的场景(如分布式任务调度)中,可合并堆更合适。</p>
+<pre class="mermaid">graph TD
+    A["h1 根 3"] --> B["左子 7"]
+    A --> C["右子 空"]
+    D["h2 根 5"] -.->|"抛硬币选右"| C
+    C --> E["合并后 5 成为右子"]</pre>
+<p><em>图示:合并时,较大根所在的堆沿随机方向并入较小根堆的子树。</em></p>
+<p><strong>小结。</strong> 可合并堆用一个随机化的 $\text{merge}$ 统一实现了插入与删除,期望代价为 $O(\log n)$,代码简洁,适合需要快速合并优先队列的场景。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

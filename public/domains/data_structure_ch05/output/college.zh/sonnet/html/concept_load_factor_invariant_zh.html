@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Load Factor Invariant | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="负载因子不变式">负载因子不变式</h2>
+<p><strong>定义。</strong> 设哈希表长度为 $m$(桶的个数),当前存储的元素个数为 $n$,则<strong>负载因子</strong>为</p>
+$$\alpha = \frac{n}{m}.$$
+<p><strong>负载因子不变式</strong>是哈希表在每次插入、删除之后都要维持的约束:</p>
+$$\alpha \le \alpha_{\max}$$
+<p>其中 $\alpha_{\max}$ 是预先选定的常数(链地址法常取 $1$,开放寻址法常取 $0.5\sim0.75$)。一旦某次插入使 $\alpha>\alpha_{\max}$,就必须<strong>扩容</strong>:新建长度为 $2m$ 的表,并把所有元素重新散列进去,使不变式重新成立。</p>
+<p><strong>为什么需要它。</strong> 在简单均匀散列假设下:</p>
+<li>链地址法:不成功查找的期望链长为 $\alpha$,期望代价为 $\Theta(1+\alpha)$。</li>
+<li>开放寻址法:不成功查找的期望探查次数至多为 $\dfrac{1}{1-\alpha}$($\alpha<1$)。</li>
+<p>只要 $\alpha\le\alpha_{\max}$ 且 $\alpha_{\max}$ 为常数,这些期望代价就是 $O(1)$。如果不维持不变式,$n$ 增大而 $m$ 固定,$\alpha$ 会线性增长,查找退化为 $\Theta(n)$。</p>
+<p><strong>例题。</strong> 开放寻址哈希表初始 $m=8$,规定 $\alpha_{\max}=0.75$。依次插入元素:</p>
+<li>插入第 6 个元素后 $\alpha=6/8=0.75$,仍满足不变式。</li>
+<li>插入第 7 个元素后 $\alpha=7/8=0.875>0.75$,触发扩容:$m\leftarrow16$,重新散列 7 个元素,此时 $\alpha=7/16\approx0.44$。</li>
+<p>扩容前,不成功查找的期望探查次数约为 $\frac{1}{1-0.875}=8$;扩容后降为 $\frac{1}{1-0.44}\approx1.8$。</p>
+<p><strong>问题求解:扩容的摊还代价。</strong> 扩容一次需要 $\Theta(n)$ 的时间,会不会让插入变慢?考虑从空表出发连续插入 $N$ 个元素,表长每次翻倍,扩容发生在元素个数约为 $1,2,4,\dots,2^k$ 时($2^k\le N$)。总的重新散列代价为</p>
+$$\sum_{i=0}^{k}2^i=2^{k+1}-1<2N.$$
+<p>再加上 $N$ 次普通插入,总代价小于 $3N$,故每次插入的<strong>摊还代价</strong>为 $O(1)$。若改为每次只增长固定长度 $c$,则扩容次数约为 $N/c$,总代价为 $\Theta(N^2/c)$,摊还代价退化为 $\Theta(N)$。所以扩容必须按<strong>固定比例</strong>(如翻倍)增长,而不是按固定增量增长。</p>
+<p><strong>练习。</strong> 链地址哈希表 $m=100$,$\alpha_{\max}=1$。当 $n=100$ 时再插入一个元素,会发生什么?新的 $\alpha$ 是多少?</p>
+<p><em>解答:</em> $\alpha=101/100>1$,触发扩容,$m\leftarrow200$,重新散列全部 101 个元素,$\alpha=101/200=0.505$。</p>
+<p><strong>要点。</strong> 负载因子不变式把"表长随元素数增长"这一维护动作,转化为对期望查找代价的常数上界;翻倍扩容则保证维护本身的摊还代价也是常数。</p>
+<pre class="mermaid">flowchart TD
+    A[插入新元素] --> B[n 加 1]
+    B --> C{α 大于 α_max?}
+    C -- 否 --> D[直接完成插入]
+    C -- 是 --> E[新建长度为 2m 的表]
+    E --> F[重新散列所有元素]
+    F --> G[不变式恢复]</pre>
+<p><em>图:插入操作中负载因子的检查与扩容流程。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

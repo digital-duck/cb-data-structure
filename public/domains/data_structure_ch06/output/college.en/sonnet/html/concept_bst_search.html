@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Search | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="bst-search">Bst Search</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>binary search tree (BST)</strong> is a binary tree in which every node with key $k$ satisfies the <strong>BST property</strong>: all keys in its left subtree are less than $k$, and all keys in its right subtree are greater than $k$. <strong>BST search</strong> exploits this property to locate a value $x$ starting at the root. At each node, compare $x$ to the node's key $k$:</p>
+<li>If $x = k$, the search succeeds.</li>
+<li>If $x < k$, continue in the left subtree.</li>
+<li>If $x > k$, continue in the right subtree.</li>
+<li>If the subtree to move into is empty (null), the search fails: $x$ is not in the tree.</li>
+<p>Each comparison discards an entire subtree, so the search follows a single root-to-node (or root-to-null) path.</p>
+<pre><code>def bst_search(node, x):
+    while node is not None:
+        if x == node.key:
+            return node
+        node = node.left if x &lt; node.key else node.right
+    return None</code></pre>
+<h3 id="worked-example">Worked example</h3>
+<p>Consider the BST with root 50, whose left child is 30 (children 20 and 40) and whose right child is 70 (children 60 and 80).</p>
+<pre class="mermaid">graph TD
+    A((50)) --> B((30))
+    A --> C((70))
+    B --> D((20))
+    B --> E((40))
+    C --> F((60))
+    C --> G((80))</pre>
+<p><em>A BST with seven keys. Searching for 60 follows the path 50, 70, 60.</em></p>
+<p><strong>Search for 60:</strong></p>
+<li>Compare with 50: $60 > 50$, go right.</li>
+<li>Compare with 70: $60 < 70$, go left.</li>
+<li>Compare with 60: equal, found. This took 3 comparisons.</li>
+<p><strong>Search for 45:</strong></p>
+<li>$45 < 50$, go left.</li>
+<li>$45 > 30$, go right.</li>
+<li>$45 > 40$, go right to a null child, so the search fails after 3 comparisons.</li>
+<h3 id="problem-solving-application-cost-analysis">Problem-solving application: cost analysis</h3>
+<p>The work done is proportional to the number of nodes on the path, which is at most $h + 1$, where $h$ is the tree's height (the number of edges on the longest root-to-leaf path). Therefore search runs in $O(h)$ time. Because the height depends on the tree's shape, two cases matter:</p>
+<li><strong>Balanced tree</strong> with $n$ nodes: each step roughly halves the remaining nodes, so $h = \lfloor \log_2 n \rfloor$ and search takes $O(\log n)$. For $n = 1{,}000{,}000$, that is about 20 comparisons.</li>
+<li><strong>Degenerate tree:</strong> inserting keys in sorted order ($1, 2, 3, \dots, n$) produces a chain with $h = n - 1$, so search takes $O(n)$, no better than a linked list.</li>
+<p><strong>Practice problem.</strong> Which of the sequences below could be the keys examined while searching for 45 in the tree above? (a) 50, 30, 40, 45  (b) 50, 70, 40, 45</p>
+<p>Sequence (a) is valid: it makes the correct moves (left at 50, right at 30, right at 40). Sequence (b) is impossible. After $45 < 50$ the search must go left, so 70 can never be visited, and 40 is not a child of 70. A useful check is that every examined key must fall within the interval set by earlier turns. After going left at 50 and right at 30, all later keys must lie strictly between 30 and 50.</p>
+<p><strong>Key takeaway:</strong> BST search is only as fast as the tree is short. Self-balancing variants (AVL, red-black trees) keep $h = O(\log n)$ to guarantee fast search.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

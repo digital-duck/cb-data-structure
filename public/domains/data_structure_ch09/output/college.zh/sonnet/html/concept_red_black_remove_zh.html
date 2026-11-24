@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Remove | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="红黑树删除-red-black-remove">红黑树删除(Red Black Remove)</h2>
+<h3 id="定义">定义</h3>
+<p>红黑树删除分两步:<strong>先摘除,再修复</strong>。</p>
+<li><strong>摘除</strong>:若待删节点 $z$ 有两个孩子,用其中序后继 $y$ 的键值替换 $z$,转而删除 $y$。这样实际被摘除的节点至多有一个孩子,可直接用该孩子 $x$ 顶替它。</li>
+<li><strong>修复</strong>:若被摘除的节点是<strong>红色</strong>,则黑高不变,无需处理。若是<strong>黑色</strong>,则 $x$ 所在路径少了一个黑节点,称 $x$ 带有"<strong>双重黑</strong>"(double-black)。<code>remove_fixup</code> 的任务就是消除这个多余的黑色。</li>
+<p>与 2-4 树的对应关系:黑节点加上它的红孩子,构成一个 2-、3- 或 4-节点。删除黑叶子,相当于从某个 2-节点中取走唯一的键,使它变空,只能向兄弟<strong>借键</strong>(旋转)或与兄弟<strong>合并</strong>(重新着色)。</p>
+<h3 id="修复的四种情形">修复的四种情形</h3>
+<p>设 $x$ 是双重黑节点,$w$ 是它的兄弟($x$ 为左孩子时的情形):</p>
+<p>| 情形 | 条件 | 操作 | 2-4 树含义 | |---|---|---|---| | 1 | $w$ 为红 | 对父节点左旋,$w$ 与父节点换色,转入情形 2/3/4 | 换一个同层表示 | | 2 | $w$ 黑,$w$ 的两个孩子都黑 | $w$ 染红,双重黑上移到父节点 | 与兄弟<strong>合并</strong>,向父层借 | | 3 | $w$ 黑,$w$ 左红右黑 | 对 $w$ 右旋并换色,转入情形 4 | 调整兄弟内部 | | 4 | $w$ 黑,$w$ 右孩子红 | 对父节点左旋,$w$ 取父节点的颜色,父节点与 $w$ 的右孩子染黑 | 从兄弟<strong>借键</strong>,结束 |</p>
+<p>只有情形 2 会使问题上移,其余情形至多常数次旋转后终止。</p>
+<h3 id="例题">例题</h3>
+<p>考虑一棵树:根 $B(10)$,左孩子 $B(5)$,右孩子 $B(15)$,$15$ 的右孩子为红节点 $R(20)$。删除黑叶子 $5$。</p>
+<li>摘除 $5$ 后,$x$ 为空叶(双重黑),父节点为 $10$,兄弟 $w=15$ 为黑。</li>
+<li>$w$ 的右孩子 $20$ 为红,属于<strong>情形 4</strong>。</li>
+<li>对 $10$ 左旋:$15$ 成为新根并继承 $10$ 原来的颜色(黑),$10$ 与 $20$ 染黑。</li>
+<p>结果:根 $B(15)$,左孩子 $B(10)$,右孩子 $B(20)$,各路径黑高均为 2,红黑性质恢复。对应到 2-4 树,就是从 3-节点 $[15,20]$ 中借出键 $15$ 上移,$10$ 下移补空。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:若例题中 $20$ 不存在($15$ 是黑叶子),会发生什么?</p>
+<p>此时 $w=15$ 为黑且两个孩子皆黑,属于情形 2:把 $15$ 染红,双重黑上移到 $10$。若 $10$ 是根,则直接去掉多余的黑色,整棵树黑高减 1,结束;若 $10$ 为红,将其染黑即可终止;若 $10$ 为黑且非根,则继续在上一层处理。这对应 2-4 树中两个 2-节点合并,并从父节点"借"走一个键。</p>
+<p><strong>复杂度</strong>:情形 2 每次使 $x$ 上移一层,至多 $O(\log n)$ 次;情形 1、3、4 的旋转总计至多 3 次。故删除的总代价为</p>
+$$T(n)=O(\log n),\quad \text{旋转次数}\le 3.$$
+<p><strong>解题要领</strong>:先判断被摘除节点的颜色,再看兄弟及其孩子的颜色,依次套用情形 1→4。</p>
+<pre class="mermaid">flowchart TD
+A[删除黑节点后产生双重黑] --> B{兄弟是红色?}
+B -- 是 --> C[情形1:旋转换色]
+C --> D
+B -- 否 --> D{兄弟的孩子都是黑色?}
+D -- 是 --> E[情形2:兄弟染红,问题上移]
+E --> A
+D -- 否 --> F{远侧孩子是红色?}
+F -- 否 --> G[情形3:旋转兄弟]
+G --> H
+F -- 是 --> H[情形4:旋转父节点,结束]</pre>
+<p><em>图:<code>remove_fixup</code> 的决策流程。只有情形 2 会循环上移,情形 4 必定终止。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

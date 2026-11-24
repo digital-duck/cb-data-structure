@@ -285,6 +285,18 @@
         "file": "output/college.en/sonnet/html/book_stack_operations_sllist.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "stack_operations_sllist",
+        "file": "output/college.zh/sonnet/html/book_stack_operations_sllist.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "queue_operations_sllist",
+        "file": "output/college.zh/sonnet/html/book_queue_operations_sllist.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
@@ -310,6 +322,13 @@
         "language": "en"
       },
       {
+        "name": "dllist_zh",
+        "label": "Dllist Zh",
+        "file": "output/college.zh/sonnet/html/concept_dllist_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "get_node_search",
         "label": "Get Node Search",
         "file": "output/core.en/sonnet/html/concept_get_node_search.html",
@@ -331,6 +350,13 @@
         "language": "en"
       },
       {
+        "name": "node_zh",
+        "label": "Node Zh",
+        "file": "output/college.zh/sonnet/html/concept_node_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "pointer_reference",
         "label": "Pointer Reference",
         "file": "output/core.en/sonnet/html/concept_pointer_reference.html",
@@ -343,6 +369,13 @@
         "file": "output/college.en/sonnet/html/concept_pointer_reference.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "pointer_reference_zh",
+        "label": "Pointer Reference Zh",
+        "file": "output/college.zh/sonnet/html/concept_pointer_reference_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "queue_operations_sllist",
@@ -359,6 +392,13 @@
         "language": "en"
       },
       {
+        "name": "queue_operations_sllist_zh",
+        "label": "Queue Operations Sllist Zh",
+        "file": "output/college.zh/sonnet/html/concept_queue_operations_sllist_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "sllist",
         "label": "Sllist",
         "file": "output/core.en/sonnet/html/concept_sllist.html",
@@ -373,6 +413,13 @@
         "language": "en"
       },
       {
+        "name": "sllist_zh",
+        "label": "Sllist Zh",
+        "file": "output/college.zh/sonnet/html/concept_sllist_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "stack_operations_sllist",
         "label": "Stack Operations Sllist",
         "file": "output/core.en/sonnet/html/concept_stack_operations_sllist.html",
@@ -385,6 +432,13 @@
         "file": "output/college.en/sonnet/html/concept_stack_operations_sllist.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "stack_operations_sllist_zh",
+        "label": "Stack Operations Sllist Zh",
+        "file": "output/college.zh/sonnet/html/concept_stack_operations_sllist_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "xor_list",
@@ -424,85 +478,174 @@
         "file": "output/core.en/sonnet/html/book_skiplist_list.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "skiplist_sset",
+        "file": "output/college.zh/sonnet/html/book_skiplist_sset.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "skiplist_list",
+        "file": "output/college.zh/sonnet/html/book_skiplist_list.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "coin_toss_randomization",
         "label": "Coin Toss Randomization",
-        "file": "output/core.en/sonnet/html/concept_coin_toss_randomization.html",
+        "file": "output/college.en/sonnet/html/concept_coin_toss_randomization.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "coin_toss_randomization_zh",
+        "label": "Coin Toss Randomization Zh",
+        "file": "output/college.zh/sonnet/html/concept_coin_toss_randomization_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "edge_length",
         "label": "Edge Length",
-        "file": "output/core.en/sonnet/html/concept_edge_length.html",
+        "file": "output/college.en/sonnet/html/concept_edge_length.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "edge_length_zh",
+        "label": "Edge Length Zh",
+        "file": "output/college.zh/sonnet/html/concept_edge_length_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "node_height",
         "label": "Node Height",
-        "file": "output/core.en/sonnet/html/concept_node_height.html",
+        "file": "output/college.en/sonnet/html/concept_node_height.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "node_height_zh",
+        "label": "Node Height Zh",
+        "file": "output/college.zh/sonnet/html/concept_node_height_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "pick_height_procedure",
         "label": "Pick Height Procedure",
-        "file": "output/core.en/sonnet/html/concept_pick_height_procedure.html",
+        "file": "output/college.en/sonnet/html/concept_pick_height_procedure.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "pick_height_procedure_zh",
+        "label": "Pick Height Procedure Zh",
+        "file": "output/college.zh/sonnet/html/concept_pick_height_procedure_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "pseudo_random_generator",
         "label": "Pseudo Random Generator",
-        "file": "output/core.en/sonnet/html/concept_pseudo_random_generator.html",
+        "file": "output/college.en/sonnet/html/concept_pseudo_random_generator.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "pseudo_random_generator_zh",
+        "label": "Pseudo Random Generator Zh",
+        "file": "output/college.zh/sonnet/html/concept_pseudo_random_generator_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "search_path",
         "label": "Search Path",
-        "file": "output/core.en/sonnet/html/concept_search_path.html",
+        "file": "output/college.en/sonnet/html/concept_search_path.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "search_path_zh",
+        "label": "Search Path Zh",
+        "file": "output/college.zh/sonnet/html/concept_search_path_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "sentinel_node",
         "label": "Sentinel Node",
-        "file": "output/core.en/sonnet/html/concept_sentinel_node.html",
+        "file": "output/college.en/sonnet/html/concept_sentinel_node.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "sentinel_node_zh",
+        "label": "Sentinel Node Zh",
+        "file": "output/college.zh/sonnet/html/concept_sentinel_node_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "singly_linked_list_hierarchy",
         "label": "Singly Linked List Hierarchy",
-        "file": "output/core.en/sonnet/html/concept_singly_linked_list_hierarchy.html",
+        "file": "output/college.en/sonnet/html/concept_singly_linked_list_hierarchy.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "singly_linked_list_hierarchy_zh",
+        "label": "Singly Linked List Hierarchy Zh",
+        "file": "output/college.zh/sonnet/html/concept_singly_linked_list_hierarchy_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "skiplist",
         "label": "Skiplist",
-        "file": "output/core.en/sonnet/html/concept_skiplist.html",
+        "file": "output/college.en/sonnet/html/concept_skiplist.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "skiplist_list",
         "label": "Skiplist List",
-        "file": "output/core.en/sonnet/html/concept_skiplist_list.html",
+        "file": "output/college.en/sonnet/html/concept_skiplist_list.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "skiplist_list_zh",
+        "label": "Skiplist List Zh",
+        "file": "output/college.zh/sonnet/html/concept_skiplist_list_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "skiplist_sset",
         "label": "Skiplist Sset",
-        "file": "output/core.en/sonnet/html/concept_skiplist_sset.html",
+        "file": "output/college.en/sonnet/html/concept_skiplist_sset.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "skiplist_sset_zh",
+        "label": "Skiplist Sset Zh",
+        "file": "output/college.zh/sonnet/html/concept_skiplist_sset_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "skiplist_zh",
+        "label": "Skiplist Zh",
+        "file": "output/college.zh/sonnet/html/concept_skiplist_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -529,43 +672,84 @@
         "file": "output/core.en/sonnet/html/book_hash_collision_dos.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "hash_collision_dos",
+        "file": "output/college.zh/sonnet/html/book_hash_collision_dos.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "chained_hash_table",
         "label": "Chained Hash Table",
-        "file": "output/core.en/sonnet/html/concept_chained_hash_table.html",
+        "file": "output/college.en/sonnet/html/concept_chained_hash_table.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "chained_hash_table_zh",
+        "label": "Chained Hash Table Zh",
+        "file": "output/college.zh/sonnet/html/concept_chained_hash_table_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "hash_collision_dos",
         "label": "Hash Collision Dos",
-        "file": "output/core.en/sonnet/html/concept_hash_collision_dos.html",
+        "file": "output/college.en/sonnet/html/concept_hash_collision_dos.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "hash_collision_dos_zh",
+        "label": "Hash Collision Dos Zh",
+        "file": "output/college.zh/sonnet/html/concept_hash_collision_dos_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "hash_function",
         "label": "Hash Function",
-        "file": "output/core.en/sonnet/html/concept_hash_function.html",
+        "file": "output/college.en/sonnet/html/concept_hash_function.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "hash_function_zh",
+        "label": "Hash Function Zh",
+        "file": "output/college.zh/sonnet/html/concept_hash_function_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "hash_table",
         "label": "Hash Table",
-        "file": "output/core.en/sonnet/html/concept_hash_table.html",
+        "file": "output/college.en/sonnet/html/concept_hash_table.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "hash_table_zh",
+        "label": "Hash Table Zh",
+        "file": "output/college.zh/sonnet/html/concept_hash_table_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "load_factor_invariant",
         "label": "Load Factor Invariant",
-        "file": "output/core.en/sonnet/html/concept_load_factor_invariant.html",
+        "file": "output/college.en/sonnet/html/concept_load_factor_invariant.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "load_factor_invariant_zh",
+        "label": "Load Factor Invariant Zh",
+        "file": "output/college.zh/sonnet/html/concept_load_factor_invariant_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -598,64 +782,132 @@
         "file": "output/core.en/sonnet/html/book_tree_balancing_strategies.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "unbalanced_bst_performance",
+        "file": "output/college.zh/sonnet/html/book_unbalanced_bst_performance.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "tree_balancing_strategies",
+        "file": "output/college.zh/sonnet/html/book_tree_balancing_strategies.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "binary_search_tree",
         "label": "Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_search_tree_zh",
+        "label": "Binary Search Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_search_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "binary_tree",
         "label": "Binary Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_tree_zh",
+        "label": "Binary Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "bst_addition",
         "label": "Bst Addition",
-        "file": "output/core.en/sonnet/html/concept_bst_addition.html",
+        "file": "output/college.en/sonnet/html/concept_bst_addition.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "bst_addition_zh",
+        "label": "Bst Addition Zh",
+        "file": "output/college.zh/sonnet/html/concept_bst_addition_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "bst_removal",
         "label": "Bst Removal",
-        "file": "output/core.en/sonnet/html/concept_bst_removal.html",
+        "file": "output/college.en/sonnet/html/concept_bst_removal.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "bst_removal_zh",
+        "label": "Bst Removal Zh",
+        "file": "output/college.zh/sonnet/html/concept_bst_removal_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "bst_search",
         "label": "Bst Search",
-        "file": "output/core.en/sonnet/html/concept_bst_search.html",
+        "file": "output/college.en/sonnet/html/concept_bst_search.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "bst_search_zh",
+        "label": "Bst Search Zh",
+        "file": "output/college.zh/sonnet/html/concept_bst_search_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "total_order",
         "label": "Total Order",
-        "file": "output/core.en/sonnet/html/concept_total_order.html",
+        "file": "output/college.en/sonnet/html/concept_total_order.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "total_order_zh",
+        "label": "Total Order Zh",
+        "file": "output/college.zh/sonnet/html/concept_total_order_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "tree_balancing_strategies",
         "label": "Tree Balancing Strategies",
-        "file": "output/core.en/sonnet/html/concept_tree_balancing_strategies.html",
+        "file": "output/college.en/sonnet/html/concept_tree_balancing_strategies.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "tree_balancing_strategies_zh",
+        "label": "Tree Balancing Strategies Zh",
+        "file": "output/college.zh/sonnet/html/concept_tree_balancing_strategies_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "unbalanced_bst_performance",
         "label": "Unbalanced Bst Performance",
-        "file": "output/core.en/sonnet/html/concept_unbalanced_bst_performance.html",
+        "file": "output/college.en/sonnet/html/concept_unbalanced_bst_performance.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "unbalanced_bst_performance_zh",
+        "label": "Unbalanced Bst Performance Zh",
+        "file": "output/college.zh/sonnet/html/concept_unbalanced_bst_performance_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -688,85 +940,174 @@
         "file": "output/core.en/sonnet/html/book_treap_hashing_priorities.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "martinez_roura_rbst",
+        "file": "output/college.zh/sonnet/html/book_martinez_roura_rbst.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "treap_hashing_priorities",
+        "file": "output/college.zh/sonnet/html/book_treap_hashing_priorities.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "binary_search_tree",
         "label": "Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_search_tree_zh",
+        "label": "Binary Search Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_search_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "heap_property",
         "label": "Heap Property",
-        "file": "output/core.en/sonnet/html/concept_heap_property.html",
+        "file": "output/college.en/sonnet/html/concept_heap_property.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "heap_property_zh",
+        "label": "Heap Property Zh",
+        "file": "output/college.zh/sonnet/html/concept_heap_property_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "martinez_roura_rbst",
         "label": "Martinez Roura Rbst",
-        "file": "output/core.en/sonnet/html/concept_martinez_roura_rbst.html",
+        "file": "output/college.en/sonnet/html/concept_martinez_roura_rbst.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "martinez_roura_rbst_zh",
+        "label": "Martinez Roura Rbst Zh",
+        "file": "output/college.zh/sonnet/html/concept_martinez_roura_rbst_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "random_binary_search_tree",
         "label": "Random Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_random_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_random_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "random_binary_search_tree_zh",
+        "label": "Random Binary Search Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_random_binary_search_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "random_permutation",
         "label": "Random Permutation",
-        "file": "output/core.en/sonnet/html/concept_random_permutation.html",
+        "file": "output/college.en/sonnet/html/concept_random_permutation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "random_permutation_zh",
+        "label": "Random Permutation Zh",
+        "file": "output/college.zh/sonnet/html/concept_random_permutation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "rotation",
         "label": "Rotation",
-        "file": "output/core.en/sonnet/html/concept_rotation.html",
+        "file": "output/college.en/sonnet/html/concept_rotation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "rotation_zh",
+        "label": "Rotation Zh",
+        "file": "output/college.zh/sonnet/html/concept_rotation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "sset_interface",
         "label": "Sset Interface",
-        "file": "output/core.en/sonnet/html/concept_sset_interface.html",
+        "file": "output/college.en/sonnet/html/concept_sset_interface.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "sset_interface_zh",
+        "label": "Sset Interface Zh",
+        "file": "output/college.zh/sonnet/html/concept_sset_interface_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "treap",
         "label": "Treap",
-        "file": "output/core.en/sonnet/html/concept_treap.html",
+        "file": "output/college.en/sonnet/html/concept_treap.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "treap_add",
         "label": "Treap Add",
-        "file": "output/core.en/sonnet/html/concept_treap_add.html",
+        "file": "output/college.en/sonnet/html/concept_treap_add.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "treap_add_zh",
+        "label": "Treap Add Zh",
+        "file": "output/college.zh/sonnet/html/concept_treap_add_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "treap_hashing_priorities",
         "label": "Treap Hashing Priorities",
-        "file": "output/core.en/sonnet/html/concept_treap_hashing_priorities.html",
+        "file": "output/college.en/sonnet/html/concept_treap_hashing_priorities.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "treap_hashing_priorities_zh",
+        "label": "Treap Hashing Priorities Zh",
+        "file": "output/college.zh/sonnet/html/concept_treap_hashing_priorities_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "treap_remove",
         "label": "Treap Remove",
-        "file": "output/core.en/sonnet/html/concept_treap_remove.html",
+        "file": "output/college.en/sonnet/html/concept_treap_remove.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "treap_remove_zh",
+        "label": "Treap Remove Zh",
+        "file": "output/college.zh/sonnet/html/concept_treap_remove_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "treap_zh",
+        "label": "Treap Zh",
+        "file": "output/college.zh/sonnet/html/concept_treap_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -817,127 +1158,216 @@
         "file": "output/core.en/sonnet/html/book_sequence_data_structure.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "scapegoat_tree_performance",
+        "file": "output/college.zh/sonnet/html/book_scapegoat_tree_performance.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "weight_balanced_tree",
+        "file": "output/college.zh/sonnet/html/book_weight_balanced_tree.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "amortized_analysis",
         "label": "Amortized Analysis",
-        "file": "output/core.en/sonnet/html/concept_amortized_analysis.html",
+        "file": "output/college.en/sonnet/html/concept_amortized_analysis.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "amortized_analysis_zh",
+        "label": "Amortized Analysis Zh",
+        "file": "output/college.zh/sonnet/html/concept_amortized_analysis_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "binary_search_tree",
         "label": "Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
-        "name": "countdown_tree",
-        "label": "Countdown Tree",
-        "file": "output/core.en/sonnet/html/concept_countdown_tree.html",
+        "name": "binary_search_tree_zh",
+        "label": "Binary Search Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_search_tree_zh.html",
         "model": "sonnet",
-        "language": "en"
+        "language": "zh"
       },
       {
         "name": "credit_scheme",
         "label": "Credit Scheme",
-        "file": "output/core.en/sonnet/html/concept_credit_scheme.html",
+        "file": "output/college.en/sonnet/html/concept_credit_scheme.html",
         "model": "sonnet",
         "language": "en"
       },
       {
-        "name": "dynamite_tree",
-        "label": "Dynamite Tree",
-        "file": "output/core.en/sonnet/html/concept_dynamite_tree.html",
+        "name": "credit_scheme_zh",
+        "label": "Credit Scheme Zh",
+        "file": "output/college.zh/sonnet/html/concept_credit_scheme_zh.html",
         "model": "sonnet",
-        "language": "en"
+        "language": "zh"
       },
       {
         "name": "height_bound_invariant",
         "label": "Height Bound Invariant",
-        "file": "output/core.en/sonnet/html/concept_height_bound_invariant.html",
+        "file": "output/college.en/sonnet/html/concept_height_bound_invariant.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "height_bound_invariant_zh",
+        "label": "Height Bound Invariant Zh",
+        "file": "output/college.zh/sonnet/html/concept_height_bound_invariant_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "rebuild_operation",
         "label": "Rebuild Operation",
-        "file": "output/core.en/sonnet/html/concept_rebuild_operation.html",
+        "file": "output/college.en/sonnet/html/concept_rebuild_operation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "rebuild_operation_zh",
+        "label": "Rebuild Operation Zh",
+        "file": "output/college.zh/sonnet/html/concept_rebuild_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "scapegoat_add",
         "label": "Scapegoat Add",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_add.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_add.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "scapegoat_add_zh",
+        "label": "Scapegoat Add Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_add_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "scapegoat_existence_lemma",
         "label": "Scapegoat Existence Lemma",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_existence_lemma.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_existence_lemma.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "scapegoat_existence_lemma_zh",
+        "label": "Scapegoat Existence Lemma Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_existence_lemma_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "scapegoat_node",
         "label": "Scapegoat Node",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_node.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_node.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "scapegoat_node_zh",
+        "label": "Scapegoat Node Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_node_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "scapegoat_remove",
         "label": "Scapegoat Remove",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_remove.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_remove.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "scapegoat_remove_zh",
+        "label": "Scapegoat Remove Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_remove_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "scapegoat_tree",
         "label": "Scapegoat Tree",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_tree.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "scapegoat_tree_performance",
         "label": "Scapegoat Tree Performance",
-        "file": "output/core.en/sonnet/html/concept_scapegoat_tree_performance.html",
+        "file": "output/college.en/sonnet/html/concept_scapegoat_tree_performance.html",
         "model": "sonnet",
         "language": "en"
       },
       {
-        "name": "sequence_data_structure",
-        "label": "Sequence Data Structure",
-        "file": "output/core.en/sonnet/html/concept_sequence_data_structure.html",
+        "name": "scapegoat_tree_performance_zh",
+        "label": "Scapegoat Tree Performance Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_tree_performance_zh.html",
         "model": "sonnet",
-        "language": "en"
+        "language": "zh"
+      },
+      {
+        "name": "scapegoat_tree_zh",
+        "label": "Scapegoat Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_scapegoat_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "subtree_size",
         "label": "Subtree Size",
-        "file": "output/core.en/sonnet/html/concept_subtree_size.html",
+        "file": "output/college.en/sonnet/html/concept_subtree_size.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "subtree_size_zh",
+        "label": "Subtree Size Zh",
+        "file": "output/college.zh/sonnet/html/concept_subtree_size_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "tree_height",
         "label": "Tree Height",
-        "file": "output/core.en/sonnet/html/concept_tree_height.html",
+        "file": "output/college.en/sonnet/html/concept_tree_height.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "tree_height_zh",
+        "label": "Tree Height Zh",
+        "file": "output/college.zh/sonnet/html/concept_tree_height_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "weight_balanced_tree",
         "label": "Weight Balanced Tree",
-        "file": "output/core.en/sonnet/html/concept_weight_balanced_tree.html",
+        "file": "output/college.en/sonnet/html/concept_weight_balanced_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "weight_balanced_tree_zh",
+        "label": "Weight Balanced Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_weight_balanced_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -970,127 +1400,258 @@
         "file": "output/core.en/sonnet/html/book_avl_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "red_black_performance",
+        "file": "output/college.zh/sonnet/html/book_red_black_performance.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "avl_tree",
+        "file": "output/college.zh/sonnet/html/book_avl_tree.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "2_4_tree",
         "label": "2 4 Tree",
-        "file": "output/core.en/sonnet/html/concept_2_4_tree.html",
+        "file": "output/college.en/sonnet/html/concept_2_4_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "2_4_tree_add_leaf",
         "label": "2 4 Tree Add Leaf",
-        "file": "output/core.en/sonnet/html/concept_2_4_tree_add_leaf.html",
+        "file": "output/college.en/sonnet/html/concept_2_4_tree_add_leaf.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "2_4_tree_add_leaf_zh",
+        "label": "2 4 Tree Add Leaf Zh",
+        "file": "output/college.zh/sonnet/html/concept_2_4_tree_add_leaf_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "2_4_tree_remove_leaf",
         "label": "2 4 Tree Remove Leaf",
-        "file": "output/core.en/sonnet/html/concept_2_4_tree_remove_leaf.html",
+        "file": "output/college.en/sonnet/html/concept_2_4_tree_remove_leaf.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "2_4_tree_remove_leaf_zh",
+        "label": "2 4 Tree Remove Leaf Zh",
+        "file": "output/college.zh/sonnet/html/concept_2_4_tree_remove_leaf_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "name": "2_4_tree_zh",
+        "label": "2 4 Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_2_4_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "amortized_potential_method",
         "label": "Amortized Potential Method",
-        "file": "output/core.en/sonnet/html/concept_amortized_potential_method.html",
+        "file": "output/college.en/sonnet/html/concept_amortized_potential_method.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "amortized_potential_method_zh",
+        "label": "Amortized Potential Method Zh",
+        "file": "output/college.zh/sonnet/html/concept_amortized_potential_method_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "avl_tree",
         "label": "Avl Tree",
-        "file": "output/core.en/sonnet/html/concept_avl_tree.html",
+        "file": "output/college.en/sonnet/html/concept_avl_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "avl_tree_zh",
+        "label": "Avl Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_avl_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "binary_search_tree",
         "label": "Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_search_tree_zh",
+        "label": "Binary Search Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_search_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "black_height_property",
         "label": "Black Height Property",
-        "file": "output/core.en/sonnet/html/concept_black_height_property.html",
+        "file": "output/college.en/sonnet/html/concept_black_height_property.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "black_height_property_zh",
+        "label": "Black Height Property Zh",
+        "file": "output/college.zh/sonnet/html/concept_black_height_property_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "colour_flip_push_pull",
         "label": "Colour Flip Push Pull",
-        "file": "output/core.en/sonnet/html/concept_colour_flip_push_pull.html",
+        "file": "output/college.en/sonnet/html/concept_colour_flip_push_pull.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "colour_flip_push_pull_zh",
+        "label": "Colour Flip Push Pull Zh",
+        "file": "output/college.zh/sonnet/html/concept_colour_flip_push_pull_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "left_leaning_property",
         "label": "Left Leaning Property",
-        "file": "output/core.en/sonnet/html/concept_left_leaning_property.html",
+        "file": "output/college.en/sonnet/html/concept_left_leaning_property.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "left_leaning_property_zh",
+        "label": "Left Leaning Property Zh",
+        "file": "output/college.zh/sonnet/html/concept_left_leaning_property_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "no_red_edge_property",
         "label": "No Red Edge Property",
-        "file": "output/core.en/sonnet/html/concept_no_red_edge_property.html",
+        "file": "output/college.en/sonnet/html/concept_no_red_edge_property.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "no_red_edge_property_zh",
+        "label": "No Red Edge Property Zh",
+        "file": "output/college.zh/sonnet/html/concept_no_red_edge_property_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "red_black_2_4_correspondence",
         "label": "Red Black 2 4 Correspondence",
-        "file": "output/core.en/sonnet/html/concept_red_black_2_4_correspondence.html",
+        "file": "output/college.en/sonnet/html/concept_red_black_2_4_correspondence.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "red_black_2_4_correspondence_zh",
+        "label": "Red Black 2 4 Correspondence Zh",
+        "file": "output/college.zh/sonnet/html/concept_red_black_2_4_correspondence_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "red_black_add",
         "label": "Red Black Add",
-        "file": "output/core.en/sonnet/html/concept_red_black_add.html",
+        "file": "output/college.en/sonnet/html/concept_red_black_add.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "red_black_add_zh",
+        "label": "Red Black Add Zh",
+        "file": "output/college.zh/sonnet/html/concept_red_black_add_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "red_black_performance",
         "label": "Red Black Performance",
-        "file": "output/core.en/sonnet/html/concept_red_black_performance.html",
+        "file": "output/college.en/sonnet/html/concept_red_black_performance.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "red_black_performance_zh",
+        "label": "Red Black Performance Zh",
+        "file": "output/college.zh/sonnet/html/concept_red_black_performance_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "red_black_remove",
         "label": "Red Black Remove",
-        "file": "output/core.en/sonnet/html/concept_red_black_remove.html",
+        "file": "output/college.en/sonnet/html/concept_red_black_remove.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "red_black_remove_zh",
+        "label": "Red Black Remove Zh",
+        "file": "output/college.zh/sonnet/html/concept_red_black_remove_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "red_black_tree",
         "label": "Red Black Tree",
-        "file": "output/core.en/sonnet/html/concept_red_black_tree.html",
+        "file": "output/college.en/sonnet/html/concept_red_black_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "red_black_tree_zh",
+        "label": "Red Black Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_red_black_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "rooted_tree",
         "label": "Rooted Tree",
-        "file": "output/core.en/sonnet/html/concept_rooted_tree.html",
+        "file": "output/college.en/sonnet/html/concept_rooted_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "rooted_tree_zh",
+        "label": "Rooted Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_rooted_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "tree_height",
         "label": "Tree Height",
-        "file": "output/core.en/sonnet/html/concept_tree_height.html",
+        "file": "output/college.en/sonnet/html/concept_tree_height.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "tree_height_zh",
+        "label": "Tree Height Zh",
+        "file": "output/college.zh/sonnet/html/concept_tree_height_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -1135,106 +1696,188 @@
         "file": "output/core.en/sonnet/html/book_dijkstras_algorithm.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "heapsort",
+        "file": "output/college.zh/sonnet/html/book_heapsort.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
+        "target": "absorb_operation",
+        "file": "output/college.zh/sonnet/html/book_absorb_operation.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "absorb_operation",
         "label": "Absorb Operation",
-        "file": "output/core.en/sonnet/html/concept_absorb_operation.html",
+        "file": "output/college.en/sonnet/html/concept_absorb_operation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "absorb_operation_zh",
+        "label": "Absorb Operation Zh",
+        "file": "output/college.zh/sonnet/html/concept_absorb_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "array_resizing_amortization",
         "label": "Array Resizing Amortization",
-        "file": "output/core.en/sonnet/html/concept_array_resizing_amortization.html",
+        "file": "output/college.en/sonnet/html/concept_array_resizing_amortization.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "array_resizing_amortization_zh",
+        "label": "Array Resizing Amortization Zh",
+        "file": "output/college.zh/sonnet/html/concept_array_resizing_amortization_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "binary_heap",
         "label": "Binary Heap",
-        "file": "output/core.en/sonnet/html/concept_binary_heap.html",
+        "file": "output/college.en/sonnet/html/concept_binary_heap.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_heap_zh",
+        "label": "Binary Heap Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_heap_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "binary_tree",
         "label": "Binary Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "binary_tree_zh",
+        "label": "Binary Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_binary_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "complete_binary_tree",
         "label": "Complete Binary Tree",
-        "file": "output/core.en/sonnet/html/concept_complete_binary_tree.html",
+        "file": "output/college.en/sonnet/html/concept_complete_binary_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
-        "name": "decrease_key",
-        "label": "Decrease Key",
-        "file": "output/core.en/sonnet/html/concept_decrease_key.html",
+        "name": "complete_binary_tree_zh",
+        "label": "Complete Binary Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_complete_binary_tree_zh.html",
         "model": "sonnet",
-        "language": "en"
-      },
-      {
-        "name": "dijkstras_algorithm",
-        "label": "Dijkstras Algorithm",
-        "file": "output/core.en/sonnet/html/concept_dijkstras_algorithm.html",
-        "model": "sonnet",
-        "language": "en"
+        "language": "zh"
       },
       {
         "name": "eytzinger_method",
         "label": "Eytzinger Method",
-        "file": "output/core.en/sonnet/html/concept_eytzinger_method.html",
+        "file": "output/college.en/sonnet/html/concept_eytzinger_method.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "eytzinger_method_zh",
+        "label": "Eytzinger Method Zh",
+        "file": "output/college.zh/sonnet/html/concept_eytzinger_method_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "heap_order_property",
         "label": "Heap Order Property",
-        "file": "output/core.en/sonnet/html/concept_heap_order_property.html",
+        "file": "output/college.en/sonnet/html/concept_heap_order_property.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "heap_order_property_zh",
+        "label": "Heap Order Property Zh",
+        "file": "output/college.zh/sonnet/html/concept_heap_order_property_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "heapsort",
         "label": "Heapsort",
-        "file": "output/core.en/sonnet/html/concept_heapsort.html",
+        "file": "output/college.en/sonnet/html/concept_heapsort.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "heapsort_zh",
+        "label": "Heapsort Zh",
+        "file": "output/college.zh/sonnet/html/concept_heapsort_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "meldable_heap",
         "label": "Meldable Heap",
-        "file": "output/core.en/sonnet/html/concept_meldable_heap.html",
+        "file": "output/college.en/sonnet/html/concept_meldable_heap.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "meldable_heap_zh",
+        "label": "Meldable Heap Zh",
+        "file": "output/college.zh/sonnet/html/concept_meldable_heap_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "merge_operation",
         "label": "Merge Operation",
-        "file": "output/core.en/sonnet/html/concept_merge_operation.html",
+        "file": "output/college.en/sonnet/html/concept_merge_operation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "merge_operation_zh",
+        "label": "Merge Operation Zh",
+        "file": "output/college.zh/sonnet/html/concept_merge_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "priority_queue",
         "label": "Priority Queue",
-        "file": "output/core.en/sonnet/html/concept_priority_queue.html",
+        "file": "output/college.en/sonnet/html/concept_priority_queue.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "priority_queue_zh",
+        "label": "Priority Queue Zh",
+        "file": "output/college.zh/sonnet/html/concept_priority_queue_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "randomization_coin_toss",
         "label": "Randomization Coin Toss",
-        "file": "output/core.en/sonnet/html/concept_randomization_coin_toss.html",
+        "file": "output/college.en/sonnet/html/concept_randomization_coin_toss.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "randomization_coin_toss_zh",
+        "label": "Randomization Coin Toss Zh",
+        "file": "output/college.zh/sonnet/html/concept_randomization_coin_toss_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -1261,71 +1904,140 @@
         "file": "output/core.en/sonnet/html/book_integer_sorting_via_indexing.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "target": "integer_sorting_via_indexing",
+        "file": "output/college.zh/sonnet/html/book_integer_sorting_via_indexing.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "generated_concepts": [
       {
         "name": "compare_operation",
         "label": "Compare Operation",
-        "file": "output/core.en/sonnet/html/concept_compare_operation.html",
+        "file": "output/college.en/sonnet/html/concept_compare_operation.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "compare_operation_zh",
+        "label": "Compare Operation Zh",
+        "file": "output/college.zh/sonnet/html/concept_compare_operation_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "comparison_based_sorting",
         "label": "Comparison Based Sorting",
-        "file": "output/core.en/sonnet/html/concept_comparison_based_sorting.html",
+        "file": "output/college.en/sonnet/html/concept_comparison_based_sorting.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "comparison_based_sorting_zh",
+        "label": "Comparison Based Sorting Zh",
+        "file": "output/college.zh/sonnet/html/concept_comparison_based_sorting_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "comparison_sorting_lower_bound",
         "label": "Comparison Sorting Lower Bound",
-        "file": "output/core.en/sonnet/html/concept_comparison_sorting_lower_bound.html",
+        "file": "output/college.en/sonnet/html/concept_comparison_sorting_lower_bound.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "comparison_sorting_lower_bound_zh",
+        "label": "Comparison Sorting Lower Bound Zh",
+        "file": "output/college.zh/sonnet/html/concept_comparison_sorting_lower_bound_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "comparison_tree",
         "label": "Comparison Tree",
-        "file": "output/core.en/sonnet/html/concept_comparison_tree.html",
+        "file": "output/college.en/sonnet/html/concept_comparison_tree.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "comparison_tree_zh",
+        "label": "Comparison Tree Zh",
+        "file": "output/college.zh/sonnet/html/concept_comparison_tree_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "counting_sort",
         "label": "Counting Sort",
-        "file": "output/core.en/sonnet/html/concept_counting_sort.html",
+        "file": "output/college.en/sonnet/html/concept_counting_sort.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "counting_sort_zh",
+        "label": "Counting Sort Zh",
+        "file": "output/college.zh/sonnet/html/concept_counting_sort_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "integer_sorting_via_indexing",
         "label": "Integer Sorting Via Indexing",
-        "file": "output/core.en/sonnet/html/concept_integer_sorting_via_indexing.html",
+        "file": "output/college.en/sonnet/html/concept_integer_sorting_via_indexing.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "integer_sorting_via_indexing_zh",
+        "label": "Integer Sorting Via Indexing Zh",
+        "file": "output/college.zh/sonnet/html/concept_integer_sorting_via_indexing_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "non_comparison_sorting",
         "label": "Non Comparison Sorting",
-        "file": "output/core.en/sonnet/html/concept_non_comparison_sorting.html",
+        "file": "output/college.en/sonnet/html/concept_non_comparison_sorting.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "non_comparison_sorting_zh",
+        "label": "Non Comparison Sorting Zh",
+        "file": "output/college.zh/sonnet/html/concept_non_comparison_sorting_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       },
       {
         "name": "radix_sort",
         "label": "Radix Sort",
-        "file": "output/core.en/sonnet/html/concept_radix_sort.html",
+        "file": "output/college.en/sonnet/html/concept_radix_sort.html",
         "model": "sonnet",
         "language": "en"
       },
       {
+        "name": "radix_sort_zh",
+        "label": "Radix Sort Zh",
+        "file": "output/college.zh/sonnet/html/concept_radix_sort_zh.html",
+        "model": "sonnet",
+        "language": "zh"
+      },
+      {
         "name": "stable_sorting",
         "label": "Stable Sorting",
-        "file": "output/core.en/sonnet/html/concept_stable_sorting.html",
+        "file": "output/college.en/sonnet/html/concept_stable_sorting.html",
         "model": "sonnet",
         "language": "en"
+      },
+      {
+        "name": "stable_sorting_zh",
+        "label": "Stable Sorting Zh",
+        "file": "output/college.zh/sonnet/html/concept_stable_sorting_zh.html",
+        "model": "sonnet",
+        "language": "zh"
       }
     ],
     "tags": [
@@ -1370,84 +2082,70 @@
       {
         "name": "adjacency_list",
         "label": "Adjacency List",
-        "file": "output/core.en/sonnet/html/concept_adjacency_list.html",
-        "model": "sonnet",
-        "language": "en"
-      },
-      {
-        "name": "adjacency_matrix",
-        "label": "Adjacency Matrix",
-        "file": "output/core.en/sonnet/html/concept_adjacency_matrix.html",
+        "file": "output/college.en/sonnet/html/concept_adjacency_list.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "breadth_first_search",
         "label": "Breadth First Search",
-        "file": "output/core.en/sonnet/html/concept_breadth_first_search.html",
+        "file": "output/college.en/sonnet/html/concept_breadth_first_search.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "cycle_detection_via_dfs",
         "label": "Cycle Detection Via Dfs",
-        "file": "output/core.en/sonnet/html/concept_cycle_detection_via_dfs.html",
+        "file": "output/college.en/sonnet/html/concept_cycle_detection_via_dfs.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "depth_first_search",
         "label": "Depth First Search",
-        "file": "output/core.en/sonnet/html/concept_depth_first_search.html",
+        "file": "output/college.en/sonnet/html/concept_depth_first_search.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "graph",
         "label": "Graph",
-        "file": "output/core.en/sonnet/html/concept_graph.html",
+        "file": "output/college.en/sonnet/html/concept_graph.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "graph_traversal",
         "label": "Graph Traversal",
-        "file": "output/core.en/sonnet/html/concept_graph_traversal.html",
-        "model": "sonnet",
-        "language": "en"
-      },
-      {
-        "name": "matrix_powers_for_paths",
-        "label": "Matrix Powers For Paths",
-        "file": "output/core.en/sonnet/html/concept_matrix_powers_for_paths.html",
+        "file": "output/college.en/sonnet/html/concept_graph_traversal.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "queue",
         "label": "Queue",
-        "file": "output/core.en/sonnet/html/concept_queue.html",
+        "file": "output/college.en/sonnet/html/concept_queue.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "shortest_path_via_bfs",
         "label": "Shortest Path Via Bfs",
-        "file": "output/core.en/sonnet/html/concept_shortest_path_via_bfs.html",
+        "file": "output/college.en/sonnet/html/concept_shortest_path_via_bfs.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "stack",
         "label": "Stack",
-        "file": "output/core.en/sonnet/html/concept_stack.html",
+        "file": "output/college.en/sonnet/html/concept_stack.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "vertex_degree",
         "label": "Vertex Degree",
-        "file": "output/core.en/sonnet/html/concept_vertex_degree.html",
+        "file": "output/college.en/sonnet/html/concept_vertex_degree.html",
         "model": "sonnet",
         "language": "en"
       }
@@ -1494,98 +2192,91 @@
       {
         "name": "binary_trie",
         "label": "Binary Trie",
-        "file": "output/core.en/sonnet/html/concept_binary_trie.html",
+        "file": "output/college.en/sonnet/html/concept_binary_trie.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "binary_trie_operations",
         "label": "Binary Trie Operations",
-        "file": "output/core.en/sonnet/html/concept_binary_trie_operations.html",
+        "file": "output/college.en/sonnet/html/concept_binary_trie_operations.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "bit_representation",
         "label": "Bit Representation",
-        "file": "output/core.en/sonnet/html/concept_bit_representation.html",
-        "model": "sonnet",
-        "language": "en"
-      },
-      {
-        "name": "fusion_tree",
-        "label": "Fusion Tree",
-        "file": "output/core.en/sonnet/html/concept_fusion_tree.html",
+        "file": "output/college.en/sonnet/html/concept_bit_representation.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "hash_table",
         "label": "Hash Table",
-        "file": "output/core.en/sonnet/html/concept_hash_table.html",
+        "file": "output/college.en/sonnet/html/concept_hash_table.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "jump_pointers",
         "label": "Jump Pointers",
-        "file": "output/core.en/sonnet/html/concept_jump_pointers.html",
+        "file": "output/college.en/sonnet/html/concept_jump_pointers.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "leaf_linked_list",
         "label": "Leaf Linked List",
-        "file": "output/core.en/sonnet/html/concept_leaf_linked_list.html",
+        "file": "output/college.en/sonnet/html/concept_leaf_linked_list.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "level_based_binary_search",
         "label": "Level Based Binary Search",
-        "file": "output/core.en/sonnet/html/concept_level_based_binary_search.html",
+        "file": "output/college.en/sonnet/html/concept_level_based_binary_search.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "probabilistic_sampling",
         "label": "Probabilistic Sampling",
-        "file": "output/core.en/sonnet/html/concept_probabilistic_sampling.html",
+        "file": "output/college.en/sonnet/html/concept_probabilistic_sampling.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "sset_interface",
         "label": "Sset Interface",
-        "file": "output/core.en/sonnet/html/concept_sset_interface.html",
+        "file": "output/college.en/sonnet/html/concept_sset_interface.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "treap",
         "label": "Treap",
-        "file": "output/core.en/sonnet/html/concept_treap.html",
+        "file": "output/college.en/sonnet/html/concept_treap.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "van_emde_boas_tree",
         "label": "Van Emde Boas Tree",
-        "file": "output/core.en/sonnet/html/concept_van_emde_boas_tree.html",
+        "file": "output/college.en/sonnet/html/concept_van_emde_boas_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "xfasttrie",
         "label": "Xfasttrie",
-        "file": "output/core.en/sonnet/html/concept_xfasttrie.html",
+        "file": "output/college.en/sonnet/html/concept_xfasttrie.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "yfasttrie",
         "label": "Yfasttrie",
-        "file": "output/core.en/sonnet/html/concept_yfasttrie.html",
+        "file": "output/college.en/sonnet/html/concept_yfasttrie.html",
         "model": "sonnet",
         "language": "en"
       }
@@ -1626,42 +2317,42 @@
       {
         "name": "b_plus_tree",
         "label": "B Plus Tree",
-        "file": "output/core.en/sonnet/html/concept_b_plus_tree.html",
+        "file": "output/college.en/sonnet/html/concept_b_plus_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "b_tree",
         "label": "B Tree",
-        "file": "output/core.en/sonnet/html/concept_b_tree.html",
+        "file": "output/college.en/sonnet/html/concept_b_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "binary_search_tree",
         "label": "Binary Search Tree",
-        "file": "output/core.en/sonnet/html/concept_binary_search_tree.html",
+        "file": "output/college.en/sonnet/html/concept_binary_search_tree.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "block_store",
         "label": "Block Store",
-        "file": "output/core.en/sonnet/html/concept_block_store.html",
+        "file": "output/college.en/sonnet/html/concept_block_store.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "btree_filesystems_databases",
         "label": "Btree Filesystems Databases",
-        "file": "output/core.en/sonnet/html/concept_btree_filesystems_databases.html",
+        "file": "output/college.en/sonnet/html/concept_btree_filesystems_databases.html",
         "model": "sonnet",
         "language": "en"
       },
       {
         "name": "external_memory_model",
         "label": "External Memory Model",
-        "file": "output/core.en/sonnet/html/concept_external_memory_model.html",
+        "file": "output/college.en/sonnet/html/concept_external_memory_model.html",
         "model": "sonnet",
         "language": "en"
       }

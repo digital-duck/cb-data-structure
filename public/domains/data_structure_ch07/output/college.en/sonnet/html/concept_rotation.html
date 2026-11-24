@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotation | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="rotation">Rotation</h2>
+<p><strong>Definition.</strong> A <em>rotation</em> is a local restructuring of a binary search tree (BST) that changes which of two adjacent nodes is the parent, while keeping the in-order sequence of keys unchanged. Because in-order order is preserved, the BST property still holds afterward. Rotations take $O(1)$ time, since only a constant number of pointers change. Self-balancing trees such as AVL trees and red-black trees use them to reduce height.</p>
+<p>There are two mirror-image forms. Let $x$ be the left child of $y$.</p>
+<li><strong>Right rotation at $y$:</strong> $x$ becomes the parent of $y$. $y$ becomes the right child of $x$.</li>
+<li><strong>Left rotation at $x$:</strong> the exact inverse. $y$ becomes the parent of $x$, and $x$ becomes the left child of $y$.</li>
+<p>The only subtree that changes parents is the one between the two nodes. In a right rotation at $y$, this is $x$'s right subtree $B$. It must move because $x$'s right child slot is now taken by $y$. Since every key in $B$ satisfies $x < B < y$, $B$ fits exactly into $y$'s vacated left slot.</p>
+<pre class="mermaid">graph TD
+    subgraph Before
+    y1["y"] --> x1["x"]
+    y1 --> C1["C"]
+    x1 --> A1["A"]
+    x1 --> B1["B"]
+    end
+    subgraph After
+    x2["x"] --> A2["A"]
+    x2 --> y2["y"]
+    y2 --> B2["B"]
+    y2 --> C2["C"]
+    end</pre>
+<p><em>A right rotation at $y$ lifts $x$ above $y$. Subtree $B$ moves from $x$'s right to $y$'s left, and $A$ and $C$ stay with their original parents.</em></p>
+<p><strong>Worked example.</strong> Suppose $y = 30$ has left child $x = 20$. Let $A = \{10\}$, $B = \{25\}$ (the right child of 20), and $C = \{40\}$. The in-order sequence is $10, 20, 25, 30, 40$.</p>
+<p>Rotate right at 30:</p>
+<li>Set $30$'s left child to $B$, which is $25$.</li>
+<li>Set $20$'s right child to $30$.</li>
+<li>Replace $30$ with $20$ in $30$'s former parent (or make $20$ the root).</li>
+<p>The new in-order traversal is still $10, 20, 25, 30, 40$. The height of the subtree went from 3 to 3 here, but if $A$ had been taller than $B$ and $C$, the rotation would lower the overall height.</p>
+<p><strong>Problem-solving application.</strong> Suppose you insert $1, 2, 3$ in order into an empty BST. You get a right-leaning chain $1 \to 2 \to 3$, with height 2. To fix this:</p>
+<li>Identify the imbalance. Node $1$ has a right subtree of height 1 and an empty left subtree.</li>
+<li>Apply a left rotation at $1$, so $2$ becomes the parent.</li>
+<li>Check the result. $2$ is the root with children $1$ and $3$, and the height drops to 1.</li>
+<p>For a general strategy, when a path leans in one direction, rotate toward the opposite side at the top of the heavy path. When the heavy path zigzags, for example a left child whose heavy child is on the right, first rotate the child to straighten the path. This is a double rotation. Then rotate at the top. Check each step by listing the in-order keys, which should never change.</p>
+<p><strong>Cost.</strong> A rotation changes at most three pointers, so $T(n) = O(1)$. Balanced trees use $O(\log n)$ rotations in the worst case per insertion or deletion.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

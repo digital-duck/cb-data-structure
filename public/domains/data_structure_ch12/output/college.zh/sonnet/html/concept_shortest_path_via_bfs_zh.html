@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortest Path Via Bfs | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="通过广度优先搜索求最短路径">通过广度优先搜索求最短路径</h2>
+<h3 id="定义">定义</h3>
+<p>设无权图 $G=(V,E)$,$r\in V$ 为源点。从 $r$ 到顶点 $j$ 的<strong>最短路径</strong>是边数最少的路径,其长度记为 $d(j)$。</p>
+<p>广度优先搜索(BFS)按"层"扩展:先访问距 $r$ 为 $0$ 的点,再访问距离为 $1$ 的点,依此类推。因此每个顶点<strong>首次被发现</strong>时,所用的边数恰为它到 $r$ 的最短距离。</p>
+<p>为了还原路径,我们为每个顶点记录<strong>前驱数组</strong> $p$:当顶点 $v$ 的邻居 $w$ 第一次被发现时,令</p>
+$$p[w]=v,\qquad d(w)=d(v)+1.$$
+<p>源点满足 $p[r]=\text{None}$。</p>
+<pre><code>from collections import deque
+
+def bfs(adj, r):
+    p = {r: None}
+    d = {r: 0}
+    q = deque([r])
+    while q:
+        v = q.popleft()
+        for w in adj[v]:
+            if w not in p:        # 首次发现
+                p[w] = v
+                d[w] = d[v] + 1
+                q.append(w)
+    return p, d
+
+def path(p, j):
+    if j not in p:
+        return None               # 不可达
+    res = []
+    while j is not None:
+        res.append(j)
+        j = p[j]
+    return res[::-1]</code></pre>
+<p>BFS 的时间复杂度为 $O(|V|+|E|)$,每个顶点至多入队一次,每条边至多被检查常数次。</p>
+<h3 id="worked-example">worked example</h3>
+<p>图的邻接表为:$A:\{B,C\}$,$B:\{A,D\}$,$C:\{A,D,E\}$,$D:\{B,C,F\}$,$E:\{C,F\}$,$F:\{D,E\}$。取 $r=A$。</p>
+<p>| 出队顶点 | 新发现的顶点 | 记录 | |---|---|---| | $A$ | $B,C$ | $p[B]=p[C]=A$ | | $B$ | $D$ | $p[D]=B$ | | $C$ | $E$ | $p[E]=C$($D$ 已被发现) | | $D$ | $F$ | $p[F]=D$ |</p>
+<p>还原 $A$ 到 $F$ 的路径:$F\to p[F]=D\to p[D]=B\to p[B]=A$,反转得 $A,B,D,F$,长度 $d(F)=3$。注意 $E$ 也能到达 $F$,但 $D$ 先出队,所以 $p[F]$ 不会被覆盖;这条路径同样长度为 3,最短路径不一定唯一。</p>
+<pre class="mermaid">graph TD
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> D((D))
+    C --> E((E))
+    D --> F((F))</pre>
+<p><em>BFS 树:每条边由 $p$ 数组确定,从任意顶点沿箭头反向走到 $A$ 即得最短路径。</em></p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:迷宫是 $n\times n$ 的网格,求从起点到出口的最少步数及一条具体路线。</p>
+<p><strong>解法</strong>:把每个空格看作顶点,相邻空格之间连边,这就化为无权图上的最短路径问题。</p>
+<li>从起点运行 BFS,记录 $p$ 和 $d$。</li>
+<li>若出口不在 $p$ 中,则无解。</li>
+<li>否则 $d(\text{出口})$ 即最少步数,用 <code>path(p, 出口)</code> 还原路线。</li>
+<p><strong>正确性要点</strong>:BFS 队列中顶点的距离单调不减,所以首次发现某点时的距离就是最小距离(对 $d$ 归纳可证)。此结论依赖边权相同;若边带有不同权重,需改用 Dijkstra 算法。</p>
+<p><strong>复杂度</strong>:网格有 $n^2$ 个顶点、至多 $2n(n-1)$ 条边,总时间为 $O(n^2)$,路径还原再花 $O(d(j))$。</p>
+<p><strong>常见错误</strong>:在顶点出队时才标记"已访问"会让同一顶点重复入队,既浪费时间,也可能覆盖 $p$。应在<strong>发现时</strong>就标记,如上面 <code>if w not in p</code> 所做的那样。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weight Balanced Tree | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="weight-balanced-tree">Weight Balanced Tree</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>weight balanced tree</strong> is a binary search tree in which every node's subtree is "not too lopsided" relative to its parent's. Write $\operatorname{size}(u)$ for the number of nodes in the subtree rooted at $u$. The tree maintains the invariant</p>
+$$\operatorname{size}(u) \le \tfrac{2}{3}\,\operatorname{size}(u.\text{parent}) \quad \text{for every non-root node } u.$$
+<p>Equivalently, no child holds more than two thirds of its parent's subtree. Like a ScapegoatTree, it keeps balance by rebuilding rather than rotating. When an insertion or deletion makes some node $w$ violate the invariant (one child has $\operatorname{size} > \tfrac{2}{3}\operatorname{size}(w)$), the subtree rooted at $w$ is rebuilt into a perfectly balanced tree. To rebuild, do an in-order traversal into an array, then recursively take the middle element as the root. This costs $O(\operatorname{size}(w))$.</p>
+<h3 id="why-the-invariant-gives-logarithmic-height">Why the invariant gives logarithmic height</h3>
+<p>Going from a node to its child multiplies the subtree size by at most $2/3$. A node at depth $d$ therefore has subtree size at most $n(2/3)^d$. Since a subtree has at least one node, $1 \le n(2/3)^d$. Solving for $d$ gives</p>
+$$d \le \log_{3/2} n = \frac{\ln n}{\ln 1.5} \approx 1.71\,\log_2 n.$$
+<p>So search, insert, and delete all take $O(\log n)$ time apart from rebuilds. Rebuilding is cheap on average. A rebuilt subtree is perfectly balanced, with children of size about $\operatorname{size}(w)/2$. To violate the invariant again, a child must grow from $\tfrac12 s$ to $\tfrac23 s$, which takes about $\tfrac16 s$ further updates below $w$. The $O(s)$ rebuild cost is spread over $\Omega(s)$ updates. Each update touches $O(\log n)$ ancestors, so the amortized cost is $O(\log n)$.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Suppose $w$ has $\operatorname{size}(w)=9$, with a left child of size 6 and a right child of size 2 (6 + 2 + 1 = 9). Then $6 \le \tfrac23 \cdot 9 = 6$, so the invariant holds. Insert one key into the left subtree. Now $\operatorname{size}(w)=10$ and the left child has size 7. Since $7 > \tfrac23\cdot 10 \approx 6.67$, the invariant is violated at $w$.</p>
+<p>Rebuild: collect the 10 keys in sorted order, make the 5th (or 6th) the root, and recurse on each half. The new children have sizes 4 and 5, both at most $\tfrac23\cdot 10$. Cost: about 10 node visits.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A weight balanced tree holds $n = 1000$ nodes. What is the maximum possible depth?</p>
+<p><strong>Solution.</strong> Use $d \le \log_{3/2} n$:</p>
+$$d \le \frac{\ln 1000}{\ln 1.5} = \frac{6.908}{0.405} \approx 17.04,$$
+<p>so the depth is at most 17. A perfectly balanced tree would have depth about $\lfloor\log_2 1000\rfloor = 9$. The weaker invariant costs at most about 1.7 times as many comparisons per search, and in return updates are cheap.</p>
+<p><strong>Checking the invariant efficiently.</strong> Store $\operatorname{size}$ at each node and update it along the insertion path. Walk back up and rebuild at the <em>highest</em> violating ancestor. Rebuilding the highest one also repairs any violations below it, because the whole subtree becomes perfectly balanced.</p>
+<pre><code>def violates(w):
+    limit = 2 * size(w) / 3
+    return size(w.left) &gt; limit or size(w.right) &gt; limit</code></pre>
+<p>The same size-tracking idea underlies the ScapegoatTree. The difference is that the scapegoat is found only after an insertion lands too deep, whereas here the local $2/3$ test triggers the rebuild directly.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Node | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="scapegoat-node">Scapegoat Node</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>scapegoat tree</strong> is a binary search tree that stores no balance information (no colors, no ranks) and instead enforces the height bound</p>
+$$h \le \log_{3/2} n + 1$$
+<p>by occasionally rebuilding an entire subtree. Fix a balance parameter $\alpha = 2/3$. A node $x$ is <strong>$\alpha$-weight-balanced</strong> if each child's subtree has size at most $\alpha \cdot \text{size}(x)$.</p>
+<p>When an insertion lands at a depth $d > \log_{3/2} n$, some ancestor on the search path must violate this condition. A <strong>scapegoat node</strong> is such an ancestor $w$: a node with a child $c$ on the path to the new node $u$ satisfying</p>
+$$\frac{\text{size}(c)}{\text{size}(w)} > \frac{2}{3}.$$
+<p>The tree rebuilds the subtree rooted at $w$ into a perfectly balanced tree in $O(\text{size}(w))$ time. Such a $w$ always exists. If every ancestor were balanced, then $\text{size}(\text{node at depth } i) \le (2/3)^i\, n$. At depth $d$ this gives $1 \le (2/3)^d n$, so $d \le \log_{3/2} n$, a contradiction.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Suppose $u$ is inserted at depth 5 in a tree of $n = 8$ nodes, and $\log_{3/2} 8 \approx 5.13$. Take the inequality as the trigger, with $n$ counting $u$. Assume a path to $u$ with ancestors $a_0$ (the root), $a_1, \dots, a_4$ and subtree sizes (including $u$):</p>
+<p>| Node | $a_0$ | $a_1$ | $a_2$ | $a_3$ | $a_4$ | $u$ | |---|---|---|---|---|---|---| | size | 8 | 6 | 5 | 3 | 2 | 1 |</p>
+<p>The search for a scapegoat goes <strong>upward</strong> from $u$, testing each parent–child pair:</p>
+<li>$a_4$: $\text{size}(u)/\text{size}(a_4) = 1/2$, which is not above $2/3$.</li>
+<li>$a_3$: $2/3$, which is not strictly above $2/3$.</li>
+<li>$a_2$: $3/5 = 0.6$, so it is balanced.</li>
+<li>$a_1$: $5/6 \approx 0.83 > 2/3$.</li>
+<p>The scapegoat is $a_1$. Rebuilding its 6 nodes as a perfectly balanced tree cuts the depth of $u$ from 5 to at most $\lceil\log_2 7\rceil = 3$ below $a_1$'s level.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Finding the scapegoat efficiently.</strong> Walk up from $u$ while maintaining $\text{size}(c)$ for the child just visited. Compute the sibling's size by a traversal, using $\text{size}(w) = 1 + \text{size}(c) + \text{size}(\text{sibling})$. The total cost is $O(\text{size}(w))$, which is no more than the rebuild itself.</p>
+<pre><code>def find_scapegoat(path):           # path = [root, ..., u]
+    child_size = 1                  # size(u)
+    for i in range(len(path) - 2, -1, -1):
+        w = path[i]
+        sibling = other_child(w, path[i + 1])
+        total = 1 + child_size + size(sibling)
+        if child_size &gt; (2/3) * total:
+            return w                # the scapegoat
+        child_size = total</code></pre>
+<p><strong>Why the cost is acceptable.</strong> After rebuilding, $w$'s subtree is perfectly balanced, so $\Theta(\text{size}(w))$ further insertions or deletions beneath $w$ are needed before it becomes unbalanced again. Charging the $O(\text{size}(w))$ rebuild to those operations gives $O(\log n)$ <strong>amortized</strong> cost per insertion. Search remains $O(\log n)$ worst case.</p>
+<p><strong>Checking your work.</strong> To test whether a candidate $w$ is a scapegoat, compute $\text{size}(c)/\text{size}(w)$ with exact arithmetic. Compare $3\,\text{size}(c) > 2\,\text{size}(w)$ to avoid floating-point error at the boundary $2/3$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

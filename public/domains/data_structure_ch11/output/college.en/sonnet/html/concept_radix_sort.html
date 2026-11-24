@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radix Sort | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="radix-sort">Radix Sort</h2>
+<p><strong>Radix sort</strong> is a non-comparison sorting algorithm for $w$-bit integers. It splits each key into $w/d$ digits of $d$ bits each, then performs one stable counting sort per digit, starting with the least significant digit (LSD) and ending with the most significant. Each digit takes values in $\{0,1,\dots,2^d-1\}$, so the digit range is $k = 2^d$.</p>
+<p>Two facts make the algorithm work:</p>
+<li><strong>Stability.</strong> Counting sort preserves the relative order of equal digits. Because of this, the order established by earlier (less significant) passes survives as a tie-breaker in later passes.</li>
+<li><strong>Correctness by induction.</strong> After pass $i$, the array is sorted by the lowest $i$ digits. Pass $i+1$ sorts by digit $i+1$. Keys that tie on that digit stay in their previous order, which was already correct for the lower digits. So after the final pass the array is fully sorted.</li>
+<p><strong>Running time.</strong> Each counting-sort pass costs $\Theta(n + 2^d)$, and there are $w/d$ passes:</p>
+$$T(n) = O\!\left(\frac{w}{d}\,(n + 2^d)\right).$$
+<p>Space is $O(n + 2^d)$ for the output array and the count array.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Sort $[170, 45, 75, 90, 802, 24, 2, 66]$ with decimal digits ($d$ corresponds to base 10).</p>
+<li><strong>Ones digit:</strong> $[170, 90, 802, 2, 24, 45, 75, 66]$</li>
+<li><strong>Tens digit:</strong> $[802, 2, 24, 45, 66, 170, 75, 90]$</li>
+<li><strong>Hundreds digit:</strong> $[2, 24, 45, 66, 75, 90, 170, 802]$</li>
+<p>In the tens pass, $802$ stays ahead of $2$ because both have tens digit $0$ and $802$ came first. The ones pass had already placed them in that order.</p>
+<h3 id="problem-solving-application-choosing-d">Problem-solving application: choosing $d$</h3>
+<p>Suppose you must sort $n = 10^6$ keys with $w = 32$ bits. Compare choices of $d$:</p>
+<p>| $d$ | passes $w/d$ | cost per pass $\approx n+2^d$ | total | |---|---|---|---| | 1 | 32 | $1.000\times10^6$ | $3.2\times10^7$ | | 8 | 4 | $1.000256\times10^6$ | $\approx 4.0\times10^6$ | | 16 | 2 | $1.065\times10^6$ | $\approx 2.1\times10^6$ | | 24 | “ | $1.7\times10^7$ | $\approx 2.3\times10^7$ |</p>
+<p>(For $d=24$, $\lceil 32/24\rceil = 2$ passes at about $1.7\times10^7$ each, so the total is about $3.4\times10^7$. Once $2^d$ exceeds $n$, it dominates.)</p>
+<p>The best choice is roughly $d \approx \log_2 n$, which keeps $2^d = O(n)$ while minimizing the number of passes. With $d = \log_2 n$:</p>
+$$T(n) = O\!\left(\frac{w\,n}{\log n}\right).$$
+<p>If $w = O(\log n)$, which holds when keys are integers in the range $0$ to $n^c$ for a constant $c$, then $w/d = O(c)$ and radix sort runs in $O(n)$ time. This is faster than the $\Omega(n\log n)$ lower bound for comparison sorts, which does not apply here because radix sort never compares two keys directly.</p>
+<p><strong>When not to use it:</strong> radix sort pays off when keys are fixed-width integers (or can be mapped to them) and $w$ is not much larger than $\log n$. For very long keys or small $n$, a comparison sort can be faster. Radix sort also needs $O(n)$ extra memory, which an in-place sort avoids.</p>
+<pre><code>def radix_sort(a, d=8, w=32):
+    mask = (1 &lt;&lt; d) - 1
+    for shift in range(0, w, d):
+        count = [0] * ((1 &lt;&lt; d) + 1)
+        for x in a:
+            count[((x &gt;&gt; shift) &amp; mask) + 1] += 1
+        for i in range(1 &lt;&lt; d):
+            count[i + 1] += count[i]
+        out = [0] * len(a)
+        for x in a:                      # forward scan keeps stability
+            b = (x &gt;&gt; shift) &amp; mask
+            out[count[b]] = x
+            count[b] += 1
+        a = out
+    return a</code></pre>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Load Factor Invariant | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="load-factor-invariant">Load Factor Invariant</h2>
+<p><strong>Definition.</strong> A hash table with $m$ slots storing $n$ items has <em>load factor</em></p>
+$$\alpha = \frac{n}{m}.$$
+<p>The <strong>load factor invariant</strong> is the rule that an implementation enforces after every insertion: $\alpha \le \alpha_{\max}$ for a fixed threshold (for example, $0.75$ in many libraries). When an insertion would break the rule, the table <em>resizes</em>: it allocates a larger array, usually $m' = 2m$, and rehashes every item into it.</p>
+<p>The invariant matters because expected cost depends on $\alpha$, not on $n$ alone. Under simple uniform hashing:</p>
+<li><strong>Chaining:</strong> an unsuccessful search examines $\alpha$ items on average, so it costs $\Theta(1+\alpha)$.</li>
+<li><strong>Open addressing (linear probing):</strong> an unsuccessful search needs about $\tfrac12\left(1+\frac{1}{(1-\alpha)^2}\right)$ probes. This grows without bound as $\alpha \to 1$, and $\alpha \le 1$ is required, since $n \le m$.</li>
+<p>If $\alpha$ is bounded by a constant, every operation is expected $O(1)$.</p>
+<p><strong>Worked example.</strong> Take $m = 8$ and $\alpha_{\max}=0.75$. The table can hold $0.75\cdot 8 = 6$ items. Inserting a 7th item would give $\alpha = 7/8 = 0.875 > 0.75$, so the table first resizes to $m' = 16$ and rehashes the 6 existing items. After inserting the 7th, $\alpha = 7/16 \approx 0.44$, and the invariant holds again.</p>
+<p>For open addressing at $\alpha = 0.75$, the expected unsuccessful probe count is</p>
+$$\tfrac12\left(1+\frac{1}{0.25^2}\right)=\tfrac12(1+16)=8.5.$$
+<p>At $\alpha=0.5$ it is $\tfrac12(1+4)=2.5$. Halving the load cuts the probe count by more than a factor of three.</p>
+<p><strong>Problem-solving application.</strong> <em>Why doesn't resizing make insertion $O(n)$?</em> A resize costs $O(n)$, but with doubling it happens rarely. Start with a table of size $m_0$. Resizes occur when $n$ reaches $\alpha_{\max}m_0,\ \alpha_{\max}\cdot 2m_0,\ \alpha_{\max}\cdot 4m_0,\dots$, and each rehashes that many items. For $N$ total insertions, the total rehash work is a geometric sum:</p>
+$$\sum_{k=0}^{\log_2(N/m_0)} \alpha_{\max}\,2^k m_0 \;<\; 2N.$$
+<p>So $N$ insertions cost $O(N)$ in total, which is $O(1)$ <strong>amortized</strong> per insertion.</p>
+<p><em>Choosing a threshold.</em> Suppose you need an average of at most $3$ probes for unsuccessful searches in linear probing. Solve $\tfrac12\left(1+\frac{1}{(1-\alpha)^2}\right)\le 3$, which gives $(1-\alpha)^2 \ge \tfrac15$ and so $\alpha \le 1-\tfrac{1}{\sqrt5}\approx 0.55$. The invariant must be set at about $0.55$ or lower.</p>
+<p><em>What goes wrong without the invariant?</em> If $m$ stays fixed while $n$ grows, $\alpha = n/m$ grows linearly. Chaining degrades to $\Theta(n)$ per operation, and open addressing fails outright once $n = m$.</p>
+<pre class="mermaid">flowchart TD
+    A[Insert item] --> B{"(n+1)/m > alpha_max?"}
+    B -- No --> D[Place item in table]
+    B -- Yes --> C[Allocate table of size 2m]
+    C --> E[Rehash all n items]
+    E --> D
+    D --> F[Invariant restored: alpha <= alpha_max]</pre>
+<p><em>Each insertion checks whether it would break the load factor bound. If so, the table doubles and rehashes before placing the item.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

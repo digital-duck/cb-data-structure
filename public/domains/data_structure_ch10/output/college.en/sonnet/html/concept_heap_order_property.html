@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heap Order Property | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="heap-order-property">Heap Order Property</h2>
+<p><strong>Definition.</strong> A binary tree has the <em>heap order property</em> (here, the min-heap form) if the value stored at every node is not smaller than the value stored at its parent. The root is the only exception, since it has no parent. Writing $key(v)$ for the value at node $v$:</p>
+$$key(v) \ge key(parent(v)) \quad \text{for every non-root node } v.$$
+<p>The property is local, because it compares only a node with its parent. It still has a global consequence. Every node's value is at least as large as the values of all its ancestors, because the inequality chains upward:</p>
+$$key(v) \ge key(parent(v)) \ge key(parent(parent(v))) \ge \cdots \ge key(\text{root}).$$
+<p>So <strong>the root holds a minimum value</strong>. Note what the property does <em>not</em> say. It does not order siblings, and it does not order nodes in different subtrees. It is much weaker than the binary search tree property.</p>
+<p><strong>Worked example.</strong> Check whether this tree satisfies the property. Nodes are listed level by level, with children written under their parents.</p>
+<li>Root: 3</li>
+<li>Children of 3: 5 and 4</li>
+<li>Children of 5: 9 and 6</li>
+<li>Children of 4: 7 and 8</li>
+<p>Compare each non-root node with its parent:</p>
+<p>| Node | Parent | Holds? | |---|---|---| | 5 | 3 | $5 \ge 3$ ✓ | | 4 | 3 | $4 \ge 3$ ✓ | | 9 | 5 | $9 \ge 5$ ✓ | | 6 | 5 | $6 \ge 5$ ✓ | | 7 | 4 | $7 \ge 4$ ✓ | | 8 | 4 | $8 \ge 4$ ✓ |</p>
+<p>Every check passes, so the tree is heap-ordered. Siblings 5 and 4 are not in sorted left-to-right order, and that is allowed. Also, 6 sits in the left subtree and is smaller than 7 in the right subtree, which is allowed too.</p>
+<pre class="mermaid">graph TD
+  A((3)) --> B((5))
+  A --> C((4))
+  B --> D((9))
+  B --> E((6))
+  C --> F((7))
+  C --> G((8))</pre>
+<p><em>A heap-ordered tree: every child's value is at least its parent's value.</em></p>
+<p><strong>Problem-solving application.</strong> Two questions can be answered using only the property.</p>
+<p><em>Problem 1.</em> Suppose we change the value 6 to 2. Does the property still hold?</p>
+<li>Only comparisons involving the changed node can change. The node 6 has one parent edge (with 5) and no children, so only that one comparison needs rechecking.</li>
+<li>Check it: $2 \ge 5$ is false, so the property is violated.</li>
+<li>Every other comparison in the table is unchanged and still passes. The tree has exactly one violating edge.</li>
+<p><em>Problem 2.</em> In the original tree, where can the second-smallest value be?</p>
+<li>Take any node that is not the root and not a child of the root. Its parent is also not the root, so by the chain above, the node is at least as large as its parent, which is at least as large as the root. That gives two nodes at or below it in the chain, so it cannot be the second smallest.</li>
+<li>Therefore the second-smallest value must be a child of the root. Here those are 5 and 4, and the second smallest is 4.</li>
+<p>The same reasoning shows that the third-smallest value must be a child of the root or a child of the second-smallest node. Heap order narrows where each small value can sit, even though it does not fully sort the tree.</p>
+<p><strong>Key takeaway.</strong> Heap order is a parent-to-child inequality that forces the minimum to the root. It permits many arrangements of the other nodes. After a change to one node, you only need to recheck the comparisons that involve that node.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

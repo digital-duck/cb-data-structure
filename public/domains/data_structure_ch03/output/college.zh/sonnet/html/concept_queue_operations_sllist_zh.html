@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queue Operations Sllist | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="队列操作-单链表实现">队列操作(单链表实现)</h2>
+<p><strong>定义。</strong> 队列(queue)遵循先进先出(FIFO)原则:<code>add(x)</code> 把元素加入队尾,<code>remove()</code> 取出并返回队首元素。用单链表 <code>SLList</code> 实现时,维护两个指针:<code>head</code> 指向第一个结点,<code>tail</code> 指向最后一个结点,另有计数器 $n$。</p>
+<p>关键设计:<strong>在尾部添加,在头部删除</strong>。原因在于单链表每个结点只有 <code>next</code> 指针,没有 <code>prev</code>:</p>
+<li>在头部删除只需改 <code>head</code>,不依赖前驱;</li>
+<li>在尾部添加借助 <code>tail</code> 直接链接;</li>
+<li>若反过来在尾部删除,则必须从 <code>head</code> 遍历到倒数第二个结点才能更新指针,耗时 $O(n)$。</li>
+<pre><code>class Node:
+    def __init__(self, x):
+        self.x, self.next = x, None
+
+class SLListQueue:
+    def __init__(self):
+        self.head = self.tail = None
+        self.n = 0
+
+    def add(self, x):
+        u = Node(x)
+        if self.n == 0:
+            self.head = u          # 空队列:新结点既是头也是尾
+        else:
+            self.tail.next = u     # 链到旧尾结点之后
+        self.tail = u
+        self.n += 1
+
+    def remove(self):
+        if self.n == 0:
+            raise IndexError("队列为空")
+        x = self.head.x
+        self.head = self.head.next
+        self.n -= 1
+        if self.n == 0:
+            self.tail = None       # 队列变空,清除悬空的 tail
+        return x</code></pre>
+<p><strong>例题。</strong> 依次执行 <code>add(3)</code>、<code>add(7)</code>、<code>add(5)</code>、<code>remove()</code>、<code>add(9)</code>。</p>
+<li>三次 <code>add</code> 后:<code>head → 3 → 7 → 5 ← tail</code>,$n=3$。</li>
+<li><code>remove()</code> 返回 $3$(最先进入),<code>head</code> 前移,链表为 $7 → 5$,$n=2$。</li>
+<li><code>add(9)</code>:<code>tail.next</code> 指向新结点,链表为 $7 → 5 → 9$,$n=3$。</li>
+<p>出队顺序 $3, 7, 5, 9,\dots$ 与入队顺序一致,符合 FIFO。</p>
+<p><strong>复杂度分析。</strong> 两个操作都只做固定数量的指针赋值与一次计数更新,没有循环或遍历,与 $n$ 无关:</p>
+$$T_{\text{add}}(n)=O(1),\qquad T_{\text{remove}}(n)=O(1).$$
+<p><strong>问题求解应用。</strong> 在"打印任务调度"中,有 $m$ 个任务依次到达并按顺序处理。每个任务入队、出队各一次,总代价为 $m\cdot O(1)+m\cdot O(1)=O(m)$。若误用"尾部删除",每次出队需 $O(n)$,总代价可达 $O(m^2)$。</p>
+<p><strong>易错点(边界情况)。</strong></p>
+<li>空队列时 <code>add</code>:必须同时设置 <code>head</code> 和 <code>tail</code>,否则 <code>head</code> 仍为 <code>None</code>。</li>
+<li>删除最后一个元素时:必须把 <code>tail</code> 置为 <code>None</code>,否则 <code>tail</code> 指向已被移除的结点,下一次 <code>add</code> 会把新结点链到"幽灵"结点上,元素丢失。</li>
+<pre class="mermaid">flowchart LR
+    H[头指针 head] --> A[结点 7]
+    A --> B[结点 5]
+    B --> C[结点 9]
+    T[尾指针 tail] --> C
+    R[remove 在头部删除] -.-> A
+    D[add 在尾部添加] -.-> C</pre>
+<p><em>图:单链表队列。<code>remove()</code> 作用于头部,<code>add(x)</code> 作用于尾部,二者均为 $O(1)$。</em></p>
+<p><strong>小结。</strong> 将队首放在链表头、队尾放在链表尾,并同时维护 <code>head</code> 与 <code>tail</code>,即可使 FIFO 队列的两个核心操作都在常数时间内完成。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

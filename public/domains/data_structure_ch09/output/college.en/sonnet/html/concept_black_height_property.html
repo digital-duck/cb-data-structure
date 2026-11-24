@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Height Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="black-height-property">Black Height Property</h2>
+<p><strong>Definition.</strong> A red-black tree is a binary search tree whose nodes are colored red or black. The <strong>black height</strong> of a node $x$, written $bh(x)$, is the number of black nodes on any path from $x$ down to a leaf (NIL), not counting $x$ itself. The <strong>black height property</strong> says this count is well defined: every path from $x$ down to a leaf contains the same number of black nodes. The property is one of the red-black invariants. The others are that the root is black, that every NIL leaf is black, and that a red node has only black children. Together these invariants keep the tree approximately balanced.</p>
+<p><strong>Worked example.</strong> Take a tree with black root $B_{10}$. Its left child is red $R_5$, and its right child is black $B_{15}$. The node $R_5$ has two black NIL children. The node $B_{15}$ also has two black NIL children.</p>
+<li>Path $10 \to 5 \to \text{NIL}$: below the root it contains the NIL leaf, so it has one black node.</li>
+<li>Path $10 \to 15 \to \text{NIL}$: below the root it contains $B_{15}$ and a NIL leaf, so it has two black nodes.</li>
+<p>These counts differ, so this coloring violates the property. To repair it, recolor $R_5$ black. Then both paths contain two black nodes below the root, and $bh(10)=2$. The coloring is now valid.</p>
+<p><strong>Why it forces balance.</strong> Two facts combine.</p>
+<li><em>Subtree size.</em> A subtree rooted at $x$ contains at least $2^{bh(x)}-1$ internal nodes. Induction shows this. A leaf has $bh=0$ and $2^0-1=0$ nodes. Each child of $x$ has black height at least $bh(x)-1$. So</li>
+$$n(x) \ge 2\,(2^{bh(x)-1}-1)+1 = 2^{bh(x)}-1.$$
+<li><em>Height bound.</em> A red node cannot have a red child. So at most half the nodes on any root-to-leaf path are red, which gives $bh(\text{root}) \ge h/2$, where $h$ is the tree height. Combining this with fact 1 gives</li>
+$$n \ge 2^{h/2}-1 \quad\Longrightarrow\quad h \le 2\log_2(n+1).$$
+<p>Search, insert, and delete therefore all run in $O(\log n)$ time.</p>
+<p><strong>Problem-solving application.</strong> <em>A red-black tree has black height 4 at the root. What are the minimum and maximum numbers of internal nodes?</em></p>
+<li><strong>Minimum:</strong> the all-black perfect tree gives $2^4-1 = 15$ nodes.</li>
+<li><strong>Maximum:</strong> the longest paths alternate colors, so the height is at most $2\cdot 4 = 8$. A full tree of height 8 has $2^8-1 = 255$ internal nodes. (Here the root counts toward the black height. This is a valid upper bound, since the extra red layers fit within height 8.)</li>
+<p>So $15 \le n \le 255$.</p>
+<p><em>Applying it to insertion.</em> A new node is inserted red because this leaves black heights unchanged. If its parent is also red, the red-red violation is fixed by recoloring or rotating. Rotations preserve the black height. Recoloring a black parent with two red children to red, and coloring those children black, also preserves it. Each repair keeps the black count on every path equal, so the fix-up cannot break the invariant.</p>
+<p><strong>Check yourself.</strong> If a node has one child subtree with black height 3, what must be true of its other child subtree? Its black height must also be 3, or the property fails.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="binary-trie">Binary Trie</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>binary trie</strong> stores a set $S$ of $w$-bit integers as root-to-leaf paths in a binary tree of height $w$. Write each $x \in S$ as bits $b_1 b_2 \cdots b_w$, with $b_1$ the most significant. Starting at the root, the path for $x$ goes to the left child if $b_i = 0$ and to the right child if $b_i = 1$ at depth $i-1$. The leaf at depth $w$ represents $x$ itself. Nodes are created only along paths of stored values, so internal nodes exist only if some stored key passes through them.</p>
+<p>Three properties follow directly:</p>
+<li>The shape depends only on the set $S$, not on insertion order.</li>
+<li>Each operation follows one path of exactly $w$ steps, so <code>find</code>, <code>insert</code>, and <code>delete</code> take $O(w)$ time, independent of $n = |S|$.</li>
+<li>The tree has at most $nw + 1$ nodes, so space is $O(nw)$.</li>
+<p>Leaves are usually linked in a doubly linked list in sorted order. Then <code>successor</code> queries can finish by following a link.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $w = 4$ and $S = \{2, 5, 13\}$. In binary, $2 = 0010$, $5 = 0101$, and $13 = 1101$.</p>
+<li>$2$: left, left, right, left</li>
+<li>$5$: left, right, left, right</li>
+<li>$13$: right, right, left, right</li>
+<p>The root has both children, because $2$ and $5$ start with $0$ and $13$ starts with $1$. Under the left child, the keys $0010$ and $0101$ split at the next bit. The paths for $5$ and $13$ share no prefix at all, so they separate at the root. The trie has $1 + 3 \cdot 4 - (\text{shared nodes})$ nodes. The shared nodes are the left child of the root, used by both $2$ and $5$ (one node saved). That gives $1 + 12 - 1 = 12$ nodes.</p>
+<pre class="mermaid">graph TD
+R((root)) -->|0| A((0))
+R -->|1| B((1))
+A -->|0| C((00))
+A -->|1| D((01))
+C -->|1| E((001))
+E -->|0| F[2]
+D -->|0| G((010))
+G -->|1| H[5]
+B -->|1| I((11))
+I -->|0| J((110))
+J -->|1| K[13]</pre>
+<p><em>Search paths for 2, 5, and 13 in a 4-bit trie. Depth-4 leaves are labeled with the stored value, and internal nodes are labeled with their bit prefix. Intermediate depth-3 and depth-4 nodes are collapsed in this drawing.</em></p>
+<h3 id="problem-solving-application-successor-query">Problem-solving application: successor query</h3>
+<p>To find the smallest element of $S$ that is at least $y$, follow the bits of $y$ downward as far as the trie allows.</p>
+<li>If you reach a leaf at depth $w$, then $y \in S$ and it is its own successor.</li>
+<li>If you stop at a node $u$ at depth $i$ because the needed child is missing, there are two cases.</li>
+<p>   - If the missing child is the left one (the bit of $y$ is $0$), the right subtree contains only larger keys. The successor is the smallest leaf in that subtree.    - If the missing child is the right one (the bit of $y$ is $1$), every key below $u$ is smaller than $y$. The successor is the leaf after the last leaf under $u$ in the linked list.</p>
+<p>Try $y = 6 = 0110$ on the trie above. The path goes $0 \to 01 \to 011$, but node $01$ has only a $0$ child. The bit needed is $1$, so no key below $01$ reaches $y$. The largest leaf under $01$ is $5$, and its list neighbor is $13$. The successor is $13$, found in $O(w)$ time.</p>
+<p><strong>Limitation:</strong> every operation costs $\Theta(w)$ steps, even for tiny sets. This is why structures such as x-fast tries add hashing to search levels by binary search and reach $O(\log w)$ time.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

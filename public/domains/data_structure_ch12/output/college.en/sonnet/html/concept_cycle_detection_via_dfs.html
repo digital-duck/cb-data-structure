@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cycle Detection Via Dfs | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="cycle-detection-via-dfs">Cycle Detection Via Dfs</h2>
+<h3 id="definition">Definition</h3>
+<p>Depth-first search (DFS) colours each vertex of a directed graph $G=(V,E)$ with one of three states:</p>
+<li><strong>White</strong>: not yet discovered.</li>
+<li><strong>Grey</strong>: discovered, but some descendants are still being explored. These vertices are on the current recursion stack.</li>
+<li><strong>Black</strong>: finished, meaning all of its out-neighbours have been fully processed.</li>
+<p>An edge $(u,v)$ is classified by the colour of $v$ at the moment DFS examines it from $u$. If $v$ is white, it is a tree edge. If $v$ is black, it is a forward or cross edge. If $v$ is <strong>grey</strong>, it is a <strong>back edge</strong>, which points to an ancestor still on the stack.</p>
+<p><strong>Cycle criterion.</strong> A directed graph contains a cycle if and only if a DFS of it produces a back edge, that is, an edge to a grey vertex.</p>
+<p><strong>Proof.</strong> ($\Rightarrow$) Suppose edge $(u,v)$ reaches grey $v$. Then $v$ is an ancestor of $u$ in the DFS forest, so a tree path $v \leadsto u$ exists. Adding $(u,v)$ closes a cycle.</p>
+<p>($\Leftarrow$) Suppose a cycle exists, and let $v$ be the first of its vertices to be discovered. By the white-path theorem, every other cycle vertex is white when $v$ is discovered and is reachable from $v$ along white vertices. So all of them become descendants of $v$. Let $u$ be the cycle vertex that precedes $v$. When DFS examines $(u,v)$, $v$ is still grey because $u$ is a descendant of $v$ and is still being processed. So $(u,v)$ is a back edge. $\blacksquare$</p>
+<p>The algorithm runs in $O(|V|+|E|)$ time.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take the edges $A\to B,\ B\to C,\ C\to D,\ B\to D,\ D\to B$.</p>
+<p>Start at $A$ and write the colours as the search proceeds:</p>
+<li>Visit $A$ (grey), then $B$ (grey), then $C$ (grey), then $D$ (grey).</li>
+<li>From $D$, examine $D\to B$. $B$ is <strong>grey</strong>, so a back edge is found. The cycle is $B\to C\to D\to B$, and we can recover it by following the parent pointers from $D$ back to $B$.</li>
+<p>Now change the graph: remove $D\to B$ and add $A\to D$. DFS finishes $D$ (black) through $B$ and $C$. When $A$ later examines $A\to D$, $D$ is black, so it is a forward edge. There is no cycle, because the graph is a DAG.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<pre><code>def has_cycle(graph):
+    color = {v: 0 for v in graph}   # 0 white, 1 grey, 2 black
+    def dfs(u):
+        color[u] = 1
+        for v in graph[u]:
+            if color[v] == 1:
+                return True
+            if color[v] == 0 and dfs(v):
+                return True
+        color[u] = 2
+        return False
+    return any(color[v] == 0 and dfs(v) for v in graph)</code></pre>
+<p><strong>Problem.</strong> Courses have prerequisites $a \to b$ (take $a$ before $b$). Can a student finish them all?</p>
+<p>The schedule is feasible if and only if the prerequisite graph is acyclic, so <code>has_cycle</code> answers the question. If it returns <code>False</code>, then ordering vertices by decreasing finish time gives a valid topological order.</p>
+<p><strong>Common pitfall.</strong> Using only a "visited" flag fails. In the graph $A\to B,\ A\to C,\ B\to C$, vertex $C$ is reached twice, but there is no cycle. The grey/black distinction separates "on the current path" (a cycle) from "already finished" (harmless).</p>
+<p>For <em>undirected</em> graphs the rule changes. The edge back to the DFS parent is trivial, so a cycle exists only if DFS meets a visited vertex that is not the parent.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

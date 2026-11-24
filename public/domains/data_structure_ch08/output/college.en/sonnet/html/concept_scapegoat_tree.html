@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scapegoat Tree | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="scapegoat-tree">Scapegoat Tree</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>scapegoat tree</strong> is a binary search tree that keeps its height logarithmic without storing balance data in each node and without rotations. It stores only two counters:</p>
+<li>$n$: the current number of nodes.</li>
+<li>$q$: an upper bound on $n$. Insertions increment both $n$ and $q$. Deletions decrement only $n$.</li>
+<p>The tree maintains two invariants, where $\alpha \in (\tfrac12, 1)$ is a fixed constant:</p>
+<li>$q/2 \le n \le q$.</li>
+<li>Every node $u$ has depth at most $\lceil \log_{1/\alpha} q \rceil$.</li>
+<p>If an insertion creates a node deeper than $\lceil \log_{1/\alpha} q \rceil$, the tree walks up from the new node to find a <strong>scapegoat</strong>. This is the nearest ancestor $w$ with $\text{size}(\text{child}) > \alpha \cdot \text{size}(w)$ for the child on the search path. The subtree rooted at $w$ is then <strong>rebuilt</strong>: it is flattened into sorted order and reassembled as a perfectly balanced tree. For deletion, the node is removed as in an ordinary BST. If $n < \alpha q$ afterward, the whole tree is rebuilt and $q$ is set to $n$.</p>
+<p>A scapegoat always exists. If every node on the path were $\alpha$-balanced, the new node's depth would be at most $\log_{1/\alpha} n \le \log_{1/\alpha} q$, which contradicts the depth violation.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $\alpha = 2/3$ and insert $1,2,3,4$ in increasing order. After the fourth insertion, $n = q = 4$ and the allowed depth is</p>
+$$\lceil \log_{3/2} 4 \rceil = \lceil 3.42 \rceil = 4.$$
+<p>Node 4 sits at depth 3, so no rebuild occurs. Insert 5: now $q = 5$, the limit is $\lceil \log_{3/2} 5 \rceil = 4$, and node 5 is at depth 4, so there is still no violation. Insert 6: the limit is $\lceil \log_{3/2} 6\rceil = 5$ and the depth is 5, so again no violation. Insert 7 at depth 6 with limit $\lceil \log_{3/2} 7 \rceil = 5$. This is a violation. Walking up from 7, the sizes are $1, 2, 3, \dots$. At node 6, the child 7 has size 1 and node 6 has size 2, giving ratio $1/2 \le 2/3$. At node 5, the child 6 has size 2 and node 5 has size 3, giving ratio $2/3$, which is still acceptable. At node 4, the child 5 has size 3 and node 4 has size 4, giving ratio $3/4 > 2/3$. So node 4 is the scapegoat, and its subtree $\{4,5,6,7\}$ is rebuilt with root 5 or 6, which brings the depth of every node in it down to at most 2 below node 4.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Cost.</strong> Rebuilding a subtree of size $s$ costs $O(s)$. Search is $O(\log n)$ worst case. Insert and delete are $O(\log n)$ <strong>amortized</strong>. Between two rebuilds of a scapegoat $w$, the subtree must receive $\Omega(\text{size}(w))$ updates, because a perfectly balanced subtree is far from the $\alpha$ threshold. Charging the $O(\text{size}(w))$ rebuild cost to those updates adds only $O(\log n)$ per update, since each update affects at most $O(\log n)$ ancestors.</p>
+<p><strong>Problem.</strong> With $\alpha = 3/4$, a tree has $q = 100$. What is the maximum allowed depth, and how many deletions are needed to force a full rebuild?</p>
+<p><em>Solution.</em> The depth limit is $\lceil \log_{4/3} 100 \rceil = \lceil 16.01 \rceil = 17$. Since $\log_{4/3}100 = \ln 100/\ln(4/3) \approx 4.605/0.2877 \approx 16.008$, the ceiling is 17. Starting with $n = 100$, a full rebuild is triggered when $n < \alpha q = 75$, which first happens at $n = 74$. That takes 26 deletions. The rebuild then sets $q = 74$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge Operation | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="合并操作">合并操作</h2>
+<p><strong>定义。</strong> 本节讨论的是倾斜堆(skew heap)的"随机化"变体,即 <strong>随机化堆(randomized meldable heap)</strong> 中的合并操作。给定两棵满足堆序的二叉树,其根分别为 $a$ 与 $b$,合并操作 $\text{merge}(a,b)$ 返回一棵包含两者全部元素、且仍满足堆序的二叉树。递归规则如下(小根堆):</p>
+<li>若 $a$ 为空,返回 $b$;若 $b$ 为空,返回 $a$。</li>
+<li>若 $a.\text{key} > b.\text{key}$,交换 $a,b$,使 $a$ 的键更小(它必须成为新根)。</li>
+<li>掷一枚公平硬币:正面则 $a.\text{left} \leftarrow \text{merge}(a.\text{left}, b)$,反面则 $a.\text{right} \leftarrow \text{merge}(a.\text{right}, b)$。</li>
+<li>返回 $a$。</li>
+<p>堆序得以保持,是因为新根始终是两个根中较小者,而被递归合并的子树中所有键都不小于它。</p>
+<p><strong>例题。</strong> 设堆 $A$:根 3,左孩子 7,右孩子为空;堆 $B$:根 5,无孩子。</p>
+<li>$\text{merge}(A,B)$:$3<5$,根为 3。假设硬币为正面,则递归 $\text{merge}(7,5)$。</li>
+<li>$\text{merge}(7,5)$:$7>5$,交换,5 成为根。假设硬币为反面,则 $5.\text{right}\leftarrow\text{merge}(\varnothing,7)=7$。</li>
+<li>结果:3 的左子树是以 5 为根、右孩子为 7 的树,3 的右子树为空。堆序成立($3<5<7$)。</li>
+<p>若第一次硬币为反面,则 $3.\text{right}\leftarrow\text{merge}(\varnothing,5)=5$,结果是另一棵同样合法的堆。可见同样的输入可产生不同的树形,但元素集合与堆序不变。</p>
+<p><strong>问题求解:期望时间。</strong> 设两棵树的节点数分别为 $n_1,n_2$,$n=n_1+n_2$。每一步递归都沿着 $a$ 或 $b$ 的某条随机路径向下走一层。<strong>引理:</strong> 在含 $m$ 个节点的二叉树中,从根出发每步等概率选左右的随机游走,其长度的期望至多为 $\log_2(m+1)$。</p>
+<p><em>证明思路:</em> 对于深度为 $d$ 的节点,随机游走恰好到达它的概率为 $2^{-d}$。若游走长度 $\ge k$,则必须到达深度 $k$ 的某个位置,而深度 $\le k$ 的完整位置至多有 $2^k$ 个;当 $k>\log_2(m+1)$ 时,到达概率总和以几何速率衰减,因此期望长度为 $O(\log m)$。</p>
+<p>合并过程中,两棵树各自的随机路径总长度之和受上述引理控制,故</p>
+$$
+E[\text{merge 的步数}] \le \log_2(n_1+1)+\log_2(n_2+1)=O(\log n).
+$$
+<p><strong>应用。</strong> 随机化堆将 <code>insert</code>(把单节点堆合并进来)与 <code>delete_min</code>(合并根的两棵子树)都归约为一次 $\text{merge}$,因此三种操作的期望时间均为 $O(\log n)$,而代码只需约十行,无需维护平衡信息。</p>
+<p><strong>练习。</strong> 若把硬币换成总是选左子树,最坏情形会退化成什么?(提示:考虑反复插入递增序列时的左链。)</p>
+<pre class="mermaid">flowchart TD
+    A["合并 a 与 b"] --> B{"任一为空?"}
+    B -- "是" --> C["返回另一棵树"]
+    B -- "否" --> D["让键较小者为 a"]
+    D --> E{"掷硬币"}
+    E -- "正面" --> F["a.left ← 合并 a.left 与 b"]
+    E -- "反面" --> G["a.right ← 合并 a.right 与 b"]
+    F --> H["返回 a"]
+    G --> H</pre>
+<p><em>图:随机化合并的递归流程,硬币决定下降到哪一侧子树。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

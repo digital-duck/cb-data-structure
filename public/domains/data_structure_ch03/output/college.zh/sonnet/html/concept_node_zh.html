@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node | Data Structure Ch03</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="节点">节点</h2>
+<p><strong>定义。</strong> 节点(node)是链式数据结构中最基本的存储单元。每个节点包含两部分:</p>
+<li><strong>数据域</strong>:存放一个数据值;</li>
+<li><strong>引用域</strong>(指针):存放指向其他节点的一个或多个引用。</li>
+<p>链表中的节点只有一个"后继"引用 $\text{next}$;二叉树中的节点有 $\text{left}$ 和 $\text{right}$ 两个引用;图中的节点则可以有任意多个。没有后继的引用记为空值(<code>None</code>)。与数组不同,节点在内存中不必连续存放,它们靠引用彼此"串"起来。</p>
+<p><strong>例题。</strong> 用 Python 构建链表 $3 \to 7 \to 9$:</p>
+<pre><code>class Node:
+    def __init__(self, value, next=None):
+        self.value = value   # 数据域
+        self.next = next     # 引用域
+
+c = Node(9)          # 尾节点,next 为 None
+b = Node(7, c)
+a = Node(3, b)       # a 是头节点</code></pre>
+<p>遍历时从头节点出发,沿 <code>next</code> 逐个访问,直到遇到 <code>None</code>:</p>
+<pre><code>cur = a
+while cur is not None:
+    print(cur.value)
+    cur = cur.next    # 输出 3, 7, 9</code></pre>
+<p>访问第 $k$ 个元素必须从头走 $k-1$ 步,所以时间复杂度为 $O(k)$,而数组的下标访问是 $O(1)$。</p>
+<pre class="mermaid">graph LR
+    A["数据: 3"] --> B["数据: 7"]
+    B --> C["数据: 9"]
+    C --> D["空值 None"]</pre>
+<p><em>图:三个节点通过 next 引用连成的单向链表,最后一个节点指向空值。</em></p>
+<p><strong>问题求解应用。</strong> 在节点 <code>a</code> 与 <code>b</code> 之间插入值为 5 的新节点:</p>
+<pre><code>new = Node(5, a.next)   # 先让新节点指向 b
+a.next = new            # 再让 a 指向新节点</code></pre>
+<p>顺序很关键:若先执行 <code>a.next = new</code>,指向 $b$ 的引用就丢失了,后面的节点 $7, 9$ 将无法再被访问。已知前驱节点时,插入只改动常数个引用,时间为 $O(1)$;而数组在中间插入需要移动 $O(n)$ 个元素。</p>
+<p><strong>练习。</strong> (1) 写出删除 <code>a</code> 之后那个节点的两行代码。(2) 为什么在单向链表中删除某节点,通常需要先找到它的前驱?</p>
+<p><strong>小结。</strong> 节点 = 数据 + 引用。链表、树、图等结构都由节点通过引用组合而成。对节点引用的操作顺序和边界情况(如 <code>None</code>)正是这类问题的关键。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch3: Linked Lists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

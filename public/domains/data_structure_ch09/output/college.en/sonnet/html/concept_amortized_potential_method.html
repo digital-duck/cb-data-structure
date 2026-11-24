@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amortized Potential Method | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="amortized-potential-method">Amortized Potential Method</h2>
+<h3 id="definition">Definition</h3>
+<p>Some operations are occasionally expensive but usually cheap. The <strong>potential method</strong> bounds the <em>total</em> cost of a sequence by treating cheap operations as "paying ahead" for later expensive ones.</p>
+<p>Choose a <strong>potential function</strong> $\Phi$ mapping each state $D_i$ of the data structure to a real number, with</p>
+$$\Phi(D_0)=0 \quad\text{and}\quad \Phi(D_i)\ge 0 \text{ for all } i.$$
+<p>The <strong>amortized cost</strong> of the $i$-th operation, whose actual cost is $c_i$, is</p>
+$$\hat{c}_i = c_i + \Phi(D_i) - \Phi(D_{i-1}).$$
+<p>Summing over $m$ operations, the potential terms telescope:</p>
+$$\sum_{i=1}^{m}\hat{c}_i = \sum_{i=1}^{m}c_i + \Phi(D_m) - \Phi(D_0) \;\ge\; \sum_{i=1}^{m}c_i.$$
+<p>So the total amortized cost is an upper bound on the total actual cost. If each $\hat{c}_i = O(1)$, the total actual cost is $O(m)$.</p>
+<h3 id="worked-example-binary-counter">Worked Example: Binary Counter</h3>
+<p>Let an increment flip bits. If an increment turns $t$ trailing 1s into 0s and one 0 into 1, then $c_i = t+1$. Define $\Phi$ = the number of 1s in the counter. The increment changes $\Phi$ by $1 - t$, so</p>
+$$\hat{c}_i = (t+1) + (1-t) = 2.$$
+<p>Thus $m$ increments cost at most $2m = O(m)$, even though a single increment can cost $\Theta(\log m)$.</p>
+<h3 id="problem-solving-application-red-black-tree-fixup">Problem-Solving Application: Red-Black Tree Fixup</h3>
+<p>Insertion into a red-black tree adds a red node, then repairs red-red violations. Case 1 (red parent <em>and</em> red uncle) recolors parent and uncle black and the grandparent red, then moves the problem two levels up. It can repeat $\Theta(\log n)$ times. Cases 2 and 3 use at most two rotations and end the fixup.</p>
+<p><strong>Step 1: Choose $\Phi$.</strong> Let $\Phi(T)$ be the number of black nodes that have two red children. An empty tree has $\Phi=0$, and $\Phi\ge 0$ always.</p>
+<p><strong>Step 2: Cost of a Case 1 step.</strong> Take actual cost 1. The grandparent was black with two red children (parent and uncle), so it counted toward $\Phi$. After recoloring, it is red, and the parent and uncle are black. So $\Phi$ drops by at least 1 from the grandparent. The great-grandparent <em>may</em> become a black node with two red children, raising $\Phi$ by at most 1. Net change $\le 0$, so</p>
+$$\hat{c} \le 1 + (-1 + 1) = 1 \;\text{ at most; more carefully, } \hat{c}\le 1 + (-1) + 1.$$
+<p>To make repeated steps pay for themselves, use the sharper accounting: each Case 1 step moves the violation up, and the only possible new such node is the one being processed next. Counting the node created by the initial insertion (at most $+1$) gives total $\Phi$ increase $\le 1$ over the whole fixup, while each Case 1 step lowers $\Phi$ by 1 net of the propagated violation. Therefore $k$ Case 1 steps cost $k$ actual but lower $\Phi$ by $k-1$ or more, so $\hat{c}_{\text{Case 1}} \le 1 - 1 = 0$ per step beyond the first.</p>
+<p><strong>Step 3: Terminal cases.</strong> Cases 2 and 3 cost $O(1)$ and change $\Phi$ by $O(1)$, so $\hat{c}=O(1)$.</p>
+<p><strong>Step 4: Conclude.</strong> Every insertion has amortized fixup cost $O(1)$. Since $\Phi(D_0)=0$ and $\Phi\ge0$, $m$ insertions require $O(m)$ total fixup work, which is $O(1)$ amortized per insertion, even though a single insertion may recolor $\Theta(\log n)$ nodes.</p>
+<p><strong>Key habit:</strong> pick $\Phi$ so that expensive steps <em>release</em> stored potential equal to their cost. Then verify $\Phi(D_0)=0$, $\Phi\ge 0$, and that every operation has small amortized cost.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Martinez Roura Rbst | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="martinez-roura-rbst">Martinez Roura Rbst</h2>
+<h3 id="定义">定义</h3>
+<p><strong>Martinez–Roura 随机化二叉搜索树(RBST)</strong> 是 Treap 的一种变体:节点不再保存随机优先级,而是保存<strong>子树大小</strong> $s(v)$。随机性不在节点中存储,而在每次插入或删除时<em>现场</em>抽取,并且概率由子树大小决定。</p>
+<p>其核心不变量是:<strong>含 $n$ 个键的 RBST,其形状分布与"将 $n$ 个键按随机排列依次插入普通二叉搜索树"所得的分布完全相同。</strong> 因此期望深度为 $O(\log n)$,并且与插入顺序无关。</p>
+<h3 id="插入规则">插入规则</h3>
+<p>在大小为 $n$ 的树 $T$ 中插入新键 $x$:</p>
+<li>以概率 $\dfrac{1}{n+1}$,把 $x$ 作为<strong>新的根</strong>插入:按 $x$ 对 $T$ 做 split,得到 $L$ 和 $R$,分别作为左、右子树。</li>
+<li>否则(概率 $\dfrac{n}{n+1}$),按键的大小递归插入左子树或右子树,并更新 $s(\text{root})$。</li>
+<p>原因:在 $n+1$ 个键的随机排列中,$x$ 恰好排在最前(成为根)的概率正是 $\frac{1}{n+1}$。</p>
+<h3 id="删除规则">删除规则</h3>
+<p>删除根 $v$ 时,需要把左子树 $L$(大小 $m$)与右子树 $R$(大小 $k$)合并为一棵树,称为 <strong>join</strong>:</p>
+<li>以概率 $\dfrac{m}{m+k}$,$L$ 的根成为新根,递归地将 $L$ 的右子树与 $R$ 合并;</li>
+<li>以概率 $\dfrac{k}{m+k}$,$R$ 的根成为新根,递归地将 $L$ 与 $R$ 的左子树合并。</li>
+<h3 id="例题">例题</h3>
+<p>向空树依次插入键 $1,2,3$(最坏情形:已排序的输入)。</p>
+<li>插入 $1$:$n=0$,概率 $\frac{1}{1}=1$,成为根。</li>
+<li>插入 $2$:$n=1$。以 $\frac12$ 成为新根(split 后 $1$ 在左);以 $\frac12$ 作为 $1$ 的右孩子。</li>
+<li>插入 $3$:$n=2$。以 $\frac13$ 成为根,否则递归进入右侧。</li>
+<p>检验长度为 $3$ 的链($1\to2\to3$)的概率:$\frac12\cdot\frac23=\frac13$。在 $3!=6$ 种插入排列中,只有排列 $(1,2,3)$ 产生这条链,概率应为 $\frac16$。这里需要小心:链 $1\to2\to3$ 对应的是 $2$ 在 $1$ 右侧、$3$ 在 $2$ 右侧——插入 $3$ 时必须不成为根(概率 $\frac23$),再进入右子树 $\{2\}$ 后不成为其根(概率 $\frac12$),合计 $\frac12\cdot\frac23\cdot\frac12=\frac16$。✓ 与随机排列一致。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>证明期望深度。</strong> 设 $D(n)$ 为大小为 $n$ 的 RBST 中随机节点的期望深度。根以均匀概率把其余 $n-1$ 个键分成大小 $(i,\,n-1-i)$,故</p>
+$$D(n)=\frac{1}{n}\sum_{i=0}^{n-1}\frac{i\,(D(i)+1)+(n-1-i)\,(D(n-1-i)+1)}{n}\;\Rightarrow\; D(n)=O(\log n).$$
+<p>这与随机快速排序的递推相同,解为 $D(n)\approx 2\ln n$。</p>
+<p><strong>与 Treap 对比:</strong> Treap 需要存储 $O(n)$ 个随机优先级,并要求优先级互不相同;RBST 用已维护的子树大小代替,同时天然支持按秩查询($k$ 小元素)。代价是每次更新都要抽取随机数并维护 $s(v)$。</p>
+<p><strong>练习:</strong> 在大小为 $7$ 的 RBST 中插入新键,它成为根的概率是多少?(答案:$\frac18$。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

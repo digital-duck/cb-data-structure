@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooted Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="有根树">有根树</h2>
+<p><strong>定义。</strong> <em>有根树</em>(rooted tree)是一个连通且无环的图,其中指定了一个特殊结点 $r$,称为<strong>根</strong>。除根以外,每个结点 $v$ 都恰有一个<strong>父结点</strong>(从 $v$ 到根的唯一路径上的下一个结点)。有 $n$ 个结点的有根树恰有 $n-1$ 条边。</p>
+<p>常用术语:</p>
+<li><strong>子结点</strong>:以 $v$ 为父结点的结点。</li>
+<li><strong>叶子</strong>:没有子结点的结点。</li>
+<li><strong>深度</strong> $d(v)$:从根到 $v$ 的路径上的边数,所以 $d(r)=0$。</li>
+<li><strong>高度</strong>:所有结点深度的最大值。</li>
+<li><strong>子树</strong>:结点 $v$ 及其全部后代构成的有根树,以 $v$ 为根。</li>
+<p>根的指定让边有了方向:从父结点指向子结点。没有指定根的树只是"自由树",它没有"上"和"下"之分。</p>
+<pre class="mermaid">graph TD
+    A["根 A (深度0)"] --> B["B (深度1)"]
+    A --> C["C (深度1)"]
+    B --> D["D (深度2)"]
+    B --> E["E (深度2)"]
+    C --> F["F (深度2)"]
+    E --> G["G (深度3)"]</pre>
+<p><em>一棵有 7 个结点的有根树:A 为根,D、F、G 为叶子,高度为 3。</em></p>
+<p><strong>例题。</strong> 对上图,求结点 $E$ 的深度、子树大小和祖先。</p>
+<li>路径 $A\to B\to E$ 有 2 条边,所以 $d(E)=2$。</li>
+<li>以 $E$ 为根的子树含 $E$ 和 $G$,大小为 2。</li>
+<li>$E$ 的祖先是它到根路径上的其他结点:$B$ 和 $A$。</li>
+<p><strong>定理(边数)。</strong> 含 $n$ 个结点的有根树恰有 $n-1$ 条边。</p>
+<p><em>证明。</em> 除根外,每个结点恰有一个父结点,因此每个非根结点对应唯一一条"连向父结点"的边。反过来,每条边也恰好连着一个子结点和它的父结点,所以边与 $n-1$ 个非根结点一一对应。$\blacksquare$</p>
+<p>上图中 $n=7$,边数为 6,与图一致。</p>
+<p><strong>问题求解应用。</strong> 有根树的结构天然适合<strong>递归</strong>。因为每棵子树本身也是有根树,许多量都可以写成递推式。例如,设 $h(v)$ 为以 $v$ 为根的子树的高度,则</p>
+$$
+h(v)=\begin{cases}0, & v\text{ 为叶子},\\[2pt] 1+\max_{c\in\text{children}(v)} h(c), & \text{否则。}\end{cases}
+$$
+<p>代入上图:$h(G)=0$,$h(E)=1$,$h(D)=0$,$h(B)=1+\max(0,1)=2$,$h(F)=0$,$h(C)=1$,于是 $h(A)=1+\max(2,1)=3$,与前面得到的高度一致。</p>
+<p>用 Python 实现同样的递推:</p>
+<pre><code>def height(node):
+    if not node.children:
+        return 0
+    return 1 + max(height(c) for c in node.children)</code></pre>
+<p>每个结点只访问一次,所以时间复杂度为 $O(n)$。</p>
+<p>同样的思路可用于计算子树大小($s(v)=1+\sum_c s(c)$)、文件系统目录的总占用空间、表达式树的求值等。遇到"层级"问题(组织架构、文件目录、HTML 的 DOM、决策过程)时,先问:根是什么?每个结点的子问题是什么?这两个问题的答案通常就给出了递归解法。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

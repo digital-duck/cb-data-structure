@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Add | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-add">Red Black Add</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>left-leaning red-black (LLRB) tree</strong> is a binary search tree whose links are colored red or black, with these invariants:</p>
+<li>A red link always leans left (no red right child).</li>
+<li>No node has two red links touching it (no red-red path).</li>
+<li>Every path from the root to a null link crosses the same number of black links (<strong>perfect black balance</strong>).</li>
+<p>A red link glues a node to its parent into a single 3-node or 4-node of a 2-4 tree (a "2-4 tree" is a B-tree whose nodes hold 1 to 3 keys). The <strong>add</strong> operation has two phases:</p>
+<li><strong>Insert:</strong> Perform ordinary BST insertion and color the new leaf <strong>red</strong>. A red leaf does not change black height, so invariant 3 survives.</li>
+<li><strong>Fix up:</strong> Walking back up the recursion, repair any violated invariants with local rotations and color flips.</li>
+<p>The fix-up on each node $h$ applies three tests in order:</p>
+<pre><code>def add_fixup(h):
+    if is_red(h.right) and not is_red(h.left):
+        h = rotate_left(h)          # restore left-leaning
+    if is_red(h.left) and is_red(h.left.left):
+        h = rotate_right(h)         # break red-red chain
+    if is_red(h.left) and is_red(h.right):
+        flip_colors(h)              # simulate a 2-4 split
+    return h</code></pre>
+<p><code>flip_colors</code> makes both children black and <code>h</code> red. In 2-4 terms, a 4-node (a node with a left and right red child) splits: its middle key moves up to the parent, while the two outer keys become separate 2-nodes.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Insert keys $10, 20, 30$ into an empty tree.</p>
+<li>Insert 10: root, recolor it black.</li>
+<li>Insert 20: it goes right of 10 as a red leaf. A red right link violates invariant 1, so <code>rotate_left</code> makes 20 the root with red left child 10. Color the root black.</li>
+<li>Insert 30: it goes right of 20 as a red leaf. Now 20 has red children 10 and 30, a 4-node. <code>flip_colors</code> makes 10 and 30 black and 20 red. The root is recolored black.</li>
+<p>The result is a perfectly balanced three-node tree. In the 2-4 tree, the 4-node $[10,20,30]$ split into a parent holding 20 and two children.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> Insert 40 into the tree above, then 50. Describe each fix-up.</p>
+<p><em>Insert 40:</em> it goes right of 30 as a red leaf. Node 30 has a red right child and a black left child (null), so <code>rotate_left</code> at 30 gives 40 as the subtree root with red left child 30. Back at 20, its children are 10 (black) and 40 (black), so nothing more happens.</p>
+<p><em>Insert 50:</em> it goes right of 40 as a red leaf. At 40, children 30 (red) and 50 (red) trigger <code>flip_colors</code>: 30 and 50 turn black and 40 turns red. At 20, the right link to 40 is red while the left child 10 is black, so <code>rotate_left</code> at 20 makes 40 the root with red left child 20. Root recolored black.</p>
+<p><strong>Cost analysis.</strong> Each node on the search path receives $O(1)$ fix-up work. An LLRB tree with $n$ keys has height at most $2\log_2 n$, because along any path, red links are at most as numerous as black links. Therefore one add costs $O(\log n)$ time.</p>
+<p><strong>Key habit:</strong> always fix up in this order (rotate left, rotate right, flip). Doing so lets the same three lines handle every 2-4 insertion case, including a flip creating a red link that the parent's fix-up then repairs.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

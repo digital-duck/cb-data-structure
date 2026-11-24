@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Operations | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="binary-trie-operations">Binary Trie Operations</h2>
+<p><strong>Definition.</strong> A <code>BinaryTrie</code> stores a set $S$ of $n$ distinct $w$-bit integers. Each integer is a root-to-leaf path of length $w$: at depth $i$, bit $i$ of the key (most significant first) selects the left child (0) or right child (1). Leaves are linked in sorted order in a doubly linked list. Each node missing a child holds a <strong>jump pointer</strong> in that slot. The pointer goes to the smallest leaf in its subtree if the right child is missing, or to the largest leaf if the left child is missing. Every operation walks one path of length $w$, so each takes $O(w)$ time.</p>
+<p><strong>Search (find).</strong> To find $x$, walk down following the bits of $x$. If the walk reaches a leaf, $x \in S$. If it stops at a node $u$ at depth $i<w$ because the needed child is missing, the jump pointer there leads to the successor or predecessor leaf of $x$. The jump pointer gives the successor if $x$'s next bit is 1... more precisely, if $x$'s bit is 0, the right child exists and the jump pointer in the left slot points to the <em>smallest leaf in the right subtree</em>, which is $\text{succ}(x)$. If $x$'s bit is 1, the pointer in the right slot goes to the largest leaf in the left subtree, which is the predecessor. In that case the successor is the next leaf in the list. Cost: $O(w)$.</p>
+<p><strong>Insert.</strong></p>
+<li>Walk toward $x$ until a child is missing, at node $u$ and depth $i$. The jump pointer at $u$ gives the successor or predecessor leaf, so the new leaf's list neighbors are known.</li>
+<li>Create the new nodes for bits $i,\dots,w-1$ as a chain ending in a leaf, and splice the leaf into the list next to its neighbor.</li>
+<li>Walk back up the path from the new leaf to the root. At each ancestor, if a child slot is empty, set its jump pointer to $x$ when $x$ is the new smallest (or largest) leaf in that slot's subtree.</li>
+<p><strong>Delete.</strong></p>
+<li>Walk to the leaf for $x$ and unlink it from the list.</li>
+<li>Climb toward the root, deleting each node that has no remaining children.</li>
+<li>Continue to the root. Any jump pointer that referenced $x$ is redirected to $x$'s list neighbor: its predecessor if it pointed to the largest leaf, its successor if it pointed to the smallest.</li>
+<p><strong>Worked example.</strong> Let $w=3$ and $S=\{1,5\}$ (001, 101). Insert $x=4$ (100). The walk follows bit 1 to the right child of the root, then bit 0 to the left child of that node. That node has a left child, the path to 101, so the walk continues to bit 0. There is no left child at depth 2, so it stops at $u$ (the node for prefix 10). Its jump pointer is the leaf 5, the successor, and 5's list predecessor is 1. Create the leaf for 100 and splice it between 1 and 5. Climb back up. The node for prefix 10 now has left child 100 and right child 101, so its jump pointer is cleared. The ancestors still have both children or no pointer to $x$, so none need updating. Total work: about $2w$ steps.</p>
+<p><strong>Problem-solving application.</strong> Suppose $S=\{3,4,9\}$ with $w=4$, and you must delete 4 and then ask for the successor of 5. Delete: walk 0100, unlink 4 (list becomes 3, 9), and remove nodes with no children: the leaf 0100 and its parent 010, which has no other child. The node for 01 now has a missing left child, so its jump pointer is set to the smallest leaf below it. That subtree is now empty, so 01 is deleted too, and prefix 0 keeps only the child 00 and a right-slot pointer to its largest leaf, 3. Search for 5 (0101): the walk goes root → 0, then the needed child 01 is missing. The pointer there gives leaf 3, the predecessor, so the successor is 3's list neighbor, 9. Every step is a bounded loop of length $w$, which is why each operation runs in $O(w)$ time and the structure uses $O(nw)$ space.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unbalanced Bst Performance | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="非平衡二叉搜索树的性能">非平衡二叉搜索树的性能</h2>
+<h3 id="定义">定义</h3>
+<p>在<strong>非平衡</strong>的二叉搜索树(BinarySearchTree)中,插入元素时不做任何旋转或重新平衡。设树中有 $n$ 个节点,树的高度为 $h$,则 <code>find(x)</code>、<code>add(x)</code>、<code>remove(x)</code> 都沿着一条从根出发的路径向下走,每层只做常数次比较,因此时间为 $O(h)$。</p>
+<p>关键在于:$h$ 并不由 $n$ 决定,而是由<strong>插入顺序</strong>决定,其范围为</p>
+$$\lfloor \log_2 n \rfloor \le h \le n-1.$$
+<p>所以在最坏情况下,三种操作的时间都是 $O(n)$。</p>
+<h3 id="例题-退化成链">例题:退化成链</h3>
+<p>依次插入有序序列 $1,2,3,4,5$:</p>
+<li>插入 1:成为根。</li>
+<li>插入 2:$2>1$,成为 1 的右孩子。</li>
+<li>插入 3:$3>1$、$3>2$,成为 2 的右孩子。</li>
+<li>之后的 4、5 同理。</li>
+<p>得到的树只有右孩子,形状是一条链,高度 $h=n-1=4$。</p>
+<pre class="mermaid">graph TD
+    A["1"] --> B["2"]
+    B --> C["3"]
+    C --> D["4"]
+    D --> E["5"]</pre>
+<p><em>有序插入使二叉搜索树退化为一条链:查找 5 必须依次经过全部 5 个节点。</em></p>
+<p>在这棵树上执行 <code>find(5)</code>,要比较 $1,2,3,4,5$,共 $n=5$ 次。若一般地插入 $1,2,\dots,n$,则 <code>find(n)</code> 需要 $n$ 次比较,所以 <code>find</code> 的最坏时间为 $\Omega(n)$。结合上界 $O(h)\le O(n)$,最坏时间为 $\Theta(n)$。</p>
+<p><code>add(x)</code> 必须先走到插入位置,<code>remove(x)</code> 必须先找到目标节点,两者都包含一次 <code>find</code> 式的下行过程,所以它们同样是 $O(n)$。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题:</strong> 向初始为空的树依次插入 $1,2,\dots,n$,总共要做多少次比较?</p>
+<p>插入第 $k$ 个元素时,它要与链上已有的 $k-1$ 个节点逐一比较,因此总比较次数为</p>
+$$\sum_{k=1}^{n}(k-1)=\frac{n(n-1)}{2}=\Theta(n^2).$$
+<p>均摊到每次插入,约为 $\Theta(n)$ 次比较,与平衡树的 $O(\log n)$ 差距很大。当 $n=10^6$ 时,链需要约 $10^6$ 步,平衡树只需约 $20$ 步。</p>
+<p><strong>如何应对:</strong></p>
+<li><strong>随机插入顺序:</strong> 对随机排列构造的树,期望高度为 $O(\log n)$。但这依赖于输入是随机的,对有序或接近有序的数据不成立。</li>
+<li><strong>使用自平衡结构:</strong> 红黑树、AVL 树等在每次修改后调整形状,保证 $h=O(\log n)$,从而使最坏情况也是 $O(\log n)$。</li>
+<p><strong>小结:</strong> 非平衡二叉搜索树的运行时间取决于树高 $h$,而不是节点数 $n$。分析时必须区分平均情况和最坏情况。要得到可靠的保证,就需要在结构上维持平衡。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

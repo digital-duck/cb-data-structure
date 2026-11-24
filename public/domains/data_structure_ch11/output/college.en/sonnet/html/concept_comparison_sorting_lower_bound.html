@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison Sorting Lower Bound | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="comparison-sorting-lower-bound">Comparison Sorting Lower Bound</h2>
+<p><strong>Definition.</strong> A <em>comparison sort</em> learns about its input only by asking questions of the form "is $a_i < a_j$?" Merge sort, heapsort, and quicksort all work this way. The <strong>comparison sorting lower bound</strong> says that every such algorithm, deterministic or randomized, needs $\Omega(n \log n)$ comparisons. More precisely, for inputs of $n$ distinct keys, the worst-case number of comparisons is at least $\lceil \log_2 (n!) \rceil = n\log_2 n - O(n)$.</p>
+<p><strong>Decision-tree model.</strong> Fix a deterministic algorithm and a input size $n$. Its behavior is a binary <em>decision tree</em>. Each internal node is a comparison $a_i : a_j$, and the two children correspond to the answers "yes" and "no." Each leaf is an output, which is a permutation of the input. The number of comparisons on a given input is the depth of the leaf it reaches. The worst case is the height $h$ of the tree.</p>
+<p><strong>Theorem.</strong> Any comparison sort on $n$ distinct keys has worst-case comparison count at least $\log_2(n!)$.</p>
+<p><em>Proof.</em> There are $n!$ possible orderings of the input. If two different orderings reached the same leaf, the algorithm would output the same permutation for both, which would be wrong for at least one of them. So a correct algorithm needs at least $n!$ leaves. A binary tree of height $h$ has at most $2^h$ leaves, so</p>
+$$2^h \ge n! \quad\Longrightarrow\quad h \ge \log_2(n!).$$
+<p><strong>Evaluating $\log_2(n!)$.</strong> Since $n! \ge (n/2)^{n/2}$, we get $\log_2(n!) \ge \tfrac{n}{2}\log_2(n/2) = \Omega(n\log n)$. Stirling's approximation, $n! \approx \sqrt{2\pi n}\,(n/e)^n$, gives the sharper form</p>
+$$\log_2(n!) = n\log_2 n - n\log_2 e + O(\log n) = n\log_2 n - O(n).$$
+<p><strong>Worked example.</strong> For $n=3$, there are $3! = 6$ orderings, so $h \ge \lceil\log_2 6\rceil = 3$. Three comparisons suffice, so the bound is tight here. For $n=5$, $5! = 120$ and $\lceil\log_2 120\rceil = 7$. Binary insertion sort sorts 5 items in 8 comparisons, but a carefully designed algorithm (merge insertion) achieves the 7-comparison bound.</p>
+<p><strong>Randomized algorithms.</strong> A randomized algorithm is a probability distribution over deterministic decision trees. Take a tree with at least $n!$ leaves. Its average leaf depth over a uniformly random input is at least $\log_2(n!)$. This is because a binary tree with $L$ leaves has average leaf depth at least $\log_2 L$. By Yao's principle, the <em>expected</em> number of comparisons of any randomized algorithm on its worst input is therefore also at least $\log_2(n!)$.</p>
+<p><strong>Problem-solving application.</strong> Suppose a company claims a comparison-based method that sorts $n = 10^6$ records in at most $15\times 10^6$ comparisons in the worst case. Is this plausible? Since $\log_2(n!) \approx n\log_2 n - 1.443\,n$, we have</p>
+$$\log_2(10^6!) \approx 10^6(19.93) - 1.44\times 10^6 \approx 18.5\times 10^6.$$
+<p>Every comparison sort needs at least about $18.5\times10^6$ comparisons, so the claim is impossible. The only way around the bound is to leave the comparison model. Counting sort and radix sort inspect key digits directly and run in $O(n)$ time for bounded integer keys. They are not comparison sorts, so the theorem does not apply to them.</p>
+<p><strong>Key takeaway.</strong> Counting the possible answers ($n!$ leaves) and the information each binary question can give (one bit) gives a bound that holds for <em>every</em> algorithm. It also shows that merge sort and heapsort are asymptotically optimal among comparison sorts.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

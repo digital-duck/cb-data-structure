@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level Based Binary Search | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="level-based-binary-search">Level Based Binary Search</h2>
+<h3 id="definition">Definition</h3>
+<p>Consider a search tree over integer keys of bit length $w$, such as a binary trie or a y-fast-style structure. Every node at depth $\ell$ (the <strong>level</strong>) is labeled by the length-$\ell$ prefix of the keys beneath it. For each level $\ell = 0, 1, \dots, w$, store the labels of all existing nodes at that level in a hash table $H_\ell$.</p>
+<p>Given a query integer $x$, its <strong>search path</strong> is the root-to-leaf walk that follows the bits of $x$ for as long as nodes exist. We want the <strong>deepest node on this path</strong>, which is the longest prefix of $x$ that is present in the structure.</p>
+<p>The key property is <strong>monotonicity</strong>. If the length-$\ell$ prefix of $x$ is in $H_\ell$, then every shorter prefix is also in its table, because a node's ancestors always exist. So the predicate</p>
+$$P(\ell) = \big[\,\text{prefix}_\ell(x) \in H_\ell\,\big]$$
+<p>is true for $\ell \le \ell^<em>$ and false afterward, where $\ell^</em>$ is the depth we want. This is exactly the structure binary search needs. We search over the $w+1$ levels, not over the keys.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $w = 4$ and store the keys $0101$, $0110$, and $1100$. The nonempty prefixes are:</p>
+<li>$H_0=\{\varepsilon\}$</li>
+<li>$H_1=\{0,1\}$</li>
+<li>$H_2=\{01,11\}$</li>
+<li>$H_3=\{010,011,110\}$</li>
+<li>$H_4=\{0101,0110,1100\}$</li>
+<p>Query $x = 0111$. Set $lo=0$, $hi=4$.</p>
+<li>$mid=2$: prefix $01\in H_2$, so $lo=2$.</li>
+<li>$mid=3$: prefix $011\in H_3$, so $lo=3$.</li>
+<li>$mid=4$ (using $\lceil (3+4)/2\rceil$): prefix $0111\notin H_4$, so $hi=3$.</li>
+<p>Now $lo=hi=3$, so the deepest node on the path is labeled $011$. Each probe is one expected $O(1)$ hash lookup.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Cost.</strong> Binary search over $w+1$ levels takes $\lceil \log_2(w+1)\rceil$ probes. With expected $O(1)$ time per lookup, the total is</p>
+$$T(w) = O(\log w).$$
+<p>For $w$-bit integers this beats the $O(w)$ cost of walking down from the root. It is also exponentially better than $O(\log n)$ in the regime where $n$ is large relative to $w$. For example, 64-bit keys need at most 7 probes.</p>
+<p><strong>Procedure.</strong></p>
+<li>Set $lo=0$, $hi=w$.</li>
+<li>While $lo<hi$, let $mid=\lceil (lo+hi)/2\rceil$.</li>
+<li>If $\text{prefix}_{mid}(x)\in H_{mid}$, set $lo=mid$. Otherwise set $hi=mid-1$.</li>
+<li>Return the node labeled $\text{prefix}_{lo}(x)$.</li>
+<p><strong>Use.</strong> The deepest node usually leads to the answer to a harder query. In a trie where each node stores pointers to the min and max leaf in its subtree, the deepest node on $x$'s path gives the predecessor or successor of $x$ in one more step. If the path leaves at a missing left child, the answer comes from the node's stored successor-side pointer. If it leaves at a missing right child, it comes from the predecessor-side pointer.</p>
+<p><strong>Common pitfall.</strong> Binary search is valid only because $P(\ell)$ is monotone. If a structure stored only leaf-level labels, or pruned internal nodes, $P$ would not be monotone and the search would fail. Every internal prefix must be inserted in its level's table.</p>
+<pre class="mermaid">flowchart TD
+A["lo=0, hi=4"] --> B["Probe level 2: 01 in H2? yes"]
+B --> C["lo=2, hi=4"]
+C --> D["Probe level 3: 011 in H3? yes"]
+D --> E["lo=3, hi=4"]
+E --> F["Probe level 4: 0111 in H4? no"]
+F --> G["lo=3, hi=3: answer is node 011"]</pre>
+<p><em>Binary search over levels for query 0111, using one hash lookup per probe.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

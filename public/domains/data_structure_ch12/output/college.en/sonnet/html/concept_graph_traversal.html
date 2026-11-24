@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Traversal | Data Structure Ch12</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="graph-traversal">Graph Traversal</h2>
+<p><strong>Definition.</strong> Let $G=(V,E)$ be a graph with $n=|V|$ vertices and $m=|E|$ edges, stored as adjacency lists. Each vertex has a list of its neighbors. <em>Graph traversal</em> starts at a vertex $i$ and visits every vertex reachable from $i$, meaning every $v$ for which a path $i \to \dots \to v$ exists. Each vertex is visited exactly once, and none is skipped.</p>
+<p>The method we use is <em>breadth-first search</em> (BFS). It marks vertices as it discovers them and keeps a queue of vertices that are discovered but not yet explored. Mark $i$ and enqueue it. Then repeat the following until the queue is empty:</p>
+<li>Remove the front vertex $u$.</li>
+<li>For each neighbor $w$ of $u$, if $w$ is unmarked, mark it and enqueue it.</li>
+<p><strong>Worked example.</strong> Let $V=\{0,1,2,3,4,5\}$ with adjacency lists</p>
+<li>$0:[1,2]$</li>
+<li>$1:[0,3]$</li>
+<li>$2:[0,3]$</li>
+<li>$3:[1,2]$</li>
+<li>$4:[5]$</li>
+<li>$5:[4]$</li>
+<p>Run BFS from $i=0$. Mark 0 and set the queue to $[0]$.</p>
+<li>Remove 0. Mark and enqueue 1 and 2. The queue is $[1,2]$.</li>
+<li>Remove 1. Vertex 0 is already marked, so mark and enqueue 3. The queue is $[2,3]$.</li>
+<li>Remove 2. Both of its neighbors are marked.</li>
+<li>Remove 3. Both of its neighbors are marked. The queue is empty.</li>
+<p>The visit order is $0,1,2,3$. Vertices 4 and 5 are never reached because no path leads to them from 0.</p>
+<pre><code>def bfs(adj, i):
+    visited = {i}
+    queue = [i]
+    for u in queue:          # list grows as we append
+        for w in adj[u]:
+            if w not in visited:
+                visited.add(w)
+                queue.append(w)
+    return queue</code></pre>
+<p><strong>Cost analysis.</strong> A vertex is marked before it is enqueued, so each reachable vertex is enqueued at most once. Each enqueued vertex's list is scanned once. The list lengths sum to $\sum_u \deg(u) = 2m$ for an undirected graph, or $m$ for a directed one. The total running time is therefore</p>
+$$T(n,m)=O(n+m),$$
+<p>which is linear in the size of the input.</p>
+<p><strong>Problem-solving application.</strong> <em>Problem:</em> A network is given as adjacency lists. A message starts at computer $s$ and is forwarded along links. Which computers receive it, and does computer $t$ receive it?</p>
+<p>Run <code>bfs(adj, s)</code>. The returned list is exactly the set of computers that receive the message, so $t$ receives it if and only if $t$ appears in the list. The marks make this reliable even when the network contains cycles. Without them, the message would loop forever between 0, 1, 3, and 2 in the example above.</p>
+<p>Check the method on the example. From $s=0$ the list is $[0,1,2,3]$, so computer 3 receives the message and computer 4 does not. The number of computers reached is <code>len(bfs(adj, s))</code>, which is 4 here. The whole computation costs $O(n+m)$, so it stays fast even for very large networks.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch12: Graphs (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

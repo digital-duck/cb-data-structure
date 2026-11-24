@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Binary Search Tree | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="随机二叉搜索树">随机二叉搜索树</h2>
+<h3 id="定义">定义</h3>
+<p><strong>二叉搜索树(BST)</strong>满足:每个结点的左子树键值均小于它,右子树键值均大于它。<strong>随机二叉搜索树</strong>是将 $n$ 个互异键值的一个<strong>均匀随机排列</strong>依次插入空树(不做任何平衡操作)所得到的 BST。共有 $n!$ 种插入顺序,每种出现的概率均为 $1/n!$。注意:不同的树形出现的概率并不相等(例如 $n=3$ 时,"平衡"树形对应 2 种排列,概率为 $1/3$,而每种"链状"树形仅对应 1 种排列,概率为 $1/6$)。</p>
+<p>最坏情况下(如按升序插入),树退化为链,高度为 $n-1$。随机性使这种情况极少出现。</p>
+<h3 id="worked-example-根的选择与递推">worked example:根的选择与递推</h3>
+<p>设键值为 $1,2,\dots,n$。第一个插入的元素成为根。由于排列是均匀随机的,根为第 $k$ 小元素的概率为 $1/n$。若根为 $k$,则左子树恰由 $\{1,\dots,k-1\}$ 构成,右子树由 $\{k+1,\dots,n\}$ 构成,且两棵子树各自仍是随机二叉搜索树。这与快速排序中"随机选主元"的结构完全一致。</p>
+<p>令 $C_n$ 为随机 BST 中所有结点深度之和的期望(内部路径长度),则</p>
+$$
+C_n = (n-1) + \frac{1}{n}\sum_{k=1}^{n}\bigl(C_{k-1} + C_{n-k}\bigr) = (n-1) + \frac{2}{n}\sum_{k=0}^{n-1} C_k .
+$$
+<p>(每个非根结点因根的存在深度加 1,共 $n-1$ 项。)</p>
+<p>用 $nC_n-(n-1)C_{n-1}$ 作差消去求和:</p>
+$$
+nC_n = (n+1)C_{n-1} + 2(n-1)\;\Longrightarrow\;\frac{C_n}{n+1}=\frac{C_{n-1}}{n}+\frac{2(n-1)}{n(n+1)} .
+$$
+<p>累加得 $C_n = 2(n+1)H_n - 4n \approx 2n\ln n$,其中 $H_n=\sum_{i=1}^n 1/i$ 为调和数。因此<strong>平均结点深度</strong>约为 $2\ln n\approx 1.39\log_2 n$,即一次查找的期望比较次数为 $O(\log n)$。</p>
+<h3 id="问题求解应用-期望高度">问题求解应用:期望高度</h3>
+<p>平均深度为对数级,而<strong>高度</strong>(最大深度)需要更强的结论。设 $H_n^{\text{tree}}$ 为高度,$Y_n=2^{H_n^{\text{tree}}}$。由根的分裂,$Y_n = 2\max(Y_{L},Y_{R})$,于是</p>
+$$
+\mathbb{E}[Y_n] \le \frac{2}{n}\sum_{k=1}^{n}\bigl(\mathbb{E}[Y_{k-1}]+\mathbb{E}[Y_{n-k}]\bigr)=\frac{4}{n}\sum_{k=0}^{n-1}\mathbb{E}[Y_k].
+$$
+<p>归纳可得 $\mathbb{E}[Y_n]\le \tfrac14\binom{n+3}{3}=O(n^3)$。由 Jensen 不等式($2^x$ 为凸函数):</p>
+$$
+2^{\mathbb{E}[H_n^{\text{tree}}]}\le \mathbb{E}[Y_n]=O(n^3)\;\Longrightarrow\;\mathbb{E}[H_n^{\text{tree}}]\le 3\log_2 n+O(1).
+$$
+<p>更精细的分析(Reed, 2003)表明 $\mathbb{E}[H_n^{\text{tree}}]\approx 4.311\ln n$,仍为 $O(\log n)$。</p>
+<p><strong>练习</strong>:对 $n=1000$ 的随机 BST,估计期望高度与平均查找比较次数。 <strong>解</strong>:$2\ln 1000\approx 13.8$(平均深度),$4.311\ln 1000\approx 29.8$(高度)。远小于最坏情况的 $999$。</p>
+<p><strong>要点</strong>:随机插入顺序使 BST 以高概率保持近似平衡,无需旋转;但若输入顺序由对手控制,则需使用 Treap、AVL 等结构来人为"制造"随机性或强制平衡。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

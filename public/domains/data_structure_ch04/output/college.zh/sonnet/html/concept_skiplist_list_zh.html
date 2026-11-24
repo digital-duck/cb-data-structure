@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skiplist List | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="跳表列表-skiplist-list">跳表列表(Skiplist List)</h2>
+<h3 id="定义">定义</h3>
+<p><strong>跳表列表</strong>用跳表实现 List 接口,支持 $\texttt{get}(i)$、$\texttt{set}(i,x)$、$\texttt{add}(i,x)$、$\texttt{remove}(i)$。关键思想是给每条<strong>边</strong>附加一个<strong>长度</strong> $\ell$:一条边的长度等于它在最底层(第 0 层)跨过的节点数。底层每条边长度为 $1$;高层的边"跳过"更多节点,长度更大。</p>
+<p>每个节点的高度 $h$ 随机决定:从 $h=0$ 开始,不断抛硬币,每次正面则 $h \leftarrow h+1$,直到出现反面。因此 $\Pr[h \ge k]=2^{-k}$,节点期望高度为 $1$,总空间期望为 $O(n)$。</p>
+<p><strong>核心不变量</strong>:从哨兵节点出发,沿路径累加所经过边的长度,得到的和就是当前节点的下标(哨兵记为 $-1$)。</p>
+<h3 id="例题">例题</h3>
+<p>设列表为 $[a,b,c,d,e,f]$,下标 $0\sim5$,求 $\texttt{get}(4)$。</p>
+<p>搜索从最高层的哨兵出发,记当前位置 $j=-1$。规则:在第 $r$ 层,若 $j+\ell \le i$,就沿边前进并令 $j \leftarrow j+\ell$;否则下降一层。假设 $c$(下标 2)高度为 3,$e$(下标 4)高度为 2,其余为 1:</p>
+<li>第 2 层:哨兵→$c$,长度 $\ell=3$,$j=-1+3=2\le 4$,前进,$j=2$。</li>
+<li>第 2 层:$c$→末尾,$j+\ell>4$,下降。</li>
+<li>第 1 层:$c\to e$,$\ell=2$,$j=4\le4$,前进,$j=4$。</li>
+<li>到达 $j=i$,返回 $e$ 的值。</li>
+<p>只走了 $2$ 条边,而不是 $5$ 步线性扫描。</p>
+<pre class="mermaid">graph LR
+    S["哨兵 j=-1"] -->|"第2层 长度3"| C["c 下标2"]
+    C -->|"第1层 长度2"| E["e 下标4"]
+    S -.->|"第0层 长度1"| A["a 下标0"]
+    A -.->|"长度1"| B["b 下标1"]
+    B -.->|"长度1"| C
+    C -.->|"长度1"| D["d 下标3"]
+    D -.->|"长度1"| E</pre>
+<p><em>图:查找下标 4 时,实线为实际走过的高层边,虚线为被跳过的底层边。</em></p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>add$(i,x)$</strong>:先抽取新节点高度 $k$,然后从上往下搜索。在每一层 $r \le k$,新节点插在"位置 $i$ 之前"的前驱 $u_r$ 之后。设 $u_r$ 在该层原边长为 $\ell$,且 $u_r$ 的下标为 $j$,则新边长度为:</p>
+$$\ell_{\text{前}} = i - j,\qquad \ell_{\text{后}} = \ell - (i-j) + 1.$$
+<p>高于 $k$ 的层,经过插入点的边长度各加 $1$(因为多了一个节点)。<strong>remove$(i)$</strong> 对称:被删节点所在各层,前驱边长度变为 $\ell_{\text{前}}+\ell_{\text{后}}-1$;更高层经过它的边长度减 $1$。</p>
+<p><strong>复杂度分析</strong>:搜索路径的反向分析是经典技巧。从目标节点倒着走:每一步以概率 $1/2$ 向上(该节点高度更高),以概率 $1/2$ 向左。向上最多 $O(\log n)$ 次(期望层数为 $\log n + O(1)$),而期望每上升一层只需向左 $1$ 步,因此期望路径长度为</p>
+$$\mathbb{E}[\text{path}] \le 2\log_2 n + O(1)=O(\log n).$$
+<p>所有四种操作都由一次自顶向下的搜索加上每层 $O(1)$ 的长度调整组成,所以期望时间均为 $O(\log n)$。</p>
+<p><strong>练习</strong>:若把抛硬币的概率由 $1/2$ 改为 $p$,期望空间与搜索路径长度如何变化?(提示:期望高度为 $\tfrac{p}{1-p}$,每层期望横向步数为 $\tfrac1p$。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

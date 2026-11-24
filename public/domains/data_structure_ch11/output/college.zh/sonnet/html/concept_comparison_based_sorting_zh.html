@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison Based Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="基于比较的排序">基于比较的排序</h2>
+<p><strong>定义。</strong> 基于比较的排序是一类排序算法,它们获取元素顺序信息的<em>唯一</em>途径,是调用比较操作 $\text{compare}(a,b)$,判断 $a \le b$ 是否成立。算法不查看元素的内部表示(如数字的位数、字符串的字符),因此只要元素之间定义了全序关系,同一算法就能排序整数、字符串或自定义对象。归并排序、快速排序、堆排序、插入排序都属于这一类;计数排序、基数排序则不是,因为它们要读取键的内部结构。</p>
+<p><strong>工作示例。</strong> 以三个互异元素 $a,b,c$ 为例。先比较 $a$ 与 $b$,再比较较大者与 $c$,最多需要 3 次比较才能确定顺序。我们可以把整个过程画成<strong>决策树</strong>:每个内部节点是一次比较,每条边是比较结果(是/否),每个叶子是一种可能的排列。</p>
+<p>3 个元素共有 $3! = 6$ 种排列,所以决策树至少有 6 个叶子。深度为 $h$ 的二叉树至多有 $2^h$ 个叶子,故 $2^h \ge 6$,即 $h \ge 3$。因此 3 次比较是最坏情况下的最优值。</p>
+<pre class="mermaid">graph TD
+A["比较 a 与 b"] -->|"a≤b"| B["比较 b 与 c"]
+A -->|"a>b"| C["比较 a 与 c"]
+B -->|"b≤c"| D["a,b,c"]
+B -->|"b>c"| E["比较 a 与 c"]
+C -->|"a≤c"| F["b,a,c"]
+C -->|"a>c"| G["b,c,a"]
+E -->|"a≤c"| H["a,c,b"]
+E -->|"a>c"| I["c,a,b"]</pre>
+<p><em>三个元素排序的决策树(部分叶子对应的排列已列出,每个叶子是一种可能的输出顺序)。</em></p>
+<p><strong>定理(比较排序的下界)。</strong> 任何基于比较的排序算法,在最坏情况下至少需要 $\Omega(n\log n)$ 次比较。</p>
+<p><em>证明。</em> 对 $n$ 个互异元素,算法必须区分 $n!$ 种输入排列,所以决策树至少有 $n!$ 个叶子。设树高为 $h$,则 $2^h \ge n!$,因此</p>
+$$h \ge \log_2 (n!).$$
+<p>由于 $n! \ge (n/2)^{n/2}$,可得</p>
+$$\log_2(n!) \ge \frac{n}{2}\log_2\frac{n}{2} = \Omega(n\log n). \qquad \blacksquare$$
+<p><strong>问题求解应用。</strong> 假设要为 $n = 10^6$ 条记录排序,你能否设计出只用约 $10^7$ 次比较的比较排序算法?</p>
+<p>计算下界:$\log_2(10^6!) \approx n\log_2 n - 1.44\,n \approx 10^6 \times 19.93 - 1.44\times 10^6 \approx 1.85\times 10^7$。所以 $10^7$ 次比较<strong>不可能</strong>做到,不论算法多么巧妙。归并排序约用 $n\log_2 n \approx 2\times10^7$ 次,已非常接近下界,说明它在渐近意义上是最优的。</p>
+<p>实际选择时可以这样判断:</p>
+<li>若只能使用 $\text{compare}(a,b)$(例如按用户自定义规则排序对象),则 $\Omega(n\log n)$ 是无法突破的底线。</li>
+<li>若键是范围有限的整数,可以放弃"只比较"的限制,使用计数排序或基数排序,在 $O(n)$ 时间内完成,因为它们利用了键的内部结构,不受上述定理约束。</li>
+<p><strong>小结。</strong> 比较排序以通用性换取了 $\Omega(n\log n)$ 的下界;理解决策树论证,就能判断一个排序目标是否可能达到,以及何时应该跳出"只比较"的框架。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

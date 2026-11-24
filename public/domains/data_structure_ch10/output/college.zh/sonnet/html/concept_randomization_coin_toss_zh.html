@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randomization Coin Toss | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="随机化抛硬币">随机化抛硬币</h2>
+<h3 id="定义">定义</h3>
+<p>在随机化二叉搜索树(如 treap 或随机化的 merge/split 结构)中,<strong>随机化抛硬币</strong>是指:在 <code>merge</code> 的每一步,用一个随机比特来决定下降到左子树还是右子树,而不是依据存储的平衡信息(高度、大小或颜色)。</p>
+<p>设要合并的两棵树为 $L$ 和 $R$,且 $L$ 中所有键都小于 $R$ 中所有键。令 $|L|=m$,$|R|=n$。则 <code>merge(L, R)</code> 以概率</p>
+$$
+p=\frac{m}{m+n}
+$$
+<p>选择 $L$ 的根作为新根(然后递归合并 $L$ 的右子树与 $R$);以概率 $1-p$ 选择 $R$ 的根作为新根(然后递归合并 $L$ 与 $R$ 的左子树)。当只用"公平硬币"($p=\tfrac12$)时,也可以得到期望对数深度的变体,但按子树大小加权的版本能精确保持均匀随机的树形分布。</p>
+<h3 id="例题">例题</h3>
+<p>合并 $L$(根 $a$,$m=3$)与 $R$(根 $b$,$n=1$)。</p>
+<li>以概率 $p=\tfrac{3}{4}$ 选 $a$ 为根:新树的根为 $a$,其右子树变为 $\text{merge}(a.\text{right},\,R)$。</li>
+<li>以概率 $\tfrac14$ 选 $b$ 为根:新树的根为 $b$,其左子树变为 $\text{merge}(L,\,b.\text{left})$。</li>
+<p>每一层只需<strong>一个随机比特(或一次随机数比较)</strong>,无需读取、维护任何平衡因子。</p>
+<pre><code>import random
+
+def merge(L, R):
+    if not L: return R
+    if not R: return L
+    if random.random() &lt; L.size / (L.size + R.size):
+        L.right = merge(L.right, R)
+        L.update()
+        return L
+    else:
+        R.left = merge(L, R.left)
+        R.update()
+        return R</code></pre>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题:</strong> 说明为什么这种做法使 <code>merge</code> 的期望时间为 $O(\log n)$。</p>
+<p><strong>分析:</strong> 每次递归都沿着 $L$ 的最右链或 $R$ 的最左链向下走一步。由于根的选择概率与子树大小成正比,每个节点成为合并后树根的概率,与它在"所有节点随机排列"模型中成为根的概率相同。因此合并结果的分布与"把全部键依次随机插入"得到的随机二叉搜索树一致。</p>
+<p>随机二叉搜索树中,节点 $x$ 的期望深度为</p>
+$$
+\mathbb{E}[\text{depth}(x)] = H_k + H_{N-k+1} - 2 = O(\log N),
+$$
+<p>其中 $H_k=\sum_{i=1}^{k}\frac1i$ 是调和数,$k$ 为 $x$ 的秩,$N$ 为节点总数。<code>merge</code> 的路径长度不超过两条链长度之和,故期望步数为 $O(\log m+\log n)$。</p>
+<p><strong>要点:</strong></p>
+<li>平衡来自<strong>概率</strong>,而非<strong>记录</strong>:没有旋转,没有平衡标记。</li>
+<li>最坏情况仍可能很深,但概率随深度指数级下降,即以高概率为 $O(\log N)$。</li>
+<li>代价是依赖随机源的质量;若随机比特可被对手预测,结构的保证就会失效。</li>
+<p><em>练习:</em> 若 $m=n=1$,<code>merge</code> 的两种结果各以什么概率出现?它们分别对应怎样的树形?</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

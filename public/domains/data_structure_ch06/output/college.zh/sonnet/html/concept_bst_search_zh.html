@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bst Search | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="二叉搜索树的查找">二叉搜索树的查找</h2>
+<p><strong>定义。</strong> 二叉搜索树(BST)的每个结点 $v$ 满足:左子树中所有键值都小于 $v.\text{key}$,右子树中所有键值都大于 $v.\text{key}$。<strong>BST 查找</strong>是在这样的树中定位值 $x$ 的操作:从根出发,将 $x$ 与当前结点比较,若相等则查找成功;若 $x<v.\text{key}$ 则转向左孩子;若 $x>v.\text{key}$ 则转向右孩子;若走到空指针(<code>None</code>),则查找失败。</p>
+<pre><code>def bst_search(node, x):
+    while node is not None:
+        if x == node.key:
+            return node
+        node = node.left if x &lt; node.key else node.right
+    return None</code></pre>
+<p><strong>正确性依据。</strong> 每次比较后,BST 性质保证 $x$ 若存在,只可能位于被选中的那一棵子树中,另一棵可以整体排除。因此该算法的循环不变式是:"若 $x$ 在树中,则它在以当前结点为根的子树中"。</p>
+<p><strong>例题。</strong> 在下面的 BST 中查找 $x=6$。</p>
+<pre class="mermaid">graph TD
+    A["8"] --> B["3"]
+    A --> C["10"]
+    B --> D["1"]
+    B --> E["6"]
+    C --> F["空"]
+    C --> G["14"]
+    E --> H["4"]
+    E --> I["7"]</pre>
+<p><em>图:一棵 BST。查找 6 的路径为 8 → 3 → 6。</em></p>
+<li>比较 $6$ 与根 $8$:$6<8$,向左,到达 $3$。</li>
+<li>比较 $6$ 与 $3$:$6>3$,向右,到达 $6$。</li>
+<li>比较 $6$ 与 $6$:相等,查找成功,共比较 3 次。</li>
+<p>若查找 $x=5$:路径为 $8\to3\to6\to4$,在 $4$ 处 $5>4$ 转向右孩子,而它为空,返回 <code>None</code>,共比较 4 次。</p>
+<p><strong>复杂度分析。</strong> 每次比较使当前结点下降一层,因此比较次数至多为树高 $h$ 加 1,即时间复杂度为 $O(h)$。树高取决于树的形状:</p>
+<li>树平衡时,$h=\Theta(\log n)$,每次排除约一半的结点;</li>
+<li>树退化为链(例如按递增顺序依次插入 $1,2,\dots,n$)时,$h=n-1$,查找退化为 $O(n)$ 的线性扫描。</li>
+<p>这正是 AVL 树、红黑树等自平衡结构存在的原因:它们把 $h$ 控制在 $O(\log n)$。</p>
+<p><strong>问题解决应用。</strong> 题目:在一棵含 $n=1023$ 个结点的完全平衡 BST 中,最坏情况需要比较多少次?</p>
+<p>解:完全平衡的树高为 $h=\lfloor\log_2 1023\rfloor=9$,共 10 层($2^{10}-1=1023$)。最坏情况需走到最深一层,即比较 $h+1=10$ 次。相比之下,在无序数组中最坏需要 1023 次比较。</p>
+<p><strong>常见错误。</strong> 不要只看根与 $x$ 的大小关系就断定位置:BST 性质要求逐层比较,每一层都重新判断。另外,BST 性质必须对整棵子树成立,而不仅仅是对父子结点成立,否则该排除推理就不再有效。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

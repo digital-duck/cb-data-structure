@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Tree | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-tree">Red Black Tree</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>red-black tree</strong> is a binary search tree (BST) in which every node is coloured red or black, and the following properties hold:</p>
+<li>The root is black.</li>
+<li><strong>No-red-edge property:</strong> a red node never has a red child (no two reds in a row on any root-to-leaf path).</li>
+<li><strong>Black-height property:</strong> every path from a node down to a missing child (a <code>null</code> leaf) passes through the same number of black nodes. This count is the node's black-height, $bh(x)$.</li>
+<p>These rules are exactly what is needed to simulate a <strong>2-4 tree</strong>. Each black node, together with any red children it has, forms one 2-4 node:</p>
+<p>| 2-4 node | Red-black form | |---|---| | 2-node (1 key) | a single black node | | 3-node (2 keys) | a black node with one red child | | 4-node (3 keys) | a black node with two red children |</p>
+<p>Red edges therefore mean "these keys live in the same 2-4 node." Since a 2-4 tree has all leaves at the same depth, the black-height property follows.</p>
+<h3 id="height-bound">Height bound</h3>
+<p>Let $h$ be the height of the tree and $n$ the number of keys. Because no red node has a red child, at least half the nodes on any root-to-leaf path are black, so $bh(\text{root}) \ge h/2$. A subtree rooted at $x$ contains at least $2^{bh(x)}-1$ internal nodes, which can be shown by induction on height. Hence</p>
+$$n \ge 2^{h/2}-1 \quad\Longrightarrow\quad h \le 2\log_2(n+1).$$
+<p>Search, insertion, and deletion therefore run in $O(\log n)$ time.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Insert keys $10, 20, 30$ into an empty tree. New nodes are coloured red.</p>
+<li>Insert 10: it is the root, so recolour it black.</li>
+<li>Insert 20: it becomes the red right child of 10. No violation.</li>
+<li>Insert 30: it becomes the red right child of 20. Now <strong>red 20 has red child 30</strong>, which violates the no-red-edge property. 20's sibling (the left child of 10) is <code>null</code>, i.e. black, so we <strong>rotate</strong>. Rotate left at 10, so 20 becomes the root. Then recolour 20 black and 10 red.</li>
+<p>The result is black 20 with red children 10 and 30. This is a 2-4 4-node $[10, 20, 30]$. Every path has black-height 1.</p>
+<p>If instead the uncle were red, we would <strong>recolour</strong> (parent and uncle black, grandparent red) and continue checking upward. This corresponds to <em>splitting</em> a 4-node in the 2-4 tree.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> What is the largest possible height of a red-black tree with $n = 15$ keys?</p>
+<p><strong>Solution.</strong> Use $h \le 2\log_2(n+1) = 2\log_2 16 = 8$. This is an upper bound, and it is the largest height the tree can have. A tree of height 8 would need a root-to-leaf path alternating black and red, while all other paths keep the same black-height of 4. The minimum number of nodes for that is far below 15 only if the shape permits it, so the bound is useful for judging performance: a plain BST with 15 keys could have height 15, but a red-black tree never exceeds roughly twice the ideal height of 4.</p>
+<p><strong>Checking a tree.</strong> To test validity, apply three checks: (a) is the root black, (b) is there any red-red parent-child pair, and (c) do all root-to-<code>null</code> paths have equal black counts? Failing any one means the tree is invalid. For example, a black root with a single child that is black, and no other children, fails (c). The path through the missing left child has 1 black node, and the path through the right child has 2.</p>
+<p><strong>Takeaway.</strong> Insertion needs at most 2 rotations, and recolouring is the other fix-up. Both are cheap local operations that keep the tree balanced.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

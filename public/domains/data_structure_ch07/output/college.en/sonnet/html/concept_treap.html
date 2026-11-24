@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap">Treap</h2>
+<p>A <strong>treap</strong> is a binary tree in which every node stores a key $k$ and a randomly assigned priority $p$, and the tree satisfies two properties at once:</p>
+<li><strong>BST property:</strong> for every node, keys in its left subtree are smaller and keys in its right subtree are larger.</li>
+<li><strong>Heap property:</strong> every node's priority is larger than its children's priorities (max-heap order).</li>
+<p>The name combines <em>tree</em> and <em>heap</em>. For distinct keys and distinct priorities, these two constraints determine the tree's shape <strong>uniquely</strong>. The node with the highest priority must be the root. Its key splits the remaining keys into a left group and a right group, and the same argument applies recursively to each group. Because the priorities are random, the shape is the same as that of a binary search tree built by inserting the keys in random order. Searching a treap is ordinary BST search, so its cost is the depth of the node being sought.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take keys and priorities $(k, p)$: $(A,5),\ (C,9),\ (E,3),\ (G,7),\ (J,1)$.</p>
+<li>The maximum priority is $9$ at $C$, so $C$ is the root.</li>
+<li>Keys less than $C$: $\{A\}$, so $A$ is the left child.</li>
+<li>Keys greater than $C$: $\{E, G, J\}$. The highest priority there is $7$ at $G$, so $G$ is the right child of $C$.</li>
+<li>Under $G$, key $E$ (priority 3) goes left and key $J$ (priority 1) goes right.</li>
+<p>The tree has height 2, counted in edges. An in-order traversal gives $A, C, E, G, J$, so the BST property holds. Every parent outranks its children, so the heap property holds.</p>
+<h3 id="expected-depth">Expected depth</h3>
+<p>The depth of a node equals its number of ancestors. Let $x_i$ be the $i$-th smallest key. Node $x_j$ is an ancestor of $x_i$ exactly when $x_j$ has the highest priority among all keys from $x_i$ to $x_j$ inclusive. If any other key in that range had a higher priority, it would sit above $x_j$ and separate the two nodes. That range contains $|i-j|+1$ keys, and all priority orderings are equally likely, so</p>
+$$P(x_j \text{ is an ancestor of } x_i) = \frac{1}{|i-j|+1}.$$
+<p>Adding these probabilities over all $j \ne i$ gives the expected depth:</p>
+$$E[\text{depth of } x_i] = \sum_{j\ne i}\frac{1}{|i-j|+1}.$$
+<p>Each side of $x_i$ contributes a sum of the form $\tfrac12+\tfrac13+\cdots+\tfrac1m$. For large $m$, the sum $1+\tfrac12+\cdots+\tfrac1m$ is approximately $\ln m + 0.58$. Each side therefore contributes $O(\log n)$, so the expected depth is $O(\log n)$ for every node.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem:</strong> In a treap with $n = 1000$ keys, estimate the expected depth of the median key.</p>
+<p>Take $i = 500$. The 499 keys to its left contribute $\tfrac12+\cdots+\tfrac1{500}$, and the 500 keys to its right contribute $\tfrac12+\cdots+\tfrac1{501}$. Each sum is about $(\ln 500 + 0.58) - 1 \approx 6.79 - 1 = 5.79$. The total is</p>
+$$E[\text{depth}] \approx 2(5.79) \approx 11.6.$$
+<p>So a search for the median takes about 12 comparisons on average. That is close to $\log_2 1000 \approx 10$. The balance comes from the random priorities, not from the order in which keys arrive. Even sorted input, which is the worst case for a plain BST, gives a treap whose expected depth is logarithmic.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

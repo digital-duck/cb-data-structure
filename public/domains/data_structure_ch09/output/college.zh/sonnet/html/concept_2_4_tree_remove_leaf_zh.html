@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 4 Tree Remove Leaf | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="2-4-树删除叶节点">2 4 树删除叶节点</h2>
+<h3 id="定义">定义</h3>
+<p><strong>2-4 树</strong>(也称 2-3-4 树)是一种多路平衡搜索树,满足两条性质:</p>
+<li><strong>度数性质</strong>:每个内部节点有 2、3 或 4 个孩子(分别对应 1、2、3 个键);</li>
+<li><strong>深度性质</strong>:所有叶子位于同一深度。</li>
+<p><strong>删除叶节点中的键</strong>,是指从最底层节点中移除一个键。若该节点原本有 2 个或 3 个键,直接删除即可。若它只剩 1 个键,删除后变为空,即"下溢"(underflow),此时必须修复度数性质。</p>
+<p>修复分为三种情形(设下溢节点为 $x$,父节点为 $p$):</p>
+<li><strong>借位(旋转)</strong>:若 $x$ 的相邻兄弟至少有 2 个键,则父节点中分隔二者的键下移到 $x$,兄弟最近的键上移到 $p$。</li>
+<li><strong>合并</strong>:若相邻兄弟只有 1 个键,则把父节点中分隔的键下移,与兄弟及 $x$ 合并为一个节点。此时 $p$ 少了一个键和一个孩子,可能继而下溢。</li>
+<li><strong>递归上推</strong>:若 $p$ 下溢,对 $p$ 重复上述过程。若根节点变空,则删除根,树高减 1。</li>
+<h3 id="例题">例题</h3>
+<p>考虑如下 2-4 树,删除键 $5$:</p>
+<pre><code>          [10]
+         /    \
+      [5]     [12, 15]</code></pre>
+<p>叶子 $[5]$ 删除后为空。其右兄弟 $[12,15]$ 有 2 个键,因此<strong>借位</strong>:父键 $10$ 下移到 $x$,兄弟最小键 $12$ 上移到父节点:</p>
+<pre><code>          [12]
+         /    \
+      [10]    [15]</code></pre>
+<p>若右兄弟只是 $[12]$,则无法借位,须<strong>合并</strong>:$10$ 下移,与 $[12]$ 合并成 $[10,12]$,根变空,于是删除根,树高减 1:</p>
+<pre><code>        [10, 12]</code></pre>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>问题</strong>:从下面的树中删除 $3$。</p>
+<pre><code>            [6]
+          /     \
+       [3]       [8]</code></pre>
+<p><strong>步骤</strong>:</p>
+<li>删除 $3$,叶子变空;右兄弟 $[8]$ 只有 1 个键,不能借位。</li>
+<li><strong>合并</strong>:父键 $6$ 下移,得到 $[6,8]$。根变空,树高减 1。</li>
+<li>结果为单节点 $[6,8]$,满足两条性质。</li>
+<p><strong>复杂度分析</strong>:2-4 树含 $n$ 个键时,高度为 $h=\Theta(\log n)$。每一层最多做一次借位或合并,每次耗时 $O(1)$(节点至多 3 个键)。借位后修复立即终止,只有合并才会向上传播。因此删除的最坏时间为</p>
+$$T(n)=O(h)=O(\log n).$$
+<p><strong>解题要点</strong>:</p>
+<li>先判断兄弟的键数:$\ge 2$ 借位,$=1$ 合并。</li>
+<li>合并会让父节点失去一个键,所以要检查父节点是否下溢。</li>
+<li>只有根节点变空时,树高才会减小,这是所有叶子仍保持同深度的原因。</li>
+<li>若要删除的键在内部节点中,则先与其中序后继(位于某个叶子)交换,再按本节方法删除叶子中的键。</li>
+<p><strong>练习</strong>:在 $[10]$ 为根、孩子为 $[5]$ 和 $[12]$ 的树中删除 $12$,写出结果并说明属于哪种情形。(答案:合并,得到 $[5,10]$,树高减 1。)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

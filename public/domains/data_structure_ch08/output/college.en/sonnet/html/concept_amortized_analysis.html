@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amortized Analysis | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="amortized-analysis">Amortized Analysis</h2>
+<p><strong>Definition.</strong> Amortized analysis bounds the <em>average cost per operation</em> over a worst-case sequence of operations. It differs from average-case analysis because it uses no probability. The guarantee holds for every sequence. A single operation may be expensive, but if it can only happen after many cheap operations have "paid" for it, the cost per operation stays small.</p>
+<p>In the <strong>credit (accounting) method</strong>, we assign each operation type an <em>amortized cost</em> $\hat{c}_i$. It may be more or less than the actual cost $c_i$. When $\hat{c}_i > c_i$, the surplus is stored as credit on specific data items. When $\hat{c}_i < c_i$, we spend stored credit. The scheme is valid if credit never goes negative. In that case, for any sequence of $n$ operations,</p>
+$$\sum_{i=1}^{n} c_i \;\le\; \sum_{i=1}^{n} \hat{c}_i .$$
+<p>The total amortized cost therefore upper-bounds the total actual cost.</p>
+<p><strong>Worked example: a doubling array.</strong> Appending to a dynamic array costs $1$ if there is space. If the array is full with $k$ elements, we allocate an array of size $2k$ and copy all $k$ elements. That append costs $k+1$. A naive bound of $O(n)$ per append gives $O(n^2)$ for $n$ appends, which is too pessimistic.</p>
+<p>Charge $\hat{c}=3$ per append:</p>
+<li>$1$ pays for the actual write.</li>
+<li>$1$ is stored on the new element, to pay for copying that element at the next rebuild.</li>
+<li>$1$ is stored on an older element that has no credit left, to pay for copying it.</li>
+<p>Suppose a rebuild happens at size $k$, and the previous rebuild left $k/2$ elements. Each of the $k/2$ elements added since then holds $2$ credits. That gives $k$ credits in total, which pays for copying all $k$ elements. Credit is never negative, so $\sum c_i \le 3n$. The cost is $O(1)$ amortized per append.</p>
+<p><strong>Problem-solving application: bounding rebuilds.</strong> Suppose a hash table rebuilds, at cost proportional to its size $m$, whenever the load factor reaches $1$. After a rebuild it holds $m$ items in $2m$ slots. Find the amortized cost of an insertion.</p>
+<li><em>Find when rebuilding happens.</em> The next rebuild occurs after $m$ more insertions.</li>
+<li><em>Set the charge.</em> Charge each insertion $\hat{c}=3$. One unit pays for the insertion itself, and two units are stored as credit.</li>
+<li><em>Check the credit.</em> Over $m$ insertions, we save $2m$ credits. The rebuild at size $2m$ costs about $2m$, which is exactly covered.</li>
+<li><em>Conclude.</em> Every insertion is $O(1)$ amortized, so $n$ insertions cost $O(n)$ in total, even though one insertion may cost $\Theta(n)$.</li>
+<p><strong>Common pitfall.</strong> Rebuilding after a <em>fixed number</em> of insertions, such as growing by $+10$ slots, fails this analysis. With $n$ insertions you get about $n/10$ rebuilds of average size $\Theta(n)$. That is $\Theta(n^2)$ in total, or $\Theta(n)$ per insertion. The credit scheme only works when the growth is <em>geometric</em>, because then the work between rebuilds grows in proportion to the rebuild cost.</p>
+<p><strong>Key takeaway.</strong> To do an amortized analysis, define the credit invariant, show it is never negative, and compare the total amortized cost with the total actual cost.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

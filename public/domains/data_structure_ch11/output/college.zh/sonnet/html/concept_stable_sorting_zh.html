@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stable Sorting | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="稳定排序">稳定排序</h2>
+<p><strong>定义。</strong> 设待排序序列为记录 $a_1, a_2, \dots, a_n$,每条记录带有一个排序键 $k(a_i)$。若一个排序算法满足:对任意 $i<j$,只要 $k(a_i)=k(a_j)$,则在输出序列中 $a_i$ 仍排在 $a_j$ 之前,就称该算法是<strong>稳定的</strong>(stable)。换言之,键相同的元素保持输入时的相对顺序。键不同的元素按键值排序,这一点所有排序算法都一样,稳定性只约束"相等"的情形。</p>
+<p><strong>示例。</strong> 对下列(姓名, 成绩)记录按成绩升序排序:</p>
+$$(\text{甲},90),\ (\text{乙},85),\ (\text{丙},90),\ (\text{丁},85)$$
+<li>稳定排序的结果:$(\text{乙},85),(\text{丁},85),(\text{甲},90),(\text{丙},90)$。乙仍在丁前,甲仍在丙前。</li>
+<li>不稳定排序可能给出:$(\text{丁},85),(\text{乙},85),(\text{丙},90),(\text{甲},90)$。成绩的顺序正确,但同分者的原有次序被打乱。</li>
+<p><strong>哪些算法是稳定的?</strong> 归并排序、插入排序、冒泡排序、计数排序是稳定的(归并时遇到相等元素,先取左半部分的元素即可)。选择排序、堆排序、朴素的快速排序通常不稳定。以选择排序为例,对 $[3_a,\,3_b,\,1]$ 排序:第一轮把最小值 $1$ 与首位交换,得到 $[1,\,3_b,\,3_a]$,两个 $3$ 的顺序被颠倒了。</p>
+<p><strong>问题求解应用:多关键字排序。</strong> 假设要先按班级、再按成绩排序,同班内成绩相同者仍按原学号顺序排列。利用稳定性,可以<strong>从次要关键字到主要关键字</strong>依次排序:</p>
+<li>先按成绩稳定排序;</li>
+<li>再按班级稳定排序。</li>
+<p>第二步中,班级相同的记录保持第一步得到的成绩顺序,因此最终结果同时满足两级要求。若第二步使用不稳定算法,班级内的成绩顺序就可能被破坏。基数排序正是依赖这一原理,对每一位依次做稳定的计数排序,才得以正确工作。</p>
+<p>在 Python 中,内置的 <code>sorted</code> 和 <code>list.sort</code> 使用 Timsort,它是稳定的:</p>
+<pre><code>students = [("甲", 2, 90), ("乙", 1, 85), ("丙", 2, 85), ("丁", 1, 90)]
+students.sort(key=lambda s: s[2])   # 次要关键字:成绩
+students.sort(key=lambda s: s[1])   # 主要关键字:班级</code></pre>
+<p><strong>复杂度提示。</strong> 稳定性通常需要付出代价:归并排序稳定,但需要 $O(n)$ 额外空间;原地的堆排序只需 $O(1)$ 额外空间,却不稳定。此外,任何排序算法都可以通过把原始下标作为第二关键字,即比较 $(k(a_i),\,i)$,变成稳定的,代价是额外的 $O(n)$ 存储。</p>
+<pre class="mermaid">flowchart LR
+    A["输入:甲90, 乙85, 丙90, 丁85"] --> B{"排序算法是否稳定?"}
+    B -->|"稳定"| C["乙85, 丁85, 甲90, 丙90"]
+    B -->|"不稳定"| D["可能:丁85, 乙85, 丙90, 甲90"]
+    C --> E["同分者保持原顺序"]
+    D --> F["同分者顺序可能改变"]</pre>
+<p><em>图:稳定与不稳定排序对相同键值元素的处理对比。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

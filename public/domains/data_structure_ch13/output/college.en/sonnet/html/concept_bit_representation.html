@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bit Representation | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="bit-representation">Bit Representation</h2>
+<p><strong>Definition.</strong> A $w$-bit unsigned integer is stored as a fixed-length string of bits $b_{w-1}b_{w-2}\cdots b_1b_0$, where each $b_i\in\{0,1\}$. Bit $b_i$ carries the place value $2^i$, so the encoded value is</p>
+$$
+x=\sum_{i=0}^{w-1} b_i\,2^i .
+$$
+<p>Bit $b_{w-1}$ is the <em>most significant bit</em> (MSB) and $b_0$ is the <em>least significant bit</em> (LSB). Because there are $w$ positions and two choices per position, exactly $2^w$ distinct values can be represented: $0,1,\dots,2^w-1$.</p>
+<p>For signed integers, the common two's-complement encoding gives the MSB the negative weight $-2^{w-1}$:</p>
+$$
+x=-b_{w-1}2^{w-1}+\sum_{i=0}^{w-2} b_i\,2^i ,
+$$
+<p>which covers the range $-2^{w-1}$ to $2^{w-1}-1$.</p>
+<p><strong>Worked example.</strong> Let $w=8$ and consider the string $10110101$. Reading from $b_7$ down to $b_0$, the bits equal to 1 are $b_7,b_5,b_4,b_2,b_0$. As an unsigned integer:</p>
+$$
+x=2^7+2^5+2^4+2^2+2^0=128+32+16+4+1=181 .
+$$
+<p>As a two's-complement integer, the MSB contributes $-128$ instead of $+128$:</p>
+$$
+x=-128+32+16+4+1=-75 .
+$$
+<p>The same bits therefore encode different values depending on the interpretation. Check: $181-256=-75$, consistent with $x_{\text{signed}}=x_{\text{unsigned}}-2^w$ whenever $b_{w-1}=1$.</p>
+<p><strong>Problem-solving application.</strong> <em>Problem:</em> Find the 8-bit pattern for $x=-37$ in two's complement, and determine how many bits are needed to store values up to 1000 unsigned.</p>
+<p><em>Solution, part 1.</em> Start with $+37=00100101$ (since $37=32+4+1$). Negation in two's complement is "flip all bits, then add 1":</p>
+$$
+\overline{00100101}=11011010,\qquad 11011010+1=11011011 .
+$$
+<p>Verify: $-128+64+16+8+2+1=-37$. ✓</p>
+<p><em>Solution, part 2.</em> We need $2^w-1\ge 1000$, i.e. $2^w\ge 1001$. Since $2^{9}=512<1001\le 1024=2^{10}$, we need</p>
+$$
+w=\lceil \log_2(1001)\rceil=10 \text{ bits}.
+$$
+<p>In general, representing $n$ distinct values requires $w=\lceil\log_2 n\rceil$ bits.</p>
+<p><strong>Useful consequences.</strong></p>
+<li>Setting or testing the $i$-th bit uses the mask $2^i$: for example, $x \,\&\, (1\ll i)$ tests $b_i$.</li>
+<li>Shifting left by $k$ positions multiplies by $2^k$ (if no bits overflow beyond $w$).</li>
+<li>Arithmetic wraps modulo $2^w$: in 8 bits, $255+1=0$. Overflow is therefore a property of the fixed width, not of the numbers themselves.</li>
+<p>When solving problems, first decide the width $w$ and the interpretation (unsigned or signed), because both are needed to turn a bit string into a value.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

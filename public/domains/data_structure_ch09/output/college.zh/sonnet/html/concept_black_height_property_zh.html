@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Height Property | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="黑高性质">黑高性质</h2>
+<p><strong>定义。</strong> 在红黑树中，从某节点 $x$ 出发（不含 $x$ 本身）向下到达任一叶子（空节点 NIL）的路径上，黑色节点的个数称为 $x$ 的<strong>黑高</strong>，记作 $bh(x)$。<strong>黑高性质</strong>（红黑树的第5条规则）规定：从任一节点到其所有后代叶子的每条简单路径，包含的黑色节点数目相同。因此 $bh(x)$ 是一个良定义的量。</p>
+<p>这条性质与另外两条规则配合使用：根和叶子为黑色；红色节点的子节点必为黑色（不存在连续两个红节点）。</p>
+<p><strong>例题。</strong> 设一棵红黑树的根 $r$ 有 $bh(r)=3$。检验沿路径 $r\to a\to b\to \text{NIL}$：若 $a$ 为红、$b$ 为黑，则（不含根、含 NIL）黑节点为 $b$ 与 NIL，只有 2 个。这与黑高 3 矛盾，说明根必须是黑色，并且路径上还需再有一个黑节点，比如 $a$ 也是黑色。</p>
+<p>再看每个子节点的黑高：若子节点 $c$ 为红色，则 $bh(c)=bh(x)$；若为黑色，则 $bh(c)=bh(x)-1$。这个递推关系是验证与维护黑高性质的基础。</p>
+<p><strong>问题求解：高度上界。</strong> 我们证明：含 $n$ 个内部节点的红黑树，高度 $h\le 2\log_2(n+1)$。</p>
+<p><em>引理：</em> 以 $x$ 为根的子树至少含有 $2^{bh(x)}-1$ 个内部节点。</p>
+<p><em>证明（对高度归纳）。</em> 若 $x$ 是叶子，$bh(x)=0$，子树含 $2^0-1=0$ 个内部节点，成立。若 $x$ 为内部节点，其每个子节点的黑高至少为 $bh(x)-1$，由归纳假设，每个子树至少含 $2^{bh(x)-1}-1$ 个内部节点。于是</p>
+$$
+\text{节点数}\ \ge\ 1+2\left(2^{bh(x)-1}-1\right)=2^{bh(x)}-1. \qquad\blacksquare
+$$
+<p>由于红节点不能相邻，任一根到叶路径上至少一半的节点是黑色，故 $bh(r)\ge h/2$。代入引理：</p>
+$$
+n\ \ge\ 2^{h/2}-1\ \Longrightarrow\ h\le 2\log_2(n+1).
+$$
+<p><strong>数值检验。</strong> 当 $n=10^6$ 时，$h\le 2\log_2(10^6+1)\approx 40$。即使最坏情形，查找、插入、删除也只需约 40 步，保证了 $O(\log n)$ 的时间复杂度。</p>
+<p><strong>应用提示。</strong> 插入或删除后，红黑树通过<strong>重新着色</strong>与<strong>旋转</strong>恢复黑高性质：旋转不改变各路径的黑节点数，重新着色则需成对调整。调试实现时，一个实用做法是编写检查函数，递归计算左右子树的黑高，若二者不等，立即报告违反性质的节点。</p>
+<pre class="mermaid">graph TD
+A["根 黑 bh=2"] --> B["黑 bh=1"]
+A --> C["红 bh=2"]
+B --> D["NIL 黑"]
+B --> E["NIL 黑"]
+C --> F["黑 bh=1"]
+C --> G["黑 bh=1"]
+F --> H["NIL 黑"]
+G --> I["NIL 黑"]</pre>
+<p><em>图示：一棵小型红黑树，每个节点标注其黑高；从根到任一 NIL 的路径上，黑节点数量一致。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

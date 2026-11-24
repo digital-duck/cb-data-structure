@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xfasttrie | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="xfasttrie">Xfasttrie</h2>
+<h3 id="definition">Definition</h3>
+<p>An <strong>x-fast trie</strong> stores a set $S$ of $n$ integers drawn from $\{0,1,\dots,2^w-1\}$. It is a <code>BinaryTrie</code> of height $w$, where each key is a root-to-leaf path of $w$ bits, with two additions:</p>
+<li><strong>One hash table per level.</strong> For each level $i = 0,\dots,w$, table $T_i$ holds every trie node at depth $i$. Each node is identified by its length-$i$ bit prefix. Checking whether a prefix exists therefore takes $O(1)$ expected time.</li>
+<li><strong>Leaf and jump pointers.</strong> The leaves form a sorted doubly linked list. Each node with only one child has a <em>jump pointer</em> to the smallest leaf in its subtree if its right child is missing, or to the largest leaf if its left child is missing.</li>
+<p>The key observation is that prefix membership is <strong>monotone</strong>. If a prefix of length $i$ is in the trie, so are all of its shorter prefixes. A binary search over the depth $i$ is therefore valid.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take $w=4$ and $S=\{2,\,5,\,6\}$, which in binary is $\{0010,\,0101,\,0110\}$. Run $\texttt{find}(7)$, where $7 = 0111$. This returns the smallest element $\ge 7$, or reports that none exists.</p>
+<p>Binary search on depth, with $\ell=0$ and $h=4$:</p>
+<li>Try $i=2$. Prefix $01$ is in $T_2$, so $\ell=2$.</li>
+<li>Try $i=3$. Prefix $011$ is in $T_3$, so $\ell=3$.</li>
+<li>Try $i=4$. Prefix $0111$ is absent, so $h=3$ and the search ends.</li>
+<p>The deepest matching node is $u = 011$. It has only a left child ($0110$), and $7$ would branch right at the next bit. So $u$'s jump pointer leads to the <em>largest</em> leaf below it, which is $6$. That is the predecessor of $7$. The successor is the next leaf in the linked list, which does not exist, so $\texttt{find}(7)$ reports no element.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Cost of find.</strong> The search makes $\lceil \log_2 (w+1)\rceil$ probes, each an $O(1)$ expected hash lookup. After the search, one jump pointer and at most one list step finish the job. Hence</p>
+$$T_{\text{find}}(n) = O(\log w)\ \text{expected}.$$
+<p>With $w = 32$ this is about 5 hash probes. A plain binary trie needs $w=32$ steps.</p>
+<p><strong>Cost of add and remove.</strong> <code>add(x)</code> must insert up to $w$ nodes, one per level, into the hash tables. It must also repair jump pointers along the path and splice the new leaf into the list. <code>remove(x)</code> reverses this work. Both are</p>
+$$T_{\text{add}},\,T_{\text{remove}} = O(w).$$
+<p><strong>Space.</strong> Each of the $n$ keys contributes at most $w+1$ nodes, so the space is $O(nw)$.</p>
+<p><strong>Exercise.</strong> For $S=\{1, 9, 12\}$ with $w=4$, find $\texttt{find}(10)$.</p>
+<p><em>Solution:</em> $10=1010$. The prefix $10$ exists, because $1001$ is in $S$. Prefix $101$ does not exist, since $9=1001$ and $12=1100$ both lack it, so the binary search stops at $u=10$. This node has only a left child (bit 0, toward $1001$). The query branches right, so the jump pointer gives the largest leaf below $u$, which is $9$. The successor is the next list element, $12$, so $\texttt{find}(10)=12$.</p>
+<p><strong>Takeaway.</strong> The x-fast trie trades slower updates ($O(w)$) and larger space ($O(nw)$) for an exponentially faster search. The $O(w)$ cost of updates is the gap that the y-fast trie later closes.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

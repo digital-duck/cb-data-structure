@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison Tree | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="comparison-tree">Comparison Tree</h2>
+<p>A <strong>comparison tree</strong> (or decision tree) models every possible execution of a comparison-based sorting algorithm on inputs of a fixed size $n$. It is a rooted binary tree in which:</p>
+<li>each <strong>internal node</strong> is a comparison of two input elements, written $a_i : a_j$ (or "$a_i \le a_j$?");</li>
+<li>the two <strong>branches</strong> from a node are the outcomes "yes" and "no";</li>
+<li>each <strong>leaf</strong> is a finished run, labeled with the output permutation the algorithm announces.</li>
+<p>Running the algorithm on a specific input traces one root-to-leaf path. The number of comparisons used equals the length of that path, so the <strong>worst-case number of comparisons equals the height $h$ of the tree</strong>. The tree depends on the algorithm and on $n$, but it exists for any algorithm that gains information only by comparing elements.</p>
+<h3 id="worked-example-n-3">Worked example: $n=3$</h3>
+<p>Take distinct elements $a_1, a_2, a_3$. One valid algorithm compares $a_1:a_2$ first, then compares the larger or smaller one against $a_3$, and so on.</p>
+<pre class="mermaid">graph TD
+A["a1 : a2"] -->|"a1<a2"| B["a2 : a3"]
+A -->|"a1>a2"| C["a1 : a3"]
+B -->|"a2<a3"| D["1,2,3"]
+B -->|"a2>a3"| E["a1 : a3"]
+C -->|"a1<a3"| F["2,1,3"]
+C -->|"a1>a3"| G["a2 : a3"]
+E -->|"a1<a3"| H["1,3,2"]
+E -->|"a1>a3"| I["3,1,2"]
+G -->|"a2<a3"| J["2,3,1"]
+G -->|"a2>a3"| K["3,2,1"]</pre>
+<p><em>Comparison tree for sorting three elements. Leaves list the sorted order as indices. The tree has 6 leaves and height 3.</em></p>
+<p>Each of the $3! = 6$ orderings appears as exactly one leaf. If a permutation were missing, the algorithm would fail on inputs requiring it. If two different permutations shared a leaf, the algorithm would give the same output for inputs that need different outputs. So a correct algorithm needs <strong>at least $n!$ leaves</strong>.</p>
+<h3 id="problem-solving-application-a-lower-bound">Problem-solving application: a lower bound</h3>
+<p>A binary tree of height $h$ has at most $2^h$ leaves. Combining this with the requirement of at least $n!$ leaves:</p>
+$$2^h \ge n! \quad\Longrightarrow\quad h \ge \log_2(n!).$$
+<p>This holds for every comparison sort, so $\log_2(n!)$ is a lower bound on worst-case comparisons.</p>
+<p><strong>Check with $n=3$:</strong> $\log_2 6 \approx 2.58$, so $h \ge \lceil 2.58 \rceil = 3$. The tree above achieves exactly 3, so it is optimal in the worst case.</p>
+<p><strong>Check with $n=4$:</strong> $\log_2 24 \approx 4.58$, so at least $5$ comparisons are needed in the worst case. No algorithm can do it in 4.</p>
+<p><strong>Asymptotic form.</strong> Since $n! \ge (n/2)^{n/2}$ (the top $n/2$ factors are each at least $n/2$),</p>
+$$h \ge \log_2\!\left(\tfrac{n}{2}\right)^{n/2} = \tfrac{n}{2}\log_2\tfrac{n}{2} = \Omega(n\log n).$$
+<p>Therefore no comparison-based sort, whether merge sort, heapsort, or one not yet invented, can beat $n \log n$ in the worst case. Merge sort and heapsort are therefore asymptotically optimal.</p>
+<p><strong>Practice:</strong> An algorithm claims to sort 5 distinct numbers in at most 6 comparisons. Is that possible? Since $5! = 120$ and $2^6 = 64 < 120$, a height-6 tree has too few leaves. The claim is impossible. The minimum is $\lceil\log_2 120\rceil = 7$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

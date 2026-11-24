@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Balancing Strategies | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="tree-balancing-strategies">Tree Balancing Strategies</h2>
+<h3 id="definition">Definition</h3>
+<p>A binary search tree (BST) supports search, insert, and delete in $O(h)$ time, where $h$ is the tree's height. For $n$ keys, $h$ ranges from $\lceil \log_2(n+1)\rceil - 1$ (balanced) to $n-1$ (a linked list produced by inserting sorted keys). A <strong>balancing strategy</strong> is any method that keeps $h = O(\log n)$, either always (worst case) or in expectation or amortized terms. Three families are common:</p>
+<li><strong>Randomization.</strong> Randomness in the structure prevents adversarial input from forcing a bad shape. A <em>treap</em> gives each key a random priority and maintains BST order on keys and heap order on priorities. The result is the same tree you would get by inserting keys in priority order, which is a random-order insertion. Its expected height is $O(\log n)$.</li>
+<li><strong>Partial rebuilding.</strong> Allow imbalance, then rebuild a subtree when it gets too lopsided. A <em>scapegoat tree</em> stores no balance data. After an insertion at depth greater than $\log_{3/2} n$, it finds an ancestor (the scapegoat) with $\text{size}(\text{child}) > \tfrac{2}{3}\,\text{size}(\text{node})$ and rebuilds that subtree perfectly. Rebuilding costs $O(\text{size})$, but it happens rarely, so insertion is $O(\log n)$ amortized.</li>
+<li><strong>Simulated non-binary trees.</strong> Represent a multiway tree as a binary one. A <em>2-3-4 tree</em> has nodes with 1–3 keys and all leaves at equal depth, so it is perfectly balanced by construction. A <em>red-black tree</em> encodes it in binary form, with red links joining keys that share a multiway node. Rotations and recolorings repair violations, which guarantees $h \le 2\log_2(n+1)$.</li>
+<h3 id="worked-example">Worked Example</h3>
+<p>Insert priorities into a treap. Keys $A<B<C<D$ arrive in sorted order with random priorities $A{:}\,7,\ B{:}\,2,\ C{:}\,9,\ D{:}\,4$ (higher priority is closer to the root). Heap order puts $C$ (9) at the root. $A$ and $B$ lie to its left, and $A$ has the higher priority, so $A$ is the left child and $B$ is $A$'s right child. $D$ is $C$'s right child. The height is 2, not the 3 a plain BST would give for sorted input.</p>
+<h3 id="problem-solving-application">Problem-Solving Application</h3>
+<p><strong>Problem.</strong> A scapegoat tree with $n = 100$ nodes accepts an insertion at depth 12. Is a rebuild triggered?</p>
+<p><strong>Solution.</strong> The depth threshold is $\log_{3/2}(101) = \dfrac{\ln 101}{\ln 1.5} \approx \dfrac{4.615}{0.405} \approx 11.4$. Since $12 > 11.4$, the tree is too deep, so we climb from the new node to find the first ancestor that violates the $\tfrac23$ rule. Say the ancestor has size 30 and its child has size 21. Then $21/30 = 0.7 > 0.667$, so this ancestor is the scapegoat. We rebuild its 30-node subtree into a perfectly balanced shape in $O(30)$ time.</p>
+<p><strong>Why amortization works.</strong> After a rebuild, the subtree is perfectly balanced. For it to become $\tfrac23$-unbalanced again, many insertions must hit one side, which is $\Omega(\text{size})$ of them. Spreading the $O(\text{size})$ rebuild cost over those insertions adds only $O(1)$ per insertion per ancestor level, giving $O(\log n)$ amortized overall.</p>
+<p><strong>Choosing a strategy.</strong></p>
+<p>| Strategy | Guarantee | Extra data per node | |---|---|---| | Treap | Expected $O(\log n)$ | Random priority | | Scapegoat | Amortized $O(\log n)$ | None | | Red-black | Worst-case $O(\log n)$ | 1 color bit |</p>
+<p>Use randomization when simplicity matters, partial rebuilding when memory is tight, and simulated multiway trees when strict worst-case latency is required.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

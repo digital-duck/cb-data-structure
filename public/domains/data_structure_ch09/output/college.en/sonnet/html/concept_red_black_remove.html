@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Remove | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-remove">Red Black Remove</h2>
+<p><strong>Definition.</strong> Deleting from a red-black tree begins like ordinary BST deletion. If the target node $z$ has two children, copy its in-order successor's key into $z$ and delete the successor instead, so the physically removed node $y$ always has <strong>at most one child</strong>. We splice $y$ out by linking its child $x$ (possibly <code>NIL</code>) to $y$'s parent.</p>
+<p>Colour determines what happens next:</p>
+<li>If $y$ is <strong>red</strong>, no black-height changes. Nothing else is needed.</li>
+<li>If $y$ is <strong>black</strong>, every path through $y$ now has one fewer black node. We say $x$ carries an extra black, or is <strong>double-black</strong>. If $x$ is red, simply recolour it black and finish. Otherwise <code>remove_fixup</code> runs.</li>
+<p>In the 2-4 tree view, a black node with no red child is a 2-node. Removing it leaves an <em>underflow</em>, an empty node. The fix-up either <strong>borrows</strong> a key from a sibling (rotation) or <strong>merges</strong> with a sibling (recolouring, which may push the deficit upward).</p>
+<p><strong>Fix-up cases.</strong> Let $x$ be double-black, $p$ its parent, $s$ its sibling (assume $x$ is a left child; the mirror case is symmetric).</p>
+<li><strong>$s$ red.</strong> Rotate left at $p$ and swap colours of $p$ and $s$. This does not fix the problem. It gives $x$ a black sibling, reducing to cases 2–4.</li>
+<li><strong>$s$ black, both of $s$'s children black.</strong> Colour $s$ red and move the extra black up: $x \leftarrow p$. This is a 2-4 <strong>merge</strong>. If $p$ was red, the loop ends by colouring $p$ black.</li>
+<li><strong>$s$ black, near child red, far child black.</strong> Rotate right at $s$ and swap colours, converting to case 4.</li>
+<li><strong>$s$ black, far child red.</strong> Set $s$'s colour to $p$'s colour, colour $p$ and $s$'s far child black, rotate left at $p$. This is a <strong>borrow</strong>, and the loop terminates.</li>
+<p><strong>Worked example.</strong> Suppose black $p=20$ has left child $x=10$ (black leaf, being deleted) and right child $s=30$ (black) with red right child $35$ and <code>NIL</code> left child. Delete 10. After splicing, <code>NIL</code> is double-black on the left of 20. The sibling $s$ is black and its far (right) child is red, so case 4 applies. Colour $s$ with $p$'s colour (black), colour $p$ and $35$ black, then rotate left at 20. The result has root 30 with children 20 and 35, all black, and every path has the same black count of 2. The 2-4 node $[20,30,35]$ lent a key to the empty node.</p>
+<p><strong>Problem-solving application.</strong> Delete a black leaf whose parent is black and sibling is black with two black children. Case 2 recolours $s$ red and moves the problem to $p$. Repeating it climbs toward the root, where the extra black just disappears and the black height of the whole tree falls by one.</p>
+<p><em>Cost analysis.</em> Case 2 is the only case that repeats, and it moves $x$ up one level, so it runs at most $O(\log n)$ times. Cases 1, 3 and 4 occur at most a constant number of times (case 1 leads to a terminating case, and case 3 leads straight to case 4). Rotations total at most 3. So:</p>
+$$T_{\text{delete}}(n) = O(\log n), \qquad \text{rotations} \le 3.$$
+<p>This is why red-black deletion is cheaper in restructuring than it first appears. Most of the work is recolouring, and only a bounded number of rotations occurs.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

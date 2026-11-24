@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radix Sort | Data Structure Ch11</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="基数排序">基数排序</h2>
+<p><strong>定义。</strong> 基数排序(radix sort)是一种非比较排序算法,用于排序 $w$ 位整数。它把每个整数切成若干组、每组 $d$ 位的"数字",共 $\lceil w/d \rceil$ 组,然后<strong>从最低位组到最高位组</strong>依次对每一组做一次稳定的计数排序。每个数字取值范围为 $\{0,1,\dots,2^d-1\}$,即基数 $b=2^d$。</p>
+<p><strong>为什么正确?</strong> 关键在于计数排序的<strong>稳定性</strong>。设第 $i$ 轮处理第 $i$ 组数字。归纳假设:第 $i-1$ 轮之后,序列已按低 $i-1$ 组数字有序。第 $i$ 轮按第 $i$ 组排序时,若两数该组数字不同,则大小由该组决定;若相同,稳定性保证它们保持原有相对顺序,而原有顺序正是按低位组排好的。因此第 $i$ 轮后序列按低 $i$ 组数字有序,最后一轮后整体有序。</p>
+<p><strong>时间复杂度。</strong> 每轮计数排序耗时 $O(n+2^d)$,共 $w/d$ 轮,所以</p>
+$$T(n)=O\!\left(\frac{w}{d}\,(n+2^d)\right).$$
+<p><strong>例题。</strong> 取 $d=1$ 位十进制(基数 10)的类比,排序 $[170, 45, 75, 90, 802, 24, 2, 66]$:</p>
+<li>按个位:$[170, 90, 802, 2, 24, 45, 75, 66]$</li>
+<li>按十位:$[802, 2, 24, 45, 66, 170, 75, 90]$</li>
+<li>按百位:$[2, 24, 45, 66, 75, 90, 170, 802]$</li>
+<p>注意第二步中 $802$ 与 $2$ 的十位都是 $0$,它们保持了上一步的先后次序($802$ 在前),这正是稳定性的作用。</p>
+<p><strong>问题求解:如何选择 $d$?</strong> 设需排序 $n=10^6$ 个 32 位整数($w=32$)。</p>
+<li>$d=1$:32 轮,每轮约 $n+2$,总计约 $3.2\times10^7$ 次操作。</li>
+<li>$d=8$:4 轮,每轮约 $n+256$,总计约 $4\times10^6$。</li>
+<li>$d=16$:2 轮,每轮约 $n+65536$,总计约 $2.1\times10^6$,但计数数组需 $65536$ 项,可能超出缓存。</li>
+<li>$d=32$:1 轮,计数数组 $2^{32}$ 项,不可行。</li>
+<p>一般地,当 $2^d$ 与 $n$ 同阶时最合适,取 $d\approx\log_2 n$,得</p>
+$$T(n)=O\!\left(\frac{w\,n}{\log n}\right).$$
+<p>若 $w=O(\log n)$(例如键值在 $0$ 到 $n^c$ 之间,$w=c\log_2 n$),则总时间为 $O(cn)=O(n)$,<strong>线性时间</strong>,突破了比较排序 $\Omega(n\log n)$ 的下界。这并不矛盾:该下界只针对只能比较两元素的算法,而基数排序利用了键的内部结构。</p>
+<p><strong>代价与注意。</strong> 基数排序需要 $O(n+2^d)$ 的额外空间;当键很长($w\gg\log n$)或数据不是整数时,其优势会消失。负数需先做偏移或单独处理符号位。</p>
+<p><strong>练习。</strong> 对 $n=2^{20}$ 个 64 位整数,取 $d=16$ 与 $d=8$,分别估算总操作次数,并说明哪个更合适。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch11: Sorting Algorithms (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

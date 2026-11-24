@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block Store | Data Structure Ch14</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="block-store">Block Store</h2>
+<p>A <strong>block store</strong> models external memory (a disk or SSD) as an array of fixed-size blocks of $B$ bytes, each named by an integer index. A program cannot touch individual bytes on the device. It moves a whole block at a time between external memory and main memory. This matches real hardware, where one access costs far more than the computation on the data it brings in.</p>
+<p>The interface has four operations:</p>
+<p>| Operation | Effect | |---|---| | <code>read_block(i)</code> | Copy block $i$ into main memory and return it. | | <code>write_block(i, data)</code> | Overwrite block $i$ with <code>data</code> (exactly $B$ bytes). | | <code>place_block(data)</code> | Store <code>data</code> in a free block and return its new index. | | <code>free_block(i)</code> | Mark block $i$ reusable. |</p>
+<p>In the I/O model, cost is the number of block transfers (reads and writes). Computation in main memory is free. Reading $N$ contiguous bytes therefore costs $\lceil N/B \rceil$ transfers, not $N$.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Take $B = 4096$ bytes and store an array of $N = 1{,}000{,}000$ four-byte integers. Each block holds $4096/4 = 1024$ integers, so the array needs</p>
+$$\left\lceil \frac{10^6}{1024} \right\rceil = 977 \text{ blocks.}$$
+<p>A sequential scan reads blocks $0,1,\dots,976$ and costs 977 I/Os. Now suppose we want only element $k$. Its block index is $\lfloor k/1024 \rfloor$ and its offset inside the block is $k \bmod 1024$. One <code>read_block</code> call is enough:</p>
+<pre><code>def get(store, k, per_block=1024):
+    block = store.read_block(k // per_block)   # 1 I/O
+    return block[k % per_block]</code></pre>
+<p>A minimal in-memory simulation keeps a free list and a counter:</p>
+<pre><code>class BlockStore:
+    def __init__(self, B):
+        self.B, self.disk, self.free, self.io = B, {}, [], 0
+    def read_block(self, i):
+        self.io += 1; return self.disk[i]
+    def write_block(self, i, data):
+        assert len(data) == self.B; self.io += 1; self.disk[i] = data
+    def place_block(self, data):
+        i = self.free.pop() if self.free else len(self.disk)
+        self.write_block(i, data); return i
+    def free_block(self, i):
+        self.free.append(i)       # no transfer needed</code></pre>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> Compare finding the maximum of $N = 10^6$ integers when the data are stored contiguously with when each integer sits in its own block (for example, scattered through linked nodes).</p>
+<p><strong>Solution.</strong> Contiguous storage costs $\lceil N/(B/4) \rceil = 977$ I/Os. Scattered storage costs one read per element, or $10^6$ I/Os. That is about $1000\times$ more, even though both programs do the same computation.</p>
+<p>The general rule is that a scan of $N$ items costs</p>
+$$\text{scan}(N) = \Theta\!\left(\frac{N}{B}\right)$$
+<p>I/Os. An algorithm designed for a block store should therefore use <strong>locality</strong>. It should place related items in the same block, and it should use every byte it reads. A balanced search tree whose nodes each fill one block reaches a key in $O(\log_B N)$ reads. A binary tree with one key per node needs $O(\log_2 N)$. For $N=10^6$ and $B$ holding 1024 keys, that is about 2 reads against about 20.</p>
+<p><strong>Check yourself.</strong> What is the I/O cost of <code>place_block</code> when it reuses a freed index? <em>(Answer: one write, so 1 I/O. <code>free_block</code> only updates bookkeeping and costs none.)</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch14: External Memory Searching (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

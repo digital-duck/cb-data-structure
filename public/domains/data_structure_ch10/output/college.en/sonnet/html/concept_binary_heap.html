@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Heap | Data Structure Ch10</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="binary-heap">Binary Heap</h2>
+<p>A <strong>binary heap</strong> is a priority queue built on a <em>complete</em> binary tree that satisfies the <strong>heap-order property</strong>. In a min-heap, every node's key is no larger than its children's keys, so the minimum always sits at the root. Because the tree is complete (every level is full except possibly the last, which fills left to right), it can be stored implicitly in an array using <strong>Eytzinger's method</strong>, with no pointers. With 0-based indexing, the node at index $i$ has:</p>
+$$\text{parent}(i)=\left\lfloor \frac{i-1}{2}\right\rfloor,\qquad \text{left}(i)=2i+1,\qquad \text{right}(i)=2i+2.$$
+<p>A complete tree with $n$ nodes has height $\lfloor \log_2 n\rfloor$. Both core operations follow one root-to-leaf or leaf-to-root path, so each costs $O(\log n)$.</p>
+<li><strong>peek</strong>: return $A[0]$ in $O(1)$.</li>
+<li><strong>insert(x)</strong>: append $x$ at index $n$, then <em>sift up</em>: while $x$ is smaller than its parent, swap them.</li>
+<li><strong>extract-min</strong>: save $A[0]$, move the last element to index 0, shrink the array, then <em>sift down</em>: swap with the smaller child until neither child is smaller.</li>
+<pre class="mermaid">graph TD
+    A["2 (i=0)"] --> B["5 (i=1)"]
+    A --> C["3 (i=2)"]
+    B --> D["9 (i=3)"]
+    B --> E["6 (i=4)"]
+    C --> F["8 (i=5)"]</pre>
+<p><em>The heap $[2,5,3,9,6,8]$ drawn as a tree. Level-by-level reading gives the array order.</em></p>
+<h3 id="worked-example">Worked example</h3>
+<p>Insert $1$ into $A=[2,5,3,9,6,8]$. Append it at index 6, giving $[2,5,3,9,6,8,1]$. Its parent is $\lfloor 5/2\rfloor=2$, which holds $3>1$, so swap: $[2,5,1,9,6,8,3]$. Now the parent is index 0, which holds $2>1$, so swap again: $[1,5,2,9,6,8,3]$. The element is at the root, so we stop after $2$ swaps, which is at most the height $\lfloor\log_2 7\rfloor=2$.</p>
+<p>Now extract-min. Return $1$, move the last element $3$ to the root: $[3,5,2,9,6,8]$. The children of index 0 are $5$ and $2$. The smaller is $2$, so swap: $[2,5,3,9,6,8]$. Index 2 has child index 5 (value $8$), and $3<8$, so stop.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Building a heap.</strong> Given $n$ arbitrary keys, calling insert $n$ times costs $O(n\log n)$. A better method, <em>heapify</em>, sifts down every internal node from index $\lfloor n/2\rfloor-1$ back to $0$. A node at height $h$ moves down at most $h$ levels, and at most $\lceil n/2^{h+1}\rceil$ nodes have height $h$. The total work is therefore bounded by</p>
+$$\sum_{h=0}^{\lfloor\log_2 n\rfloor}\left\lceil\frac{n}{2^{h+1}}\right\rceil h \le n\sum_{h=0}^{\infty}\frac{h}{2^{h+1}}\cdot 1 + O(n)= O(n),$$
+<p>because $\sum_{h\ge 0} h/2^{h+1}=1$. Most nodes sit near the bottom, where sifting is cheap.</p>
+<p><strong>Heapsort.</strong> Heapify the array in $O(n)$, then perform $n$ extract-mins, placing each result in the slot the shrinking heap vacates. The total is $O(n\log n)$ time and $O(1)$ extra space.</p>
+<p><strong>Check yourself.</strong> For $A=[4,7,6,9]$, which index is the parent of index 3, and does the array satisfy min-heap order? (Answer: $\lfloor 2/2\rfloor=1$; yes, since $7\le 9$, $4\le 7$, and $4\le 6$.)</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch10: Heaps (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

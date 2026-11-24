@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chained Hash Table | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="链式哈希表">链式哈希表</h2>
+<h3 id="定义">定义</h3>
+<p><strong>链式哈希表</strong>(chained hash table,也称"拉链法")由一个长度为 $m$ 的数组构成,数组的每个位置称为一个<strong>桶</strong>(bucket),每个桶存放一个链表。哈希函数 $h(k)$ 把键 $k$ 映射到下标 $0,1,\dots,m-1$。若多个键得到相同的下标(即发生<strong>冲突</strong>),它们就被依次追加到该下标对应的链表中。</p>
+<p>三种基本操作如下:</p>
+<li><strong>插入</strong>:计算 $h(k)$,把 $(k,v)$ 追加到 <code>table[h(k)]</code>。</li>
+<li><strong>查找</strong>:计算 $h(k)$,只在 <code>table[h(k)]</code> 这一条链表中顺序比较。</li>
+<li><strong>删除</strong>:先查找,再从链表中摘除该节点。</li>
+<p>衡量表的拥挤程度用<strong>装载因子</strong> $\alpha = n/m$,其中 $n$ 是已存元素个数。</p>
+<h3 id="例题">例题</h3>
+<p>取 $m=5$,$h(k)=k \bmod 5$,依次插入键 $12,\,22,\,7,\,15,\,17$。</p>
+<p>| 下标 | 链表 | |---|---| | 0 | 15 | | 1 | (空) | | 2 | 12 → 22 → 7 → 17 | | 3 | (空) | | 4 | (空) |</p>
+<p>因为 $12,22,7,17$ 除以 5 的余数都是 2,它们全部落入下标 2 的链表。查找 $17$ 时,先算出 $h(17)=2$,再沿链表比较 4 个节点。此时 $\alpha = 5/5 = 1$。</p>
+<pre><code>class ChainedHashTable:
+    def __init__(self, m=5):
+        self.m = m
+        self.table = [[] for _ in range(m)]
+
+    def put(self, k, v):
+        bucket = self.table[hash(k) % self.m]
+        for i, (key, _) in enumerate(bucket):
+            if key == k:              # 键已存在则更新
+                bucket[i] = (k, v)
+                return
+        bucket.append((k, v))
+
+    def get(self, k):
+        for key, v in self.table[hash(k) % self.m]:
+            if key == k:
+                return v
+        raise KeyError(k)</code></pre>
+<h3 id="问题求解-复杂度分析">问题求解:复杂度分析</h3>
+<p><strong>简单均匀哈希假设</strong>:每个键等可能地落入 $m$ 个桶中,且彼此独立。在此假设下,任一链表的期望长度恰为 $\alpha = n/m$。</p>
+<li><strong>不成功查找</strong>(键不在表中):需要遍历整条链表,期望比较次数为 $\alpha$,加上计算哈希的 $O(1)$,总期望代价为 $\Theta(1+\alpha)$。</li>
+<li><strong>成功查找</strong>:平均需检查的节点数约为 $1+\dfrac{\alpha}{2}-\dfrac{\alpha}{2n}$,同样是 $\Theta(1+\alpha)$。</li>
+<p><strong>应用</strong>:若要存储 $n=10^6$ 个键,并希望平均每次查找比较不超过 2 个节点,则需 $\alpha \le 1$,所以取 $m \ge 10^6$。实际中常在 $\alpha$ 超过某个阈值(如 $0.75$ 到 $1$)时<strong>扩容</strong>:把 $m$ 加倍并重新哈希所有元素。单次扩容代价为 $O(n)$,但按摊还分析,每次插入的平均代价仍是 $O(1)$。</p>
+<p><strong>最坏情况</strong>:若所有键都冲突到同一个桶,查找退化为 $\Theta(n)$。这说明哈希函数的质量至关重要。若把每条链表换成平衡二叉搜索树,最坏情况可降为 $O(\log n)$。</p>
+<pre class="mermaid">graph LR
+    A["键 17"] --> B["哈希函数 h(k)=k mod 5"]
+    B --> C["下标 2"]
+    C --> D["节点 12"]
+    D --> E["节点 22"]
+    E --> F["节点 7"]
+    F --> G["节点 17"]</pre>
+<p><em>图:键 17 经哈希函数定位到下标 2,再沿该桶的链表顺序查找,最终在第 4 个节点处命中。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

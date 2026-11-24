@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf Linked List | Data Structure Ch13</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="leaf-linked-list">Leaf Linked List</h2>
+<h3 id="definition">Definition</h3>
+<p>A <strong>leaf linked list</strong> is a doubly-linked list that threads together every leaf of a binary trie in sorted key order. Recall that in a BinaryTrie storing $w$-bit integers, each key $x$ lives at a leaf at depth $w$, and the path from the root spells out the bits of $x$. Leaves from left to right are therefore already in increasing order. The linked list makes that order <em>explicit</em>, so that moving from one leaf to its neighbor costs $O(1)$ instead of a tree traversal.</p>
+<p>The list <strong>reuses child pointers</strong>. A leaf has no children, so its <code>left</code> and <code>right</code> fields are free. We set</p>
+<li><code>leaf.left</code> $=$ the previous leaf (predecessor) in sorted order,</li>
+<li><code>leaf.right</code> $=$ the next leaf (successor) in sorted order.</li>
+<p>Non-leaf nodes use <code>left</code> and <code>right</code> as ordinary children. Because leaves sit at depth $w$, a program always knows which interpretation applies. No extra memory is needed. A dummy node can serve as the head and tail so the list is circular.</p>
+<p>Likewise, an internal node with only one child can use its empty pointer as a <strong>jump pointer</strong>: a missing left child points to the smallest leaf in its right subtree, and a missing right child points to the largest leaf in its left subtree.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $w = 4$ and store the keys $S = \{2, 5, 9, 12\}$, with binary forms $0010, 0101, 1001, 1100$. The leaf list is</p>
+$$\text{dummy} \leftrightarrow 2 \leftrightarrow 5 \leftrightarrow 9 \leftrightarrow 12 \leftrightarrow \text{dummy}.$$
+<p>To search for the successor of $x = 6 = 0110$, walk down from the root following bits of $x$ as far as possible. The path $0, 1$ succeeds (prefix $01$ exists, since $0101$ is stored). The next bit is $1$, but node $01$ has no right child. Its right pointer is therefore a jump pointer. Since the right child is missing, it points to the <strong>largest leaf in its left subtree</strong>, which is leaf $5$.</p>
+<p>Because $5 < 6$, leaf $5$ is the predecessor, and its list pointer <code>right</code> gives the successor: $9$.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Rule for finding the successor of $x$.</strong> Descend until you can't continue, at node $u$ at depth $i$. Then:</p>
+<li>If $u$ is a leaf, $x$ is stored, so its successor is <code>u.right</code>.</li>
+<li>If $u$ is internal and its missing child is the <em>right</em> one (we wanted bit $1$), <code>u.right</code> points to the predecessor leaf $\ell$. Answer: <code>ℓ.right</code>.</li>
+<li>If the missing child is the <em>left</em> one (we wanted bit $0$), <code>u.left</code> points to the smallest leaf larger than $x$. Answer: that leaf directly.</li>
+<p><strong>Check on the example.</strong> Query $x = 3 = 0011$. Path: $0$, then $0$ (prefix $00$ exists), then $1$ fails at node $001$? Only $0010$ is stored, so $001$ exists. The next bit $1$ requires child $0011$, which is missing. Node $001$ lacks a right child, so its right pointer leads to leaf $2$, the predecessor. Then <code>2.right</code> $= 5$, the successor. ✓</p>
+<p><strong>Cost.</strong> The descent can be done by binary search on levels (using hash tables of prefixes, as in an x-fast trie) in $O(\log w)$ time. The list step adds $O(1)$. Without the list, finding the neighbor would require climbing and re-descending, costing $\Theta(w)$.</p>
+<p><strong>Maintenance.</strong> Insert $x$: find its predecessor $p$ using the search above, splice the new leaf between $p$ and $p.\text{right}$ in $O(1)$, then repair jump pointers along the $w$ nodes of its root path, for $O(w)$ total. Deletion mirrors this.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch13: Data Structures for Integers (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

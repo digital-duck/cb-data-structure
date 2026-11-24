@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chained Hash Table | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="chained-hash-table">Chained Hash Table</h2>
+<p>A <strong>chained hash table</strong> stores data in an array of $m$ buckets, where each bucket holds a list. A hash function $h(k)$ maps a key $k$ to an index in $\{0, 1, \dots, m-1\}$. To insert a key, compute $h(k)$ and append the item to the list at that index. When two keys have the same hash value (a <em>collision</em>), they simply share a list. This is called <em>separate chaining</em>.</p>
+<p>Three operations define the structure:</p>
+<li><strong>Insert</strong> $(k, v)$: append to <code>table[h(k)]</code>, which costs $O(1)$.</li>
+<li><strong>Search</strong> $k$: scan the list at <code>table[h(k)]</code>, which costs $O(\text{length of that list})$.</li>
+<li><strong>Delete</strong> $k$: search, then remove the item from the list.</li>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $m = 5$ and $h(k) = k \bmod 5$. Insert the keys $12, 22, 7, 15, 32$.</p>
+<p>| Key | $h(k)$ | |-----|--------| | 12 | 2 | | 22 | 2 | | 7 | 2 | | 15 | 0 | | 32 | 2 |</p>
+<p>The final table is:</p>
+<li>index 0: <code>[15]</code></li>
+<li>index 1: <code>[]</code></li>
+<li>index 2: <code>[12, 22, 7, 32]</code></li>
+<li>index 3: <code>[]</code></li>
+<li>index 4: <code>[]</code></li>
+<p>Searching for $32$ computes $h(32)=2$ and scans four items, so it takes four comparisons. This hash function is a poor fit for this key set, because most keys land in one bucket.</p>
+<pre><code>class ChainedHashTable:
+    def __init__(self, m=8):
+        self.m = m
+        self.table = [[] for _ in range(m)]
+
+    def _h(self, key):
+        return hash(key) % self.m
+
+    def insert(self, key, value):
+        bucket = self.table[self._h(key)]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:               # update existing key
+                bucket[i] = (key, value)
+                return
+        bucket.append((key, value))
+
+    def search(self, key):
+        for k, v in self.table[self._h(key)]:
+            if k == key:
+                return v
+        return None
+
+    def delete(self, key):
+        bucket = self.table[self._h(key)]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                del bucket[i]
+                return True
+        return False</code></pre>
+<h3 id="performance-analysis">Performance analysis</h3>
+<p>Define the <strong>load factor</strong> $\alpha = n/m$, where $n$ is the number of stored items. Under the <em>simple uniform hashing assumption</em> (each key is equally likely to hash to any bucket, independently of the others), the expected length of any list is $\alpha$. Therefore:</p>
+<li>An unsuccessful search examines $\alpha$ items on average, so it costs $\Theta(1+\alpha)$.</li>
+<li>A successful search costs $\Theta(1+\alpha)$ as well. A typical derivation gives about $1 + \alpha/2 - \alpha/(2n)$ comparisons.</li>
+<p>If the table is resized to keep $m = \Theta(n)$, then $\alpha = O(1)$ and all operations run in expected $O(1)$ time. Without that guarantee, the worst case is $\Theta(n)$, which happens when every key lands in one bucket, as in the example above.</p>
+<h3 id="problem-solving-application">Problem-solving application</h3>
+<p><strong>Problem.</strong> A table with $m = 100$ buckets holds $n = 450$ items. Estimate the average cost of an unsuccessful search, then choose a new size that brings $\alpha$ to at most $0.75$.</p>
+<p><strong>Solution.</strong> The load factor is $\alpha = 450/100 = 4.5$, so an unsuccessful search scans about $4.5$ items, plus $1$ for the hash computation. To get $\alpha \le 0.75$, we need $m \ge 450/0.75 = 600$. Resizing to $m = 600$ (or a convenient larger size, such as the next prime) requires <strong>rehashing</strong> every item, because $h(k) = \text{hash}(k) \bmod m$ changes with $m$. The rehash costs $O(n)$ once. If the size doubles whenever $\alpha$ exceeds a threshold, the amortized cost per insertion remains $O(1)$.</p>
+<p><strong>Takeaway.</strong> Chaining handles collisions gracefully, since the table never "fills up". Its speed depends on keeping $\alpha$ small and on a hash function that spreads keys evenly.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap Add | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap-add">Treap Add</h2>
+<p>A <strong>treap</strong> is a binary tree in which every node holds a key and a random priority. It is a binary search tree (BST) on keys and a max-heap on priorities. For every node $v$ with parent $p$, $\text{key}(\text{left}(v)) < \text{key}(v) < \text{key}(\text{right}(v))$ and $\text{pri}(v) \le \text{pri}(p)$. Because priorities are random, the tree's shape matches that of a BST built by inserting keys in random order, so its expected height is $O(\log n)$.</p>
+<p><strong>Treap add</strong> places a new key $k$ in three steps:</p>
+<li>Draw a random priority $p$, for example uniformly from $[0,1)$.</li>
+<li>Insert $(k, p)$ as a leaf using the ordinary BST rule: go left if $k < \text{key}(v)$, right otherwise.</li>
+<li>While the new node $x$ has a parent with smaller priority, rotate $x$ above its parent.</li>
+<p>A <strong>rotation</strong> preserves the BST order and moves $x$ one level up. If $x$ is a left child of $y$, a right rotation at $y$ makes $y$ the right child of $x$, and $x$'s old right subtree becomes $y$'s left subtree. A right child uses the mirror image.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Start with a treap written as (key, priority): root $(50, 0.9)$ with left child $(30, 0.6)$ and right child $(70, 0.4)$. Insert key $60$ with priority $0.8$.</p>
+<li><strong>Step 1, BST insert.</strong> $60 > 50$, so go right. $60 < 70$, so go left. The new node becomes the left child of $(70, 0.4)$.</li>
+<li><strong>Step 2, first check.</strong> $0.8 > 0.4$, so the heap property is violated. Rotate $60$ above $70$ with a right rotation. Now $60$ is the right child of $50$, and $70$ is the right child of $60$.</li>
+<li><strong>Step 3, second check.</strong> $0.8 < 0.9$, so the heap property holds and we stop.</li>
+<p>One rotation was enough. Had the priority been $0.95$, a second rotation, this time a left rotation at $50$, would have made $60$ the root.</p>
+<h3 id="problem-solving-application-cost-of-an-insertion">Problem-solving application: cost of an insertion</h3>
+<p><strong>Problem.</strong> Show that inserting into a treap of $n$ keys takes $O(\log n)$ expected time.</p>
+<p><strong>Solution.</strong> Split the work into the two phases of the algorithm.</p>
+<p><em>Search phase.</em> The new node ends step 2 as a leaf, so the walk down visits at most height$+1$ nodes. A treap has the shape of a random BST, so its expected height is $O(\log n)$. This phase costs $O(\log n)$ in expectation.</p>
+<p><em>Rotation phase.</em> Each rotation moves $x$ up exactly one level, and $x$ can never rise above the root. If the leaf sits at depth $d$, then</p>
+$$
+\text{rotations} \le d \le \text{height}.
+$$
+<p>Each rotation takes constant time, so this phase also costs $O(\log n)$ in expectation. In the example above, the leaf started at depth 2 and made 1 rotation. With priority $0.95$ it made 2, which is the maximum possible.</p>
+<p>Adding the two phases gives $O(\log n) + O(\log n) = O(\log n)$.</p>
+<p><strong>Takeaway.</strong> Random priorities keep the tree balanced in expectation, and each rotation only repairs one local heap violation. The cost of an add is therefore bounded by the length of one root-to-leaf path.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

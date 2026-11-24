@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Black Performance | Data Structure Ch09</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="red-black-performance">Red Black Performance</h2>
+<p><strong>Definition.</strong> A red-black tree stores $n$ keys in a binary search tree and colors each node red or black so that (1) the root is black, (2) no red node has a red child, and (3) every root-to-null path contains the same number of black nodes, the <em>black-height</em> $b$. The performance result has two parts:</p>
+<li><strong>Worst case:</strong> <code>add</code>, <code>remove</code>, and <code>find</code> each take $O(\log n)$ time.</li>
+<li><strong>Amortized:</strong> across a sequence of $m$ updates starting from an empty tree, the total <em>restructuring</em> work (rotations and recolorings) is $O(m)$, so $O(1)$ amortized per update. Locating the position still costs $O(\log n)$, so the full operation remains $O(\log n)$.</li>
+<p><strong>Why the height is logarithmic.</strong> By rule (3), every path has at least $b$ black nodes, so the top $b$ levels are completely full. Hence $n \ge 2^b - 1$, which gives $b \le \log_2(n+1)$. By rule (2), red nodes cannot be adjacent, so at most half the nodes on any path are red. This gives a height $h \le 2b$, and therefore</p>
+$$h \le 2\log_2(n+1).$$
+<p><code>find</code> walks one root-to-leaf path, so it takes $O(h)=O(\log n)$. <code>add</code> and <code>remove</code> first do the same walk. They then repair violations by moving upward, with at most one step per level, so the repair is also $O(\log n)$ in the worst case.</p>
+<p><strong>Worked example.</strong> Take $n = 1{,}000{,}000$. Then $h \le 2\log_2(1{,}000{,}001) \approx 2(19.93) \approx 39.9$, so no search visits more than about 40 nodes. A plain BST built from sorted input would have height $10^6$. Rebalancing keeps the tree within a factor of 2 of the ideal height $\approx 20$.</p>
+<p><strong>Why updates are $O(1)$ amortized.</strong> Recoloring is the only repair step that moves upward. A rotation is a terminal step: it finishes the repair, and at most two rotations occur per insertion. To count recolorings, let the potential $\Phi$ be the number of black nodes that have two red children. Each recoloring step in an insertion turns such a node red and its children black, so $\Phi$ decreases by 1 per step. A single insertion adds at most $O(1)$ to $\Phi$. The total recoloring over $m$ insertions is therefore at most $O(m)$. Deletion has a similar argument: it uses at most 3 rotations, and its upward recoloring is paid for by the same potential. (This bound counts structural changes only, and it assumes insertions and deletions are charged to the repair phase, not the search.)</p>
+<p><strong>Problem-solving application.</strong> <em>A system performs $m = 10^6$ inserts into an initially empty red-black tree. Estimate the total work.</em></p>
+<li>Searching: each insert descends at most $\approx 40$ nodes, so at most $\approx 4\times10^7$ comparisons in total (using $h\le 2\log_2(n+1)$ with $n\le 10^6$).</li>
+<li>Repair: at most $2$ rotations per insert, so at most $2\times10^6$ rotations. The recolorings add only $O(m)$ more, so total repair work is on the order of $10^6$ operations. This is a small constant per insert.</li>
+<p><strong>Conclusion:</strong> the total is $O(m\log n)$, and the search dominates it, not the rebalancing. This is why red-black trees suit workloads with many updates, such as ordered maps and sets. They guarantee a worst-case bound on every single operation, which a structure with only amortized bounds cannot do.</p>
+<p><strong>Check yourself.</strong> If a tree has black-height $b=5$, what are the minimum and maximum numbers of nodes? The minimum is $2^5-1=31$ (all black). The maximum is $2^{10}-1=1023$ (alternating red and black levels with height $2b$).</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch9: Red-Black Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

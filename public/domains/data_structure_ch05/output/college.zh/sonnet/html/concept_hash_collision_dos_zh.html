@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Collision Dos | Data Structure Ch05</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="哈希碰撞拒绝服务攻击">哈希碰撞拒绝服务攻击</h2>
+<h3 id="定义">定义</h3>
+<p><strong>哈希碰撞拒绝服务攻击</strong>(hash collision DoS)是一种算法复杂度攻击:攻击者精心构造大量不同的键,使它们经哈希函数映射后落入同一个桶,从而把哈希表的操作从期望的常数时间退化为线性时间,耗尽服务器的 CPU 资源。</p>
+<p>在正常情况下,设哈希表有 $m$ 个桶,存有 $n$ 个键,装载因子 $\alpha = n/m$。若哈希函数把键均匀分散,链地址法下一次查找的期望代价为</p>
+$$E[T] = \Theta(1+\alpha).$$
+<p>但若所有 $n$ 个键都落入同一个桶,该桶的链表长度为 $n$,一次查找就是 $\Theta(n)$。</p>
+<h3 id="例题">例题</h3>
+<p>向空表依次插入 $n$ 个键,每次插入前需先检查键是否已存在(扫描所在链表)。</p>
+<li><strong>均匀情形</strong>:第 $i$ 次插入扫描的链表平均长度约为 $i/m$,总代价为</li>
+$$\sum_{i=1}^{n}\Theta\!\left(1+\tfrac{i}{m}\right)=\Theta(n)\quad(m=\Theta(n)).$$
+<li><strong>全碰撞情形</strong>:第 $i$ 次插入需扫描长度为 $i-1$ 的链表,总代价为</li>
+$$\sum_{i=1}^{n}(i-1)=\frac{n(n-1)}{2}=\Theta(n^2).$$
+<p>取 $n=10^5$:前者约 $10^5$ 次基本操作,后者约 $5\times10^9$ 次,相差约 $5\times10^4$ 倍。一个只需几毫秒的请求,会变成数十秒的 CPU 占用。</p>
+<h3 id="问题求解应用">问题求解应用</h3>
+<p><strong>攻击如何成立。</strong> 设服务器用已知的确定性哈希(如 $h(s)=\left(\sum s_i\cdot 31^{\,k-i}\right) \bmod m$)解析 HTTP 参数。由于该函数结构简单,攻击者可以离线构造碰撞。例如 Java 中 <code>"Aa"</code> 与 <code>"BB"</code> 的哈希值相同(因为 $65\cdot31+97=66\cdot31+66$)。把它们任意拼接,$k$ 段就得到 $2^k$ 个长度为 $2k$ 的不同字符串,且哈希值全部相同。攻击者只需发送一个包含几万个这样参数名的 POST 请求,就能使服务器的 CPU 在 $\Theta(n^2)$ 时间内被占满。</p>
+<p><strong>防御思路。</strong></p>
+<li><strong>随机化哈希</strong>:每个进程启动时随机选取密钥 $k$,使用带密钥的哈希 $h_k(x)$(如 SipHash)。攻击者不知道 $k$,就无法预先构造碰撞。通用哈希族保证对任意不同的 $x\neq y$,</li>
+$$\Pr_{h}[\,h(x)=h(y)\,]\le \frac{1}{m},$$
+<p>于是即使输入由对手选择,期望代价仍为 $\Theta(1+\alpha)$。</p>
+<li><strong>限制输入规模</strong>:限制单个请求的参数个数与体积。</li>
+<li><strong>改进数据结构</strong>:当桶内链表过长时转为平衡树,将最坏情况由 $\Theta(n)$ 降至 $\Theta(\log n)$,总代价降为 $O(n\log n)$。</li>
+<p><strong>练习。</strong> 某服务器对 $5\times10^4$ 个全碰撞参数做上述插入,每次比较耗时 $1\,\text{ns}$。估算总耗时。(答案:$\frac{n^2}{2}\approx1.25\times10^9$ 次比较,约 $1.25$ 秒;若改用平衡树,约 $n\log_2 n\approx8\times10^5$ 次比较,不足 $1$ 毫秒。)</p>
+<pre class="mermaid">flowchart LR
+    A[攻击者离线构造碰撞键] --> B[发送含大量键的请求]
+    B --> C{哈希函数是否随机化?}
+    C -- 否 --> D[所有键落入同一桶]
+    D --> E[操作退化为线性时间]
+    E --> F[CPU 耗尽,服务不可用]
+    C -- 是 --> G[键均匀分散]
+    G --> H[期望常数时间,服务正常]</pre>
+<p><em>图:有无随机化哈希时,同一攻击请求的两种结局。</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch5: Hash Tables (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Toss Randomization | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="抛硬币随机化">抛硬币随机化</h2>
+<p><strong>定义。</strong> 抛硬币随机化是指用一次公平的二元随机选择(正面/反面)来决定数据结构中的某个概率性操作。设 $X$ 为一次抛掷的结果,则</p>
+$$P(X=\text{正面})=P(X=\text{反面})=\tfrac12 .$$
+<p>各次抛掷相互独立。由于结构的形状依赖于随机结果,我们不再分析某一个具体输入的“最坏情形”,而是分析<strong>期望</strong>代价:对所有可能的抛掷序列取平均。</p>
+<p>典型例子是<strong>跳表(skip list)</strong>:插入一个元素时,不断抛硬币,每得到一次正面就把该元素提升到上一层,直到出现第一次反面为止。</p>
+<p><strong>核心计算。</strong> 设 $H$ 为该元素的层高(从第 1 层开始计数)。它到达第 $k+1$ 层,当且仅当前 $k$ 次抛掷全为正面,所以</p>
+$$P(H\ge k+1)=\left(\tfrac12\right)^k .$$
+<p>利用 $E[H]=\sum_{k\ge 0}P(H\ge k+1)$,得</p>
+$$E[H]=\sum_{k=0}^{\infty}\left(\tfrac12\right)^k=\frac{1}{1-\tfrac12}=2 .$$
+<p>也就是说,平均每个元素只占 2 个指针,$n$ 个元素的总空间期望为 $2n$,即 $O(n)$。</p>
+<pre class="mermaid">flowchart TD
+    A[插入新元素,层数设为1] --> B[抛一次硬币]
+    B -->|正面| C[层数加1]
+    C --> B
+    B -->|反面| D[停止,按此层高插入]</pre>
+<p><em>图:跳表插入时的抛硬币流程。连续出现正面才会继续升层,所以层高呈几何分布。</em></p>
+<p><strong>例题。</strong> 一个跳表有 $n=1024$ 个元素。问:至少有一个元素的层高不小于 $k+1$ 的期望个数是多少?最高层大约是多少?</p>
+<p><strong>解。</strong> 层高 $\ge k+1$ 的元素期望个数为 $n\cdot 2^{-k}$。令 $n\cdot 2^{-k}=1$,得 $k=\log_2 n=10$。因此最高层大约在第 $\log_2 n+1\approx 11$ 层。更严格地,由联合界(union bound),存在元素层高超过 $c\log_2 n$ 的概率至多为</p>
+$$n\cdot 2^{-c\log_2 n}=n^{1-c},$$
+<p>取 $c=3$ 时小于 $1/n^2$,几乎不可能发生。</p>
+<p><strong>问题求解应用。</strong> 查找时从最高层出发向右、向下移动。若把搜索路径倒着看,每走一步“向上”的概率为 $\tfrac12$(对应一次正面),所以爬升 $\log_2 n$ 层平均需要约 $2\log_2 n$ 步(期望为“要得到 $L$ 个正面需抛 $2L$ 次”)。于是期望查找时间为</p>
+$$E[T(n)]=O(\log n),$$
+<p>与平衡二叉树同阶,但实现中无需旋转操作。</p>
+<p><strong>要点。</strong> (1) 期望是对<em>抛硬币的随机性</em>取平均,而非对输入分布取平均,因此任何输入都有同样的期望保证;(2) 期望低并不意味着不会出现坏情形,需用联合界等工具说明其概率极小;(3) 分析的关键步骤是把“层高”转化为一串独立抛掷的几何分布。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Total Order | Data Structure Ch06</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="total-order">Total Order</h2>
+<p><strong>Definition.</strong> A <em>total order</em> on a set $S$ is a relation $\le$ that, for all $a, b, c \in S$, satisfies four properties:</p>
+<li><strong>Reflexive:</strong> $a \le a$.</li>
+<li><strong>Antisymmetric:</strong> if $a \le b$ and $b \le a$, then $a = b$.</li>
+<li><strong>Transitive:</strong> if $a \le b$ and $b \le c$, then $a \le c$.</li>
+<li><strong>Total (comparable):</strong> either $a \le b$ or $b \le a$ (or both).</li>
+<p>The first three properties define a <em>partial order</em>. The fourth is what makes the order <em>total</em>: no two elements are left incomparable. The integers, the reals, and strings under dictionary order are all totally ordered. Subsets of a set under $\subseteq$ are not. For example, $\{1\}$ and $\{2\}$ are incomparable.</p>
+<p><strong>Why it matters for binary search trees.</strong> A binary search tree (BST) keeps every key in a node's left subtree smaller than the node's key and every key in its right subtree larger. This rule only makes sense if any two keys can be compared and the comparisons agree with each other. Totality guarantees that a comparison always has an answer. Transitivity guarantees that if a key is less than the root, it is also less than everything the root is greater than. This is why a search can safely discard an entire subtree after one comparison.</p>
+<p><strong>Worked example.</strong> Insert the keys $5, 3, 8, 4$ into an empty BST, and then search for $4$.</p>
+<li>$5$ becomes the root.</li>
+<li>$3 \le 5$ and $3 \ne 5$, so $3$ goes left of $5$.</li>
+<li>$8 > 5$, so $8$ goes right of $5$.</li>
+<li>$4 < 5$ goes left. Then $4 > 3$ goes right of $3$.</li>
+<p>To search for $4$, compare with $5$ (go left), then with $3$ (go right), then find $4$. That took 3 comparisons, not a scan of all keys. Transitivity is what justifies skipping the right subtree, since $4 < 5 < 8$ implies $4 < 8$.</p>
+<p><strong>Problem-solving application.</strong> Suppose you store points $(x, y)$ in a BST and define $p \preceq q$ iff $x_p \le x_q$ <em>and</em> $y_p \le y_q$. Is this a valid ordering for the tree?</p>
+<p>Check totality. Take $p = (1, 5)$ and $q = (2, 3)$. Then $x_p \le x_q$ but $y_p > y_q$, so neither $p \preceq q$ nor $q \preceq p$. The relation is only a partial order, and a search could not decide which way to go.</p>
+<p><em>Fix:</em> use <strong>lexicographic order</strong>: $p \prec q$ if $x_p < x_q$, or if $x_p = x_q$ and $y_p < y_q$. This is a total order, since the $x$-coordinates decide first and the $y$-coordinates break ties. Now $(1,5) \prec (2,3)$, and every pair has a definite answer.</p>
+<p><strong>Practical check.</strong> When you define a custom comparison for a BST, test three things:</p>
+<li>Does it return an answer for every pair?</li>
+<li>Is it consistent, so that $a<b$ and $b<c$ imply $a<c$?</li>
+<li>Does it treat equal keys the same way every time?</li>
+<p>For floating-point values, $\text{NaN}$ breaks totality, because $\text{NaN} \le x$ is false for every $x$, including itself. A tree that stores $\text{NaN}$ without special handling can silently lose keys.</p>
+<pre class="mermaid">graph TD
+    A["5"] --> B["3"]
+    A --> C["8"]
+    B --> D["Left: none"]
+    B --> E["4"]</pre>
+<p><em>The BST built from inserting 5, 3, 8, 4. Each left descendant is less than its ancestor, and each right descendant is greater, which is only well-defined because the keys are totally ordered.</em></p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch6: Binary Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

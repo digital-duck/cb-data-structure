@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amortized Analysis | Data Structure Ch08</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="摊还分析">摊还分析</h2>
+<p><strong>定义。</strong> 摊还分析(amortized analysis)用来计算一个操作序列中<strong>每次操作的平均代价</strong>,并且这个平均是对最坏情况序列取的,与概率无关。有些操作偶尔很贵(例如重建数据结构),但如果昂贵操作之前必然有许多便宜操作,总代价仍然很小。</p>
+<p>设 $n$ 个操作的实际代价为 $c_1,\dots,c_n$,则摊还代价的上界为</p>
+$$
+\hat{c}=\frac{1}{n}\sum_{i=1}^{n}c_i .
+$$
+<p>本节使用<strong>记账法(credit scheme)</strong>:给每个操作规定一个摊还代价 $\hat{c}_i$,多收的部分作为"积分"存起来,供以后昂贵操作支付。只要积分余额始终 $\ge 0$,就有</p>
+$$
+\sum_{i=1}^{n} c_i \;\le\; \sum_{i=1}^{n}\hat{c}_i .
+$$
+<p><strong>示例:动态数组的扩容。</strong> 数组容量为 $m$ 且已满时,再插入一个元素需要新开容量 $2m$ 的数组并复制 $m$ 个元素(重建),代价为 $m+1$。普通插入代价为 $1$。</p>
+<p>规定每次插入的摊还代价为 $\hat{c}=3$:</p>
+<li>$1$ 个单位用于插入本身;</li>
+<li>$2$ 个单位作为积分存放在新元素上。</li>
+<p>当容量从 $m/2$ 扩到 $m$ 后,后面的 $m/2$ 次插入共攒下 $2\cdot\frac{m}{2}=m$ 个积分,正好支付下一次重建复制 $m$ 个元素的开销。所以积分永远不会为负,即使最坏的那次插入代价为 $\Theta(m)$,每次插入的摊还代价仍是 $O(1)$。</p>
+<p><strong>问题求解应用。</strong> 连续插入 $n=16$ 个元素,初始容量为 $1$。重建发生在插入第 $2,3,5,9$ 个元素时,复制的元素数分别为 $1,2,4,8$,总复制量为 $15$。</p>
+<p>总实际代价为</p>
+$$
+\sum c_i = 16 + (1+2+4+8) = 31 \;\le\; 3\times 16 = 48 .
+$$
+<p>推广到一般的 $n$:复制总量为</p>
+$$
+\sum_{k=0}^{\lfloor\log_2 n\rfloor} 2^k < 2n,
+$$
+<p>所以总代价小于 $n+2n=3n$,与记账法的结论一致。</p>
+<p><strong>解题步骤:</strong></p>
+<li>找出昂贵操作及其触发条件(此处是"数组已满");</li>
+<li>估计昂贵操作之前至少有多少次便宜操作;</li>
+<li>设定摊还代价,使多收的积分刚好覆盖昂贵操作;</li>
+<li>验证积分余额始终非负。</li>
+<p><strong>注意。</strong> 摊还界是对整个操作序列的<strong>最坏情况保证</strong>,不是平均情况的概率估计。它只限制总代价,不限制某一次操作的延迟:单次重建仍然很慢。如果系统对单次响应时间有严格要求,就需要另外的技术,例如增量式重建。</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch8: Scapegoat Trees (Level: College &middot; Language: ZH &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

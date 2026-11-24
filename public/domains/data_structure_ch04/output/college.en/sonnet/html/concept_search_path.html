@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Path | Data Structure Ch04</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="search-path">Search Path</h2>
+<p>In a skip list, the <strong>search path</strong> for a target key $x$ is the sequence of nodes visited when searching from the sentinel (header) node in the topmost list $L_h$ down to the target's position in the bottom list $L_0$. The rule at each node is simple:</p>
+<li><strong>Move right</strong> while the next key on the current level is $\le x$ (not overshooting).</li>
+<li>When the next key would <strong>overshoot</strong> $x$ (is greater than $x$, or is the end of the list), <strong>step down</strong> one level.</li>
+<li>Stop when you reach $x$ at level $0$ (or confirm that it is absent).</li>
+<p>Because each higher list skips over many nodes in the lists below, the path takes long strides early and short strides late, like zooming a map from country to street level.</p>
+<h3 id="worked-example">Worked example</h3>
+<p>Let $L_0 = \{3, 7, 12, 19, 25, 31, 40\}$, $L_1 = \{7, 19, 31\}$, $L_2 = \{19\}$, and search for $x = 25$. Start at the sentinel on $L_2$.</p>
+<p>| Step | Level | Current | Next | Action | |---|---|---|---|---| | 1 | $L_2$ | sentinel | 19 | $19 \le 25$, move right | | 2 | $L_2$ | 19 | end | overshoot, step down | | 3 | $L_1$ | 19 | 31 | $31 > 25$, step down | | 4 | $L_0$ | 19 | 25 | $25 \le 25$, move right | | 5 | $L_0$ | 25 | | found |</p>
+<p>The path touched only 3 distinct keys (19, 25, plus the sentinel), whereas a linear scan of $L_0$ would examine 5.</p>
+<pre class="mermaid">graph LR
+  S2["Sentinel L2"] --> A["19 (L2)"]
+  A --> B["19 (L1)"]
+  B --> C["19 (L0)"]
+  C --> D["25 (L0)"]</pre>
+<p><em>The search path for 25: right along $L_2$, down twice at node 19, then right once on $L_0$.</em></p>
+<h3 id="problem-solving-application-expected-length">Problem-solving application: expected length</h3>
+<p>Suppose each node is promoted to the next level with probability $p = \tfrac12$. Analyze the path <strong>backwards</strong>, from the target in $L_0$ up to the sentinel at $L_h$. At each node on the reversed path, one of two things happens:</p>
+<li>the node was promoted (probability $p$), so we go <strong>up</strong>, or</li>
+<li>it was not promoted (probability $1-p$), so we go <strong>left</strong>.</li>
+<p>Each up-move corresponds to one level climbed, and the path must climb $h$ levels. The expected number of moves to climb one level is the expected number of trials until the first "promoted" outcome, which is $1/p$ (geometric distribution). So the expected number of steps to climb $h$ levels is</p>
+$$
+\mathbb{E}[\text{path length}] \approx \frac{h}{p}.
+$$
+<p>For $n$ keys, the expected height is $h \approx \log_{1/p} n$, so for $p=\tfrac12$:</p>
+$$
+\mathbb{E}[\text{path length}] = O(\log n).
+$$
+<p><strong>Check:</strong> with $n = 1024$ and $p = \tfrac12$, $h \approx 10$, giving about $10/0.5 = 20$ steps, versus up to $1024$ for a linked list.</p>
+<p><strong>Why this matters:</strong> the search path is the unit of cost for <em>every</em> skip-list operation. Insertion and deletion first trace a search path, then modify the pointers of the nodes where the path stepped down. Bounding the path's length therefore bounds all three operations at expected $O(\log n)$.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch4: Skiplists (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

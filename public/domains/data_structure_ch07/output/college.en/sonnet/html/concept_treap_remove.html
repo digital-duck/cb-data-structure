@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treap Remove | Data Structure Ch07</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fafaf8;color:#1a1a1a;line-height:1.7}
+h2{font-size:1.45rem;color:#1e3a5f;margin-bottom:12px}
+h3{font-size:1.1rem;color:#2e4a7f;margin:20px 0 8px}
+h4{font-size:1rem;color:#3a5a8f;margin:16px 0 6px}
+p{margin-bottom:16px;font-size:1rem}
+li{margin-bottom:6px;margin-left:24px;font-size:1rem}
+pre{background:#f4f4f0;border:1px solid #d8d8d0;border-radius:6px;
+    padding:16px 20px;overflow-x:auto;margin:16px 0}
+code{font-family:Menlo,Consolas,monospace;font-size:.87em}
+p code{background:#f0f0ea;padding:1px 4px;border-radius:3px}
+footer.spl-credit{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;
+      font-family:system-ui,sans-serif;font-size:.78rem;color:#999;text-align:center}
+footer.spl-credit a{color:#2563eb;text-decoration:none}
+footer.spl-credit span{display:block}
+footer.spl-credit .spl-credit__meta{margin-bottom:4px}
+.cb-figure{margin:24px 0;text-align:center}
+.cb-figure img{max-width:100%;height:auto;border:1px solid #e0e0d8;border-radius:6px}
+figcaption{font-size:.82rem;color:#666;margin-top:8px;font-style:italic;text-align:center}
+pre.mermaid{background:none;border:none;padding:0;overflow:visible;margin:16px 0}
+.page{max-width:780px;margin:0 auto;padding:40px 32px}
+section{margin-bottom:48px;border-top:1px solid #e0e0d8;padding-top:36px}
+section:first-of-type{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <h2 id="treap-remove">Treap Remove</h2>
+<p><strong>Definition.</strong> A treap stores each node with a key $x$ and a random priority $p(x)$. It is a binary search tree on keys and a min-heap on priorities, so every parent has a smaller priority than its children. The operation <code>remove(x)</code> deletes the node $u$ holding $x$ and restores both properties. Removal rotates $u$ <em>down</em> until it has at most one child, and then splices it out. A rotation swaps a node with one of its children while preserving the in-order sequence of keys. It is the only structural tool this section uses.</p>
+<p><strong>Algorithm.</strong></p>
+<li>Find $u$ by ordinary BST search. If $x$ is absent, stop.</li>
+<li>While $u$ has two children, rotate $u$ with the child that has the <em>smaller</em> priority. That child becomes $u$'s parent. Its priority is lower than that of $u$'s other child, so the heap property holds at the new root of the subtree.</li>
+<li>Once $u$ has at most one child, splice it out. Its parent points directly to $u$'s only child, or to nothing if $u$ is a leaf.</li>
+<p>Rotations preserve the in-order sequence, so the BST property is never broken. Each rotation lowers $u$ by one level, and the heap property holds again once $u$ is gone.</p>
+<p><strong>Worked example.</strong> Take the treap with (key, priority) pairs: root $(5,\,1)$, left child $(3,\,4)$, right child $(8,\,2)$. Node $(8,2)$ has children $(7,\,6)$ and $(9,\,3)$. Remove $x=8$.</p>
+<li>Node $8$ has two children with priorities $6$ and $3$. Rotate with the smaller one, $(9,3)$. This is a left rotation, so $9$ moves up and $8$ becomes its left child. Node $8$ now has one child, $(7,6)$.</li>
+<li>Node $8$ has only one child, so splice it out. Node $9$'s left pointer now points to $7$.</li>
+<p>The result is $5$ with children $3$ and $9$, and $9$ has left child $7$. Every parent's priority is smaller than its children's: $1<4$, $1<2$ is replaced by $1<3$, $3<6$. The in-order keys $3,5,7,9$ are still sorted.</p>
+<p><strong>Why it is $O(\log n)$.</strong> Search costs the depth of $u$. Trickle-down costs at most the height of $u$'s subtree. Together the work is at most the length of the longest root-to-leaf path through $u$, which is bounded by the treap height. Because priorities are random, the treap has the same shape distribution as a random BST built by inserting keys in priority order. Its expected height is $O(\log n)$. Therefore</p>
+$$E[\text{cost of remove}] = O(\log n).$$
+<p><strong>Problem-solving application.</strong> <em>Question:</em> You remove a node whose subtree has height $h=3$ and which sits at depth $d=4$. What is the maximum number of rotations, and what is the maximum number of nodes on the path the operation touches?</p>
+<p><em>Solution:</em> Each rotation lowers $u$ by one level, and $u$ can drop at most $h=3$ levels before it becomes a leaf, so there are at most $3$ rotations. Search visits $d+1=5$ nodes. Trickle-down moves through at most $3$ more levels, so the work is at most $d+h=7$ steps past the root, plus $O(1)$ for the final splice. Both quantities are bounded by the treap height, so the cost stays logarithmic in expectation.</p>
+<p><strong>Common pitfall.</strong> Rotate with the child of <em>smaller</em> priority. Choosing the larger one puts a high-priority node above a low-priority one and breaks the heap property.</p>
+  </main>
+  <footer class="spl-credit"><span class="spl-credit__meta">Open Data Structures (Python) — Ch7: Random Binary Search Trees (Level: College &middot; Language: EN &middot; Model: sonnet)</span><span class="spl-credit__powered">Generated and Powered by <a href="https://github.com/digital-duck/SPL.py" target="_blank" rel="noopener">SPL</a></span></footer>
+</div>
+</body>
+</html>

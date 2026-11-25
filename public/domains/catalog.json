@@ -288,13 +288,13 @@
       },
       {
         "target": "stack_operations_sllist",
-        "file": "output/college.zh/sonnet/html/book_stack_operations_sllist.html",
+        "file": "output/college.zh/sonnet/html/book_stack_operations_sllist_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "queue_operations_sllist",
-        "file": "output/college.zh/sonnet/html/book_queue_operations_sllist.html",
+        "file": "output/college.zh/sonnet/html/book_queue_operations_sllist_zh.html",
         "model": "sonnet",
         "language": "zh"
       }
@@ -481,15 +481,27 @@
       },
       {
         "target": "skiplist_sset",
-        "file": "output/college.zh/sonnet/html/book_skiplist_sset.html",
+        "file": "output/college.zh/sonnet/html/book_skiplist_sset_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "skiplist_list",
-        "file": "output/college.zh/sonnet/html/book_skiplist_list.html",
+        "file": "output/college.zh/sonnet/html/book_skiplist_list_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "skiplist_sset",
+        "file": "output/college.en/sonnet/html/book_skiplist_sset.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "skiplist_list",
+        "file": "output/college.en/sonnet/html/book_skiplist_list.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -675,9 +687,15 @@
       },
       {
         "target": "hash_collision_dos",
-        "file": "output/college.zh/sonnet/html/book_hash_collision_dos.html",
+        "file": "output/college.zh/sonnet/html/book_hash_collision_dos_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "hash_collision_dos",
+        "file": "output/college.en/sonnet/html/book_hash_collision_dos.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -785,15 +803,27 @@
       },
       {
         "target": "unbalanced_bst_performance",
-        "file": "output/college.zh/sonnet/html/book_unbalanced_bst_performance.html",
+        "file": "output/college.zh/sonnet/html/book_unbalanced_bst_performance_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "tree_balancing_strategies",
-        "file": "output/college.zh/sonnet/html/book_tree_balancing_strategies.html",
+        "file": "output/college.zh/sonnet/html/book_tree_balancing_strategies_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "unbalanced_bst_performance",
+        "file": "output/college.en/sonnet/html/book_unbalanced_bst_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "tree_balancing_strategies",
+        "file": "output/college.en/sonnet/html/book_tree_balancing_strategies.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -943,15 +973,27 @@
       },
       {
         "target": "martinez_roura_rbst",
-        "file": "output/college.zh/sonnet/html/book_martinez_roura_rbst.html",
+        "file": "output/college.zh/sonnet/html/book_martinez_roura_rbst_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "treap_hashing_priorities",
-        "file": "output/college.zh/sonnet/html/book_treap_hashing_priorities.html",
+        "file": "output/college.zh/sonnet/html/book_treap_hashing_priorities_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "martinez_roura_rbst",
+        "file": "output/college.en/sonnet/html/book_martinez_roura_rbst.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "treap_hashing_priorities",
+        "file": "output/college.en/sonnet/html/book_treap_hashing_priorities.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -1161,15 +1203,27 @@
       },
       {
         "target": "scapegoat_tree_performance",
-        "file": "output/college.zh/sonnet/html/book_scapegoat_tree_performance.html",
+        "file": "output/college.zh/sonnet/html/book_scapegoat_tree_performance_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "weight_balanced_tree",
-        "file": "output/college.zh/sonnet/html/book_weight_balanced_tree.html",
+        "file": "output/college.zh/sonnet/html/book_weight_balanced_tree_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "scapegoat_tree_performance",
+        "file": "output/college.en/sonnet/html/book_scapegoat_tree_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "weight_balanced_tree",
+        "file": "output/college.en/sonnet/html/book_weight_balanced_tree.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -1403,15 +1457,27 @@
       },
       {
         "target": "red_black_performance",
-        "file": "output/college.zh/sonnet/html/book_red_black_performance.html",
+        "file": "output/college.zh/sonnet/html/book_red_black_performance_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "avl_tree",
-        "file": "output/college.zh/sonnet/html/book_avl_tree.html",
+        "file": "output/college.zh/sonnet/html/book_avl_tree_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "red_black_performance",
+        "file": "output/college.en/sonnet/html/book_red_black_performance.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "avl_tree",
+        "file": "output/college.en/sonnet/html/book_avl_tree.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -1699,15 +1765,27 @@
       },
       {
         "target": "heapsort",
-        "file": "output/college.zh/sonnet/html/book_heapsort.html",
+        "file": "output/college.zh/sonnet/html/book_heapsort_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "absorb_operation",
-        "file": "output/college.zh/sonnet/html/book_absorb_operation.html",
+        "file": "output/college.zh/sonnet/html/book_absorb_operation_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "heapsort",
+        "file": "output/college.en/sonnet/html/book_heapsort.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "absorb_operation",
+        "file": "output/college.en/sonnet/html/book_absorb_operation.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -1907,9 +1985,15 @@
       },
       {
         "target": "integer_sorting_via_indexing",
-        "file": "output/college.zh/sonnet/html/book_integer_sorting_via_indexing.html",
+        "file": "output/college.zh/sonnet/html/book_integer_sorting_via_indexing_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "integer_sorting_via_indexing",
+        "file": "output/college.en/sonnet/html/book_integer_sorting_via_indexing.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -2079,15 +2163,27 @@
       },
       {
         "target": "shortest_path_via_bfs",
-        "file": "output/college.zh/sonnet/html/book_shortest_path_via_bfs.html",
+        "file": "output/college.zh/sonnet/html/book_shortest_path_via_bfs_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "cycle_detection_via_dfs",
-        "file": "output/college.zh/sonnet/html/book_cycle_detection_via_dfs.html",
+        "file": "output/college.zh/sonnet/html/book_cycle_detection_via_dfs_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "shortest_path_via_bfs",
+        "file": "output/college.en/sonnet/html/book_shortest_path_via_bfs.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "cycle_detection_via_dfs",
+        "file": "output/college.en/sonnet/html/book_cycle_detection_via_dfs.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -2271,15 +2367,27 @@
       },
       {
         "target": "van_emde_boas_tree",
-        "file": "output/college.zh/sonnet/html/book_van_emde_boas_tree.html",
+        "file": "output/college.zh/sonnet/html/book_van_emde_boas_tree_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "yfasttrie",
-        "file": "output/college.zh/sonnet/html/book_yfasttrie.html",
+        "file": "output/college.zh/sonnet/html/book_yfasttrie_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "van_emde_boas_tree",
+        "file": "output/college.en/sonnet/html/book_van_emde_boas_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "yfasttrie",
+        "file": "output/college.en/sonnet/html/book_yfasttrie.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
@@ -2499,15 +2607,27 @@
       },
       {
         "target": "b_plus_tree",
-        "file": "output/college.zh/sonnet/html/book_b_plus_tree.html",
+        "file": "output/college.zh/sonnet/html/book_b_plus_tree_zh.html",
         "model": "sonnet",
         "language": "zh"
       },
       {
         "target": "btree_filesystems_databases",
-        "file": "output/college.zh/sonnet/html/book_btree_filesystems_databases.html",
+        "file": "output/college.zh/sonnet/html/book_btree_filesystems_databases_zh.html",
         "model": "sonnet",
         "language": "zh"
+      },
+      {
+        "target": "b_plus_tree",
+        "file": "output/college.en/sonnet/html/book_b_plus_tree.html",
+        "model": "sonnet",
+        "language": "en"
+      },
+      {
+        "target": "btree_filesystems_databases",
+        "file": "output/college.en/sonnet/html/book_btree_filesystems_databases.html",
+        "model": "sonnet",
+        "language": "en"
       }
     ],
     "generated_concepts": [
